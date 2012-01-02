@@ -1,2 +1,69 @@
 // This File is imported last, and will override other styles in the cascade
 // Add styles here to make changes without digging in too much
+
+body > header h1 {
+  font-family: "Michroma", sans-serif;
+  text-transform: uppercase;
+  font-weight: normal;
+}
+
+body > header {
+  font-size: .7em;
+  hgroup {
+    text-align: center;
+  }
+  h1 {
+    text-shadow: rgba(#000, .8) 0 0 8px;
+    font-size: 3.4em;
+    line-height: 0.6em;
+    position: relative;
+    margin: 0;
+    hgroup { padding: 0 0 1em; }
+    a:hover { color: #fff; }
+    &:before {
+      content: "";
+      position: absolute; left: -8em;
+      height: image-height('moirae_logo.png');
+      @include replace-text('moirae_logo.png');
+    }
+  }
+  h2 {
+    font-size: 1.5em;
+    position: relative; top: .2em;
+    font-style:italic
+  }
+  @media only screen and (min-width: 360px) {
+    font-size: .70em;
+    h1 { 
+      &:before {
+        position: absolute; left: -1.75em; right: 0; top: .05em;
+        width: 1.6em;
+        height: 1.6em;
+        @include background-size(100%);
+      }
+    }
+    h2 {
+      @extend .sans;
+      font-size: 1.2em;
+      color: $subtitle-color;
+      position: relative; left: -1.6em;
+      text-shadow: $header-bg 0 2px 1px;
+    }
+  }
+  @media only screen and (min-width: 485px) {
+    font-size: .95em;
+    h2 { top: .2em; }
+  }
+  @media only screen and (min-width: 768px) {
+    font-size: 1.05em;
+    h2 { top: .2em; }
+  }
+  @media only screen and (min-width: 992px) {
+    font-size: 1.2em;
+    h2 { top: .2em; }
+    h1:before {
+      width: image-width('moirae_logo.png');
+      height: image-height('moirae_logo.png');
+    }
+  }
+}
