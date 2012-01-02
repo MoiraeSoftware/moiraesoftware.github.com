@@ -23,8 +23,8 @@ body > header {
     &:before {
       content: "";
       position: absolute; left: -8em;
-      height: image-height('moirae_logo.png');
-      @include replace-text('moirae_logo.png');
+      height: image-height('logo.png');
+      @include replace-text('logo.png');
     }
   }
   h2 {
@@ -62,8 +62,8 @@ body > header {
     font-size: 1.2em;
     h2 { top: .2em; }
     h1:before {
-      width: image-width('moirae_logo.png');
-      height: image-height('moirae_logo.png');
+      width: image-width('logo.png');
+      height: image-height('logo.png');
     }
   }
 }
