@@ -6,6 +6,8 @@ slug: fsharp_solid
 status: publish
 title: F# and Design principles - SOLID
 wordpress_id: '434'
+published: false
+comments: true
 categories:
 - Programming Tales
 tags:

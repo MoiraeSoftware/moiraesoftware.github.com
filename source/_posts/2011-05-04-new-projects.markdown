@@ -6,6 +6,8 @@ slug: new-projects
 status: publish
 title: New projects
 wordpress_id: '333'
+published: false
+comments: true
 categories:
 - Programming Tales
 tags:

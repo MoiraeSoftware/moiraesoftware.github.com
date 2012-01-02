@@ -6,6 +6,8 @@ slug: agents-and-objectpools
 status: publish
 title: ' Agents and ObjectPools'
 wordpress_id: '341'
+published: false
+comments: true
 categories:
 - Programming Tales
 tags:

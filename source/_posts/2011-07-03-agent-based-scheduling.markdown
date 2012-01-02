@@ -6,6 +6,8 @@ slug: agent-based-scheduling
 status: publish
 title: Agent based scheduling
 wordpress_id: '382'
+published: false
+comments: true
 categories:
 - Programming Tales
 tags:

@@ -6,6 +6,8 @@ slug: introduction
 status: publish
 title: Introduction
 wordpress_id: '34'
+published: false
+comments: true
 categories:
 - Programming Tales
 tags:

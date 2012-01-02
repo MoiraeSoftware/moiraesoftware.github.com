@@ -6,6 +6,8 @@ slug: pipeline-processing-3
 status: publish
 title: Pipeline processing 3
 wordpress_id: '310'
+published: false
+comments: true
 categories:
 - Programming Tales
 tags:

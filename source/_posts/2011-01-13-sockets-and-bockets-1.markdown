@@ -6,6 +6,8 @@ slug: sockets-and-bockets-1
 status: publish
 title: Sockets and Bockets 1
 wordpress_id: '39'
+published: false
+comments: true
 categories:
 - Programming Tales
 tags:

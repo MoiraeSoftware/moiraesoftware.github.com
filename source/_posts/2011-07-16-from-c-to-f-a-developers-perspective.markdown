@@ -6,6 +6,8 @@ slug: from-c-to-f-a-developers-perspective
 status: publish
 title: 'From C# to F#: A Developer''s Perspective'
 wordpress_id: '419'
+published: false
+comments: true
 categories:
 - Programming Tales
 tags:

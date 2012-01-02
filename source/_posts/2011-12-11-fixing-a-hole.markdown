@@ -6,6 +6,7 @@ slug: fixing-a-hole
 status: publish
 title: Fixing a hole...
 wordpress_id: '505'
+comments: true
 categories:
 - Programming Tales
 tags:
@@ -29,7 +30,7 @@ simple test to see if pipelets were contributing to the memory allocation
 issues I was seeing.  Here's the simple iteration test code I used for the
 memory profiling:
 
-{% codeblock lang:ocaml %}
+{% codeblock %}
     open System
     open System.Diagnostics
     open System.Threading

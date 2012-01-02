@@ -6,6 +6,8 @@ slug: build-2011-a-quick-look
 status: publish
 title: Build 2011 - A quick look
 wordpress_id: '477'
+published: false
+comments: true
 categories:
 - Programming Tales
 tags:
