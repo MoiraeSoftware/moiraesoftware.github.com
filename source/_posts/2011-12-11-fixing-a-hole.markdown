@@ -30,68 +30,7 @@ simple test to see if pipelets were contributing to the memory allocation
 issues I was seeing.  Here's the simple iteration test code I used for the
 memory profiling:
 
-{% codeblock %}
-    open System
-    open System.Diagnostics
-    open System.Threading
-    open Fracture.Pipelets  
-    let reverse (s:string) =
-      String(s |> Seq.toArray |> Array.rev)  
-    let oneToSingleton a b f=
-      let result = b |> f
-      result |> Seq.singleton  
-    /// Total number to run through test cycle
-    let number = 100  
-    /// To Record when we are done
-    let counter = ref 0
-    let sw = new Stopwatch()
-    let countThis (a:String) =
-      do Interlocked.Increment(counter) |> ignore
-      if !counter % number = 0 then
-        sw.Stop()
-        printfn "Execution time: %A" sw.Elapsed.TotalMilliseconds
-        printfn "Items input: %d" number
-        printfn "Time per item: %A ms (Elapsed Time / Number of items)"
-          (TimeSpan.FromTicks(sw.Elapsed.Ticks / int64 number).TotalMilliseconds)
-        printfn "Press any key to repeat, press 'q' to exit."
-        sw.Reset()
-      counter |> Seq.singleton  
-    let OneToSeqRev a b =
-      oneToSingleton a b reverse   
-    let generateCircularSeq (s) =
-      let rec next () =
-        seq {
-          for element in s do
-            yield element
-          yield! next()
-        }
-      next()  
-    let stage1 = new Pipelet<_,_>("Stage1", OneToSeqRev "1", Routers.roundRobin, number, -1)
-    let stage2 = new Pipelet<_,_>("Stage2", OneToSeqRev "2", Routers.basicRouter, number, -1)
-    let stage3 = new Pipelet<_,_>("Stage3", OneToSeqRev "3", Routers.basicRouter, number, -1)
-    let stage4 = new Pipelet<_,_>("Stage4", OneToSeqRev "4", Routers.basicRouter, number, -1)
-    let stage5 = new Pipelet<_,_>("Stage5", OneToSeqRev "5", Routers.basicRouter, number, -1)
-    let stage6 = new Pipelet<_,_>("Stage6", OneToSeqRev "6", Routers.basicRouter, number, -1)
-    let stage7 = new Pipelet<_,_>("Stage7", OneToSeqRev "7", Routers.basicRouter, number, -1)
-    let stage8 = new Pipelet<_,_>("Stage8", OneToSeqRev "8", Routers.basicRouter, number, -1)
-    let stage9 = new Pipelet<_,_>("Stage9", OneToSeqRev "9", Routers.basicRouter, number, -1)
-    let stage10 = new Pipelet<_,_>("Stage10", OneToSeqRev "10", Routers.basicRouter, number, -1)
-    let final = new Pipelet<_,_>("Final", countThis, Routers.basicRouter, number, -1)  
-    let manyStages = [stage2;stage3;stage4;stage5;stage6;stage7;stage8;stage9;stage10]  
-    oneToMany stage1 manyStages
-    manyToOne manyStages final  
-    System.AppDomain.CurrentDomain.UnhandledException |> Observable.add (fun x ->
-      printfn "%A" (x.ExceptionObject :?> Exception); Console.ReadKey() |> ignore)  
-    let circ = ["John"; "Paul"; "George"; "Ringo"; "Nord"; "Bert"] |> generateCircularSeq   
-    let startoperations() =
-      sw.Start()
-      for str in circ |> Seq.take number
-        do  str --> stage1
-      printfn "Insert complete waiting for operation to complete."  
-    printfn "Press any key to process %i items" number
-    while not (Console.ReadKey().Key = ConsoleKey.Q) do
-      startoperations()
-{% endcodeblock %}
+{% gist 1557610 test_code.fs %}
 
 Using process explorer from Mark Russinovich I watched the allocated memory
 grow as the iterations progressed:
@@ -185,29 +124,11 @@ So whats happening here is that there is a continuation that has been built
 around the asynchronous calls that gets bigger and bigger on each iteration.
 
 Now that we have identified the leak, lets look at the code and see whats
-going on.  That would be loop function in Pipelets line 37:
+going on.  That would be the loop function in Pipelets:
 
-{% codeblock %}
-    let mailbox = MailboxProcessor.Start(fun inbox ->
-      let rec loop routes = async {
-        let! msg = inbox.Receive()
-        match msg with
-        | Payload(data) ->
-          ss.Release() |> ignore
-          try
-            data |> transform |> router <| routes
-            return! loop routes
-          with //force loop resume on error
-          | ex -> errors ex
-              return! loop routes
-        | Attach(stage) -> return! loop (stage::routes)
-        | Detach(stage) -> return! loop (List.filter (fun x -> x <> stage) routes)
-      }
-      loop [])
-{% endcodeblock %}
+{% gist 1557610 leaky_mailbox.fs %}
 
-I have highlighted what would be line 37 and also two other interesting
-sections.  Can you guess whats wrong?
+Have a look at lines 9 and 12.  Can you guess whats wrong?
 
 Well, to quote the [F# Teams blog](http://blogs.msdn.com/b/fsharpteam/archive/2011/07/08/tail-calls-in-fsharp.aspx):
 
@@ -227,49 +148,12 @@ section.  The most idiomatic way of dealing with this is to use the
 [Async.Catch function](http://msdn.microsoft.com/en-us/library/ee353899.aspx)
 which would result in code something like the following:
 
-{% codeblock %}    
-    let mailbox = MailboxProcessor.Start(fun inbox ->
-      let rec loop routes = async {
-        let! msg = inbox.Receive()
-        match msg with
-        | Payload(data) ->
-          ss.Release() |> ignore
-          let result = async{data |> transform |> router <| routes} |> Async.Catch |> Async.RunSynchronously
-          match result with
-          | Choice1Of2() -> ()
-          | Choice2Of2 exn -> errors exn
-          return! loop routes
-        | Attach(stage) -> return! loop (stage::routes)
-        | Detach(stage) -> return! loop (List.filter (fun x -> x <> stage) routes)
-      }
-      loop [])
-{% endcodeblock %}
+{% gist 1557610 async_catch.fs %}
 
 Alternatively you could move the entire try with section out to a more local
-section not in the tail recursive async loop construct:
+section thats not in the recursive async loop construct:
 
-{% codeblock %}    
-    let computeAndRoute data routes =
-      try
-        data |> transform |> router <| routes
-        Choice1Of2()
-      with
-      | ex -> Choice2Of2 ex  
-    let mailbox = MailboxProcessor.Start(fun inbox ->
-      let rec loop routes = async {
-        let! msg = inbox.Receive()
-        match msg with
-        | Payload(data) ->
-          ss.Release() |> ignore
-          match computeAndRoute data routes with
-          | Choice2Of2 exn -> errors exn
-          | _ -> ()
-          return! loop routes
-        | Attach(stage) -> return! loop (stage::routes)
-        | Detach(stage) -> return! loop (List.filter (fun x -> x <> stage) routes)
-      }
-      loop [])
-{% endcodeblock %}
+{% gist 1557610 move_try.fs %}
 
 Anyway I hope that sheds a bit of light on how to spot where memory leaks are
 stemming from, and also some of the little known and often forgotten caveats
