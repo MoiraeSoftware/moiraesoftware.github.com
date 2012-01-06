@@ -6,10 +6,10 @@ slug: sockets-and-bockets-part-4
 status: publish
 title: Sockets and Bockets 4
 wordpress_id: '180'
-published: false
 comments: true
 categories:
 - Programming Tales
+- Sockets
 tags:
 - F#
 - GC
@@ -21,22 +21,17 @@ tags:
 - YourKit
 ---
 
-### Welcome to part 4
-
-[Part 1](http://moiraesoftware.com/?p=39) [Part
-2](http://moiraesoftware.com/?p=68) [Part 3](http://moiraesoftware.com/?p=139)
-Part 4
+## Welcome to part 4
 
 If you were looking forward to some exciting new F# code this time your going
 to be disappointed, however if you are like me and like looking at graphs and
 stats and digging in deeper into the code then your going to enjoy this, lets
-get started...
+get started...<!-- more -->
 
 I set up a 5 minute test with 50 clients connecting to the server with a 15ms
 interval between each one.  Once connected each client receives a 128 byte
 message from the server every 100ms so this will be a 500 messages per second
-test.  I am going to be using an excellent product called [YourKit Profiler
-for .NET](http://bit.ly/e4ToaO ) it can do both memory and CPU profiling as
+test.  I am going to be using an excellent product called [YourKit Profilerfor .NET](http://bit.ly/e4ToaO ) it can do both memory and CPU profiling as
 well as displaying telemetry for things like thread count, stack contents,
 memory allocations etc.  It can be configured to be a lot less intrusive than
 a lot of other profilers and I have had a lot of success using it.  You can
@@ -50,7 +45,7 @@ a simple test client using Brian's code as mentioned in
 [Part1](http://moiraesoftware.com/?p=39) I have highlighted the lines that
 have changed below.
 
-    
+{% codeblock lang:fsharp %}    
     open System.Net
     open System.Net.Sockets  
     let quoteSize = 128  
@@ -84,16 +79,17 @@ have changed below.
       |> Async.Ignore
       |> Async.Start
     System.Console.ReadKey() |> ignore
+{% endcodeblock %}
 
-### CPU and threading performance
+## CPU and threading performance
 
-First of all lets look at the CPU results from the IAsync pattern:
+First of all lets look at the CPU results from the _IAsync_ pattern:
 
-![](http://moiraesoftware.com/wp-content/uploads/2011/01/mcnamara-cpu1.png)
+{% img https://lh5.googleusercontent.com/-3H8-TiiB-VI/TwYhL2mvYsI/AAAAAAAABQI/z8dmiHBvTJE/mcnamara-cpu1.png %}
 
 Heres the same run from the SAEA pattern:
 
-![](http://moiraesoftware.com/wp-content/uploads/2011/01/Bocket-cpu2.png)
+{% img https://lh3.googleusercontent.com/-yGB2zdE3kGM/TwYhLPrUmLI/AAAAAAAABP8/Y6CIMWOi4Gk/Bocket-cpu2.png %}
 
 You can see that both the number of threads and the amount of CPU is a quite a
 lot less in the SAEA pattern.  The spike at the beginning is the allocation of
@@ -101,46 +97,35 @@ buffers for the BocketPool.
 
 Now lets move on to memory and garbage collection.
 
-### Memory Allocation
+## Memory Allocation
 
-Here's a graph of the heap and process memory allocation in the IAsync
+Here's a graph of the heap and process memory allocation in the **IAsync**
 pattern, green is generation 0, blue is generation 1 and orange is the large
 object heap.  There's also red for generation 2 but the results are behind the
 others and they are only small 0,2 MB peaks at 5 to 15 second intervals.
 
-[![](http://moiraesoftware.com/wp-content/uploads/2011/01/mcnamara-
-mem1.png)](http://moiraesoftware.com/wp-content/uploads/2011/01/mcnamara-
-mem1.png)
+{% img https://lh3.googleusercontent.com/-PalohQxAkOg/TwYhL6hR5JI/AAAAAAAABQQ/NtCLYc43OZc/mcnamara-mem1.png %}
 
 Heres the same but for the SAEA pattern, there are red peaks every 10- 20
 second intervals of 0.2MB hidden under the others.
 
-[![](http://moiraesoftware.com/wp-content/uploads/2011/01/Bocket-
-mem1.png)](http://moiraesoftware.com/wp-content/uploads/2011/01/Bocket-
-mem1.png)
+{%img https://lh3.googleusercontent.com/-Nadz1nXQ7lg/TwYhLBXMvcI/AAAAAAAABQM/xCfuXkzkekM/Bocket-mem1.png %}
 
-As you can see the heap memory is around half the size and the process memory
-is 15MB less.
+As you can see the heap memory is around half the size and the process memory is 15MB less.
 
-### Memory Hotspots
+## Memory Hotspots
 
 Finally here's a couple of screen shot of the hot spots for memory allocations
 in both implementations
 
-[caption id="attachment_201" align="alignnone" width="300" caption="IAsync hot
-spots"][![](http://moiraesoftware.com/wp-content/uploads/2011/01/IAsync-hot-
-300x209.png)](http://moiraesoftware.com/wp-content/uploads/2011/01/IAsync-
-hot.png)[/caption]
+{% img https://lh4.googleusercontent.com/-n3QWLgvNjq8/TwYhLX8cIZI/AAAAAAAABQA/LkeRno775Ew/s800/IAsync-hot.png IAsync %}
 
-[caption id="attachment_202" align="alignnone" width="300" caption="SAEA
-hotspots"][![](http://moiraesoftware.com/wp-content/uploads/2011/01/SAEA-hot-
-300x209.png)](http://moiraesoftware.com/wp-content/uploads/2011/01/SAEA-
-hot.png)[/caption]
+{% img https://lh5.googleusercontent.com/-PSX_YUfxkgU/TwYhMr40DTI/AAAAAAAABQY/D8bgLS6kNwc/s800/SAEA-hot.png SAEA %}
 
-You can clearly the IAsync allocations are not present in the SAEA
+You can clearly the **IAsync** allocations are not present in the SAEA
 implementation and there are 310,188 of them, that's 27% of the total garbage!
 
-### Final thoughts
+## Final thoughts
 
 The SAEA pattern definitely cuts down on memory and CPU usage, yes it adds a
 lot of complexity but if your application is dealing with a very high volume
@@ -159,4 +144,3 @@ There's definitely a lot more or interesting things to explore in this area.
 As usual any comments are welcome.
 
 See you next time...
-

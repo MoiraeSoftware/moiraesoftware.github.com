@@ -6,7 +6,6 @@ slug: new-site-new-blog
 status: publish
 title: New Site, new blog
 wordpress_id: '32'
-published: false
 comments: true
 categories:
 - Programming Tales

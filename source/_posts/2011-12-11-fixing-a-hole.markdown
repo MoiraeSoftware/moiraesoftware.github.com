@@ -19,9 +19,9 @@ tags:
 - pipelets
 ---
 
-Due to popular demand... well, I had a couple of requests anyway :-) So heres
-my post inspired by my recent encounters profiling some of the code in
-[Fracture-IO](https://github.com/fractureio/fracture).  I have recently been
+Due to popular demand... well, I had a couple of requests anyway :-) Heres
+a post inspired by my recent encounters profiling some of the code in
+[Fracture-IO](https://github.com/fractureio/fracture).  <!-- more -->I have recently been
 profiling the code in fracture to remove any so called low hanging fruits.
 During this time I also noticed an increase in memory allocation.  I
 remembered I had recently been experimenting in a branch using pipelets as a

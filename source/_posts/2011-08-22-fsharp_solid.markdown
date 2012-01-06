@@ -6,7 +6,6 @@ slug: fsharp_solid
 status: publish
 title: F# and Design principles - SOLID
 wordpress_id: '434'
-published: false
 comments: true
 categories:
 - Programming Tales
@@ -17,23 +16,20 @@ tags:
 - solid
 ---
 
-## SOLID and its relevance to F#
+## SOLID and its relevance to F# 
 
 There has been an increasing amount of exposure for F# and functional
 programming lately.  If you come from an object-orientated background a change
 in mindset is required when working with functional programming, there is a
 lot of misinformation on functional languages and their relationship with
-object-orientated design.
-
-In this post we run quickly through SOLID to see if these object-orientated
-principles apply to F#, and if so, how.
-
+object-orientated design.  In this post we run quickly through SOLID to see if these object-orientated principles apply to F#, and if so, how.<!-- more -->
   
 This post assumes you are familiar with SOLID principles, if not here is a
-[link](http://en.wikipedia.org/wiki/SOLID_(object-oriented_design)).  Lets
-take a quick overview of what SOLID stands for:
+[link](http://en.wikipedia.org/wiki/SOLID_(object-oriented_design).  
 
-### Single responsibility principle
+Lets take a quick overview of what SOLID stands for:
+
+## Single responsibility principle
 
 This is the notion that an object should have only a single responsibility.
 
@@ -41,10 +37,10 @@ An object-orientated program consists of layers of abstract classes with less
 abstract classes layered on top of ones that are more abstract.  Functional
 programming is similar, although abstractions are used throughout the design
 and are composed into a final solution.  Programming in F# naturally forms
-small succinct functions which should have a **single purpose**, so the single
+small succinct functions which should have a single purpose, so the single
 responsibility rule holds strong here.
 
-### Open closed principle
+## Open closed principle
 
 The notion that “software entities should be open for extension, but closed
 for modification”
@@ -56,7 +52,7 @@ languages where inheritance is a core concept, inheritance and polymorphism
 are not strongly used in F#, so this principle is very weak here.  Composition
 and Type augmentation are the core methods for extension in F#.
 
-### Liskov substitution principle
+## Liskov substitution principle
 
 Liskov substitution states “objects in a program should be replaceable with
 instances of their subtypes without altering the correctness of that program”.
@@ -69,7 +65,7 @@ enforcing this principle.  Functional languages also have a heritage in
 mathematics and algebraic reasoning so referential transparency is key in this
 respect.
 
-### Interface segregation principle
+## Interface segregation principle
 
 The notion that “many client specific interfaces are better than one general
 purpose interface.”
@@ -78,7 +74,7 @@ If you are violating single responsibility then your interface will probably
 be bloated too with unnecessary properties and methods.  The same rule applies
 to F#, keep your interfaces modular and keep indifferent concepts separated.
 
-### Dependency inversion principle
+## Dependency inversion principle
 
 The notion that one should “Depend upon Abstractions. Do not depend upon
 concretions.”
@@ -93,7 +89,7 @@ these containers and injection concepts can be solved with a simple higher
 order function, or hole-in-the-middle type pattern which are built right into
 the language.
 
-### Summary
+## Summary
 
 So we can assume that in the functional paradigm:
 

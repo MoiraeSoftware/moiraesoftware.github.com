@@ -6,10 +6,10 @@ slug: agent-based-scheduling
 status: publish
 title: Agent based scheduling
 wordpress_id: '382'
-published: false
 comments: true
 categories:
 - Programming Tales
+- Agents
 tags:
 - Agents
 - Async Workflows
@@ -23,24 +23,25 @@ quite a lot of work in this area lately.
 Agents can be used for a multitude of different purposes ranging from:
 isolated message passing, object caching, finite state machines, web crawling,
 and even reactive user interfaces.  One of the ideas that I have been looking
-into lately is agent based scheduling.
+into lately is agent based scheduling.<!-- more -->
 
-SchedulerAgent
+##SchedulerAgent
 
-Listing 1 shows a simple Agent based scheduler:
+****Listing 1**** shows a simple Agent based scheduler:
 
-#### Listing 1
-
-    
+{% codeblock listing 1 lang:fsharp %}
     module AgentUtilities
     open System
-    open System.Threading  
+    open System.Threading 
+ 
     //Agent alias for MailboxProcessor
-    type Agent<'T> = MailboxProcessor<'T>  
+    type Agent<'T> = MailboxProcessor<'T> 
+ 
     /// Two types of Schedule messages that can be sent
     type ScheduleMessage<'a> =
       | Schedule of ('a -> unit) * 'a * TimeSpan * TimeSpan * CancellationTokenSource AsyncReplyChannel
-      | ScheduleOnce of ('a -> unit) * 'a * TimeSpan * CancellationTokenSource AsyncReplyChannel  
+      | ScheduleOnce of ('a -> unit) * 'a * TimeSpan * CancellationTokenSource AsyncReplyChannel
+  
     /// An Agent based scheduler
     type SchedulerAgent<'a>()=   
       let scheduleOnce delay msg receiver (cts: CancellationTokenSource)=
@@ -88,24 +89,24 @@ Listing 1 shows a simple Agent based scheduler:
           | Some(x) -> Schedule(receiver,msg,initialDelay, x, replyChan)
           | _ -> ScheduleOnce(receiver,msg,initialDelay, replyChan)
         scheduler.PostAndReply (fun replyChan -> replyChan |> buildMessage)
-
+{% endcodeblock %}
 The structure of the SchedulerAgent broken down into sections below:
 
-#### ScheduleMessage
+### ScheduleMessage
 
-Lines **9-11** show the definition of ScheduleMessage. This is a discriminated
+Lines **9-11** show the definition of ScheduleMessage.  This is a discriminated
 union of two different types of Schedule message.
 
-##### **ScheduleOnce**
+#### ScheduleOnce
 
-** **ScheduleOnce has four parameters: 
+ScheduleOnce has four parameters: 
 
   1. A function which is called at the schedule time ('a -> unit).
   2. The message that is sent at the schedules time ('a).
   3. A TimeSpan which is the length of time to wait before triggering the schedule.
-  4. An AsyncReplyChannel<CancellationTokenSource> (CancellationTokenSource AsyncReplyChannel).  This is used to return a CancellationTokenSource which can be used to cancel the Schedule.
+  4. An AsyncReplyChannel<CancellationTokenSource>(CancellationTokenSource AsyncReplyChannel).  This is used to return a CancellationTokenSource which can be used to cancel the Schedule.
 
-##### **Schedule**
+#### Schedule
 
 Schedule has five parameters which are as follows:
 
@@ -113,44 +114,43 @@ Schedule has five parameters which are as follows:
   2. The message that is sent at the schedules time ('a).
   3. A TimeSpan which is the initial length of time to wait before first triggering the schedule function.
   4. A TimeSpan which is used as an interval between each subsequent triggering of the schedule function.
-  5. An AsyncReplyChannel<CancellationTokenSource> (CancellationTokenSource AsyncReplyChannel).  This is used to return a CancellationTokenSource which can be used to cancel the Schedule.
+  5. An AsyncReplyChannel<CancellationTokenSource>(CancellationTokenSource AsyncReplyChannel).  This is used to return a CancellationTokenSource which can be used to cancel the Schedule.
 
-### SchedulerAgent
+## SchedulerAgent
 
-#### **scheduleOnce **
+### scheduleOnce
 
-** **Lines **16-20** define an async workflow, which asynchronously sleeps for the specified time before checking that the schedule hasn't been cancelled before finally calling the schedule function. 
+Lines **16-20** define an async workflow, which asynchronously sleeps for the specified time before checking that the schedule hasn't been cancelled before finally calling the schedule function. 
 
-#### **scheduleMany **
+### scheduleMany
 
-** **Lines **22-29** define a recursive async workflow, which asynchronously sleeps for the specified interval (_3rd Parameter_) before checking the schedule hasn't been cancelled before finally calling the schedule function. The **loop** function is then called passing in the second TimeSpan interval (_4th Parameter_). 
+Lines **22-29** define a recursive async workflow, which asynchronously sleeps for the specified interval (_3rd Parameter_) before checking the schedule hasn't been cancelled before finally calling the schedule function. The **loop** function is then called passing in the second TimeSpan interval _(4th Parameter)_. 
 
-#### **scheduler **
+### scheduler
 
 This is the main processing loop for the agent.  A recursive **loop** function
-is declared on line **32**.  On line **33**** **the agent waits for a message
+is declared on line **32**.  On line **33** the agent waits for a message
 to arrive.  Once a message arrives a **CancellationTokenSource** is created on
-line **36 ** which can be used to cancel an already scheduled message.
+line **36** which can be used to cancel an already scheduled message.
 Pattern matching is used on line **35** to find the type of message that has
 been received.  The first pattern matching block on lines **36-43** matches
 the **Schedule** message.  The parameters from the Schedule message are passed
 into the **scheduleMany** function.  This is then invoked asynchronously via
-the **Async.StartImmediate **function.  The CancellationTokenSource is now
-returned to the caller on line **43. **This allows the caller to cancel an
+the **Async.StartImmediate** function.  The CancellationTokenSource is now
+returned to the caller on line **43**. This allows the caller to cancel an
 already running schedule.   Finally the recursive **loop** function is called
 on line **44**.  The second pattern matching block on lines **45-52** is much
 the same passing the parameters from the **ScheduleOnce** message into the
 **scheduleOnce** function, again this is invoked via the
-**Async.StartImmediate **function.  Like the Schedule message the
+**Async.StartImmediate** function.  Like the Schedule message the
 CancellationTokenSource returned on line **51** and the recursive **loop**
-function is called on line **52.**
+function is called on line **52**.
 
-The agent is then started on line **54** by calling the **loop** function for
-the first time.
+The agent is then started on line **51** by calling the **loop** function for the first time.
 
-#### Members
+### Members
 
-The SchedulerAgent has only a single member **Schedule**. ** **This member
+The SchedulerAgent has only a single member **Schedule**.  This member
 function takes three parameters and an optional parameter **delayBetween**.  A
 function called **buildMessage** on line **59** uses the optional parameter
 with pattern matching to determine whether a **ScheduleOnce** or a
@@ -160,14 +160,11 @@ synchronous call to return the cancellationTokenSource immediately, and this
 can be used to cancel a running schedule.
 
   
-Sample Application
+##Sample Application
 
-Listing 2 shows a test harness that creates and uses a simple string based
-message scheduler.
+**Listing 2** shows a test harness that creates and uses a simple string based message scheduler.
 
-#### Listing 2:
-
-    
+{% codeblock Listing 2 lang:fsharp %}
     open AgentUtilities
     open System
     open System.Threading  
@@ -187,12 +184,12 @@ message scheduler.
     multicancel.Cancel()
     printfn "Cancelled, press any key to exit."
     Console.ReadKey() |> ignore
+{% endcodeblock %}
 
 Here is the Console output from the test harness.
 
 ![](http://moiraesoftware.com/wp-content/uploads/2011/07/SchedulerTest.png)
 
-  
 I hope this gives you a feel for what you can do with agent based scheduling.
 The library here could be expanded further in several ways.  You could replace
 the fixed message with a message generator function or even an agent based
@@ -206,4 +203,3 @@ envisage them used for a many different things in this environment:  heart
 beat messages, performance sampling, diagnostics and testing.
 
 Until next time...
-

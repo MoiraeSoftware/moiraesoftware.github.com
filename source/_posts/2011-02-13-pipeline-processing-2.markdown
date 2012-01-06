@@ -6,10 +6,10 @@ slug: pipeline-processing-2
 status: publish
 title: Pipeline processing 2
 wordpress_id: '260'
-published: false
 comments: true
 categories:
 - Programming Tales
+- Pipelines
 tags:
 - asynchronous
 - Complexity
@@ -29,7 +29,7 @@ to try and rectify that a bit now.  If you have any queries then please leave
 a comment and I will try to address them in further articles. Pipelines are a
 simple concept but in practice there can be some caveats and things to bear in
 mind, sometime the whole mindset of development team can be against them
-unless they can see the bigger picture...
+unless they can see the bigger picture...<!-- more -->
 
 First of all one of the most important things to bear in mind with a pipeline
 is that you are only going to be as fast as your slowest stage, if one stage
@@ -53,39 +53,30 @@ code that you can be proud of, and part of that is having clean code that's
 both efficient and works.  I think some of this boils down to a feature driven
 approach that measures developers solely in terms of features added, take the
 typical [burn down chart](http://en.wikipedia.org/wiki/Burn_down_chart) that
-you would use in [agile software
-development](http://en.wikipedia.org/wiki/Agile_software_development):
+you would use in [agile software development](http://en.wikipedia.org/wiki/Agile_software_development):
 
 ![](http://alistair.cockburn.us/get/1880)
 
-There is nowhere on this chart that measures whether the code is good or bad
-or runs to performance requirements.  In the future I may do an article on
-integrating code quality into your build process, its something I have been
-thinking about doing for a while now.
+There is nowhere on this chart that measures whether the code is good or bad or runs to performance requirements.  In the future I may do an article on
+integrating code quality into your build process, its something I have been thinking about doing for a while now.
 
-While I'm talking about performance you also might want to check out Joe
-Duffy's post on [The 'premature optimization is evil' myth](http://www.bluebyt
-esoftware.com/blog/2010/09/06/ThePrematureOptimizationIsEvilMyth.aspx), and
-also check out Joe's book on [concurrent programming](http://www.bluebytesoftw
-are.com/books/winconc/winconc_book_resources.html), put it on your wish list
-if you haven't already read it, its a great book.
+While I'm talking about performance you also might want to check out Joe Duffy's post on [The 'premature optimization is evil' myth](http://www.bluebyt
+esoftware.com/blog/2010/09/06/ThePrematureOptimizationIsEvilMyth.aspx), and also check out Joe's book on [concurrent programming](http://www.bluebytesoftw
+are.com/books/winconc/winconc_book_resources.html), put it on your wish list if you haven't already read it, its a great book.
 
 #### Unbalanced pipelines
 
-Data is received from the network via packets, each packet may contain one or
-more messages from a business systems or indeed a partial message.  We need to
-collect the packets either separate or combine them to form individual
-messages, deserialize them and finally log them.
+Data is received from the network via packets, each packet may contain one or more messages from a business systems or indeed a partial message.  We need to
+collect the packets either separate or combine them to form individual messages, deserialize them and finally log them.
 
 Here's a sample pipeline demonstrating an unbalanced pipeline:
 
-[![](http://moiraesoftware.com/wp-
-content/uploads/2011/02/pipeline.png)](http://moiraesoftware.com/wp-
-content/uploads/2011/02/pipeline.png)
+{% img https://lh6.googleusercontent.com/-HDFpPk4zBzY/TwTnGvEn9kI/AAAAAAAABPE/CcRYtQ4fsEQ/pipeline.png %}
 
   1. Stage 1 of the pipeline receives these packets and processes them into individual messages passing them onto Stage 2.
   2. We now have a complete message (in this instance the message will be XML) we want to turn it into a .Net type we now deserialize the message and pass it onto Stage 3.
-  3. To keep this pipeline simple all we are going to do here is log type of message to disk or a database, the pipeline is now complete.
+  3. To keep this pipeline simple all we are going to do here is log type of message to disk or a database, the pipeline is now complete.  
+
 Stage 1 would take 5 seconds to fully utilise stage 2, stage 2 would take 2
 seconds to fully utilise stage 3.  You can see this pipeline will only process
 100 transactions per second even though stages 2 has 5x the throughput of
@@ -96,9 +87,7 @@ Lets look at the following diagram which demonstrate a balanced pipeline:
 
 #### Balanced pipelines
 
-[![](http://moiraesoftware.com/wp-content/uploads/2011/02/balanced-
-pipeline.png)](http://moiraesoftware.com/wp-content/uploads/2011/02/balanced-
-pipeline.png)
+{% img https://lh4.googleusercontent.com/-8Pgq9ISPe4Q/TwTp1nwBzfI/AAAAAAAABPU/AUwLor1WI7o/balanced-pipeline.png %}
 
 You can see from this diagram that each stage processes the same number of
 transactions per second by introducing parallel stages.  This is called a
@@ -119,7 +108,8 @@ already have:
   * How do you baseline the throughput of each stage?
   * Can you automate the parallelism of a particular stage?
   * How do you manage the complexity of multiple stages?
-  * What about parallelism and mutable state?
+  * What about parallelism and mutable state?  
+
 The final point to note is the Distributor/Router must operate at a much
 higher rate than the processing stages otherwise you will introduce another
 bottle neck into the system, although you could have a multiple distributors

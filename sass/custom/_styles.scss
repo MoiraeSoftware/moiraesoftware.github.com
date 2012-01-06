@@ -1,6 +1,8 @@
 // This File is imported last, and will override other styles in the cascade
 // Add styles here to make changes without digging in too much
 
+$noise-bg: image-url('noise.png') top left !default;
+
 body > header h1 {
   font-family: "Michroma", sans-serif;
   text-transform: uppercase;

@@ -6,10 +6,10 @@ slug: sockets-and-bockets-part-2
 status: publish
 title: Sockets and Bockets 2
 wordpress_id: '68'
-published: false
 comments: true
 categories:
 - Programming Tales
+- Sockets
 tags:
 - Async Workflows
 - F#
@@ -20,10 +20,6 @@ tags:
 
 ### Welcome to part two
 
-[Part 1](http://moiraesoftware.com/?p=39) Part 2 [Part
-3](http://moiraesoftware.com/?p=139) [Part
-4](http://moiraesoftware.com/?p=180)
-
 Lets jump in at the deep end and take a look at some code...
 
 When you look at the method syntax for the xxxAsync methods you will notice
@@ -33,25 +29,26 @@ you use one of the methods and invoke the callback yourself if it completes
 synchronously.  In practice this hardly ever happens, and normally only on a
 send operation.  But as it is a possibility we will add module with a some
 extension methods in to help us out, this will make the code more readable and
-avoid unnecessary duplication.
+avoid unnecessary duplication.<!-- more -->
 
 ### SocketExtensions
 
-    
-    module SocketExtensions
-      open System
-      open System.Net
-      open System.Net.Sockets  
-      type Socket with
-        /// extension method to make async based call easier, this ensures the callback always gets
-        /// called even if there is an error or the async method completed syncronously
-        member s.InvokeAsyncMethod( asyncmethod, callback, args:SocketAsyncEventArgs) =
-          let result = asyncmethod args
-          if result <> true then callback args
-        member s.AcceptAsyncSafe(callback, args) = s.InvokeAsyncMethod(s.AcceptAsync, callback, args)
-        member s.ReceiveAsyncSafe(callback, args) = s.InvokeAsyncMethod(s.ReceiveAsync, callback, args)
-        member s.SendAsyncSafe(callback, args) = s.InvokeAsyncMethod(s.SendAsync, callback, args)
-        member s.DisconnectAsyncSafe(callback, args) = s.InvokeAsyncMethod(s.DisconnectAsync, callback, args)
+{% codeblock lang:fsharp %}
+module SocketExtensions
+  open System
+  open System.Net
+  open System.Net.Sockets  
+  type Socket with
+    /// extension method to make async based call easier, this ensures the callback always gets
+    /// called even if there is an error or the async method completed syncronously
+    member s.InvokeAsyncMethod( asyncmethod, callback, args:SocketAsyncEventArgs) =
+      let result = asyncmethod args
+      if result <> true then callback args
+    member s.AcceptAsyncSafe(callback, args) = s.InvokeAsyncMethod(s.AcceptAsync, callback, args)
+    member s.ReceiveAsyncSafe(callback, args) = s.InvokeAsyncMethod(s.ReceiveAsync, callback, args)
+    member s.SendAsyncSafe(callback, args) = s.InvokeAsyncMethod(s.SendAsync, callback, args)
+    member s.DisconnectAsyncSafe(callback, args) = s.InvokeAsyncMethod(s.DisconnectAsync, callback, args)
+{% endcodeblock %}
 
 Now lets get down to business, the next few types have a fair bit of code in
 them so I will briefly explain each type in turn:
@@ -77,11 +74,12 @@ make the send and receive calls, heres the general flow that occurs:
 * Allocate an array to the buffer.
 * Allocate an offset and length to the buffer.
 * Allocate a callback method.
-* Call Socket.xxxAsync passing in the SocketAsyncEventArgs, the operation will complete and invoke the callback.
+* Call Socket.xxxAsync passing in the SocketAsyncEventArgs, the operation will complete and invoke the callback.  
+
 What we are going to do is wrap the whole creation, array allocation, and
 offsetting to the BocketPool:
 
-    
+{% codeblock lang:fsharp %}
     namespace Fes
       open System
       open System.Net.Sockets
@@ -119,6 +117,7 @@ offsetting to the BocketPool:
           pool.Count
         interface IDisposable with
           member this.Dispose() = cleanUp()
+{% endcodeblock %}
 
 Next up we have to look at the Connection and the Tcplistener types as two
 interconnected entities:
@@ -133,7 +132,7 @@ and receive operations to and from the client
 
 ### Connection
 
-    
+{% codeblock lang:fsharp %}
     namespace Fes
       open System
       open System.Net
@@ -183,8 +182,7 @@ and receive operations to and from the client
             match args.LastOperation with
             | SocketAsyncOperation.Send ->
               match args.SocketError with
-              | SocketError.Success ->
-                ()
+              | SocketError.Success -> ()
               | SocketError.NoBufferSpaceAvailable
               | SocketError.IOPending
               | SocketError.WouldBlock ->
@@ -199,6 +197,7 @@ and receive operations to and from the client
           let s = sendPool.CheckOut()
           Buffer.BlockCopy(msg, 0, s.Buffer, s.Offset, msg.Length)
           socket.SendAsyncSafe(this.sendCompleted, s)
+{% endcodeblock %}
 
 Finally here's the TcpListener type.  It is responsible for creating an
 initial Connection object for each client and starts asynchronous sending
@@ -213,7 +212,7 @@ of service attacks due to too many connection being made.
 
 ### TcpListener
 
-    
+{% codeblock lang:fsharp %}
     namespace Fes
       open System
       open System.Net
@@ -228,8 +227,7 @@ of service attacks due to too many connection being made.
         let createListener (ip:IPAddress, port, backlog) =
           let s = createTcpSocket()
           s.Bind(new IPEndPoint(ip, port))
-          s.Listen(backlog)
-          s  
+          s.Listen(backlog); s  
         let listeningSocket = createListener( IPAddress.Loopback, port, backlog)  
         let initPool (maxinpool, callback) =
           let pool = new BlockingCollection<SocketAsyncEventArgs>(maxinpool:int)
@@ -313,11 +311,11 @@ of service attacks due to too many connection being made.
           cleanUp()  
         interface IDisposable with
           member this.Dispose() = cleanUp()
+{% endcodeblock %}
 
 Its a fair bit of code to take in at once, so Ill leave you with it to ponder
 over.  Ill be explaining all of the interesting bits in more detail in part
 three...
 
 Please feel free to leave any comments you have, especially on better use of
-functional constructs.
-
+functional constructs.  
