@@ -186,10 +186,6 @@ can be used to cancel a running schedule.
     Console.ReadKey() |> ignore
 {% endcodeblock %}
 
-Here is the Console output from the test harness.
-
-![](http://moiraesoftware.com/wp-content/uploads/2011/07/SchedulerTest.png)
-
 I hope this gives you a feel for what you can do with agent based scheduling.
 The library here could be expanded further in several ways.  You could replace
 the fixed message with a message generator function or even an agent based
