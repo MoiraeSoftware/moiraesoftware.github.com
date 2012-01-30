@@ -1,33 +1,42 @@
-// This File is imported last, and will override other styles in the cascade
-// Add styles here to make changes without digging in too much
-
-//$noise-bg: image-url('noise.png') top left !default;
-$noise-bg: image-url('') top left;
-$nav-bg-front: image-url('');
-$footer-bg-front: image-url('');
-
+article li { em { color: mix($text-color-light, $text-color); }}
+article{line-height: 1.38em;}
 body > header h1 {
   font-family: "Michroma", sans-serif;
   text-transform: uppercase;
   font-weight: normal;
 }
 
+.highlight, html .gist .gist-file .gist-syntax .gist-highlight {
+  .line-numbers {
+    font-size: 0.73em;
+    line-height: 1.45em;
+  }
+}
+
+pre {
+  line-height: 1.46em;
+  font-size: 0.73em;
+}
+
+
 body > header {
   font-size: .7em;
   hgroup {
     text-align: center;
+    position: relative;
+    padding: .5em 0;
+    margin: 0 auto;
   }
   h1 {
     text-shadow: rgba(#000, .8) 0 0 8px;
     font-size: 3.4em;
-    line-height: 0.6em;
+    line-height: .6em;
     position: relative;
     margin: 0;
-    hgroup { padding: 0 0 1em; }
     a:hover { color: #fff; }
     &:before {
       content: "";
-      position: absolute; left: -8em;
+      position: absolute; top: -.05em; left: -7.8em;
       height: image-height('logo.png');
       @include replace-text('logo.png');
     }
@@ -38,37 +47,37 @@ body > header {
     font-style:italic
   }
   @media only screen and (min-width: 360px) {
-    font-size: .70em;
-    h1 { 
+    font-size: .7em;
+    h1 { padding-bottom: 0;
       &:before {
-        position: absolute; left: -1.75em; right: 0; top: .05em;
+        position: absolute; top: -.08em; left: -1.75em;
         width: 1.6em;
         height: 1.6em;
         @include background-size(100%);
       }
     }
     h2 {
+      margin: 0 0 .3em;
       @extend .sans;
       font-size: 1.2em;
       color: $subtitle-color;
-      position: relative; left: -1.6em;
+      position: relative; left: -1.6em; top: 0;
       text-shadow: $header-bg 0 2px 1px;
     }
   }
-  @media only screen and (min-width: 485px) {
-    font-size: .95em;
+  @media only screen and (min-width: 480px) {
+    font-size: .92em;
     h2 { top: .2em; }
   }
   @media only screen and (min-width: 768px) {
-    font-size: 1.05em;
-    h2 { top: .2em; }
+    font-size: 1em;
   }
-  @media only screen and (min-width: 992px) {
-    font-size: 1.2em;
-    h2 { top: .2em; }
+  @media only screen and (min-width: 990px) {
+    font-size: 1.1em;
     h1:before {
       width: image-width('logo.png');
       height: image-height('logo.png');
     }
+    h2 { top: .35em; }
   }
 }
