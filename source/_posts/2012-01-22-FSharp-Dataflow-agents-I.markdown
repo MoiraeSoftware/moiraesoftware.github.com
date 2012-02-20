@@ -84,14 +84,13 @@ much in the same way as we can use Asynchronous Workflows to take advantage of T
 This post is going to be centered around F# agents but with a twist.  First of all are going to be 
 reimplementing a MailboxProcessor using TDF for the underlying processing.  This will allow us to to use 
 all of our existing agent code and examples and also stay within the F# agent paradigm.  Following this 
-approach we could also make use of the ```ExecutionDataflowBlockOptions``` type, it  has some interesting 
+approach we could also make use of the ```DataflowBlockOptions``` type, it has some interesting 
 properties which we will look at in future posts:
 
    * TaskScheduler
    * CancellationToken
    * MaxMessagesPerTask
    * BoundedCapacity
-   * MaxDegreeOfParallelism
 
 ###Implementation
 In this post we are going replicate the MailboxProcessor, we will be using Tomas Petricek's caching agent 
@@ -191,7 +190,6 @@ them.  When we have implemented all the members from MailboxProcessor Ill post t
    * TryScan:```('Msg -> Async<'T> option) * ?int -> Async<'T option>```
    * CurrentQueueLength:```int```
    * DefaultTimeout:```int with get, set```
-   * Error:```IEvent<Exception>```
 
 So here we go, this is the Dataflow implementation of the MailboxProcessor:
 {% codeblock Dataflow Agent lang:fsharp %}
