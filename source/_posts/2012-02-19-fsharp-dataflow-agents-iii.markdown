@@ -105,7 +105,7 @@ member x.Scan(scanner, timeout) =
 Finally we have Scan, this is much like PostAndReply in that it just acts as a wrapper around `TryScan` making use of 
 pattern matching throwing an exception on a time out.
 
-That sums up the last few pieces, completing the TDF implementation of the `MailboxProcessor`.  I think this series of posts has shown the elegance of F#'s asynchronous workflows.  The use of recursive functions and the compositional nature of asynchronous workflows really helps when you are doing this type of programming.  Its also very nice on the eye, each section being clearly defined.
+That sums up the last few pieces, completing the TDF implementation of the `MailboxProcessor`.  I think this series of posts has shown the elegance of F#'s asynchronous workflows.  The use of recursive functions and the compositional nature of asynchronous workflows really helps when you are doing this type of programming.  It's also very nice on the eye, each section being clearly defined.
 
 The more astute of you may have noticed something a little different.  `Scan` and `TryScan` are destructive in this implementation, the unmatched messages are purged from the internal queue.  Although I could have mirrored the same functionality of the `MailboxProcessor` by using an internal list to keep track of unmatched messages, this leads to performing checks during `Receive` and `Scan` and their derivatives to make sure that this list is used first when switching from `Scan` and `Receive` functionality.  
 
