@@ -92,7 +92,7 @@ member x.TryScan((scanner: 'Msg -> Async<_> option), timeout): Async<_ option> =
 {% endcodeblock %}
 This one also uses the same `ContinueWith` functionality in the recursive `loopForMsg` function, perhaps some 
 of these functions could extracted out and refactored but I prefer to keep the code like this to better explain what's going 
-on.  The the code will be available on GitHub anyway so feel free to clean up any detritus and send me a pull request.  Again we use pattern matching to keep calling the `loopForMsg` function until the result is returned or a time out occurs.  
+on.  The the code is available on GitHub anyway so feel free to clean up any detritus and send me a pull request.  Again we use pattern matching to keep calling the `loopForMsg` function until the result is returned or a time out occurs.  
 
 ###Scan
 {% codeblock lang:fsharp %}
@@ -110,5 +110,7 @@ That sums up the last few pieces, completing the TDF implementation of the `Mail
 The more astute of you may have noticed something a little different.  `Scan` and `TryScan` are destructive in this implementation, the unmatched messages are purged from the internal queue.  Although I could have mirrored the same functionality of the `MailboxProcessor` by using an internal list to keep track of unmatched messages, this leads to performing checks during `Receive` and `Scan` and their derivatives to make sure that this list is used first when switching from `Scan` and `Receive` functionality.  
 
 I think the separation of concerns are a little fuzzy in the `MailboxProcessor`.  The `scan` function seems like an after thought, even if you don't use `Scan` you still pay a price for it as there are numerous checks between the internal queue and the unmatched messages list.  You can also run into issues while using `Scan` and `TryScan` that can result in out of memory conditions due to the inherent unbounded nature.  I will briefly describe and explore the conditions that can lead to that in the next post.  In the implementation presented here we can get bounded checking by passing in an optional `DataflowBlockOptions` and setting a value for the `BoundedCapacity` property.  
+
+**EDIT:** The code for this series of articles is now available on GitHub: [FSharpDataflow](https://github.com/7sharp9/FSharpDataflow)
 
 Until next time...
