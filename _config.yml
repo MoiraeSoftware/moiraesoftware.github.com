@@ -61,8 +61,8 @@ default_asides: [asides/recent_posts.html, asides/github.html, asides/twitter.ht
 github_user: 7sharp9
 github_repo_count: 0
 github_show_profile_link: true
-github_skip_forks: true
-github_blacklist:
+github_skip_forks: false
+github_blacklist: [nemerle, FSharp.Javascript, ServiceStack]
 # You can optionally blacklist repos from being displayed by putting their
 # names in the github_blacklist array, e.g.:
 #
