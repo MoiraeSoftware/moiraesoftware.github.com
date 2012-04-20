@@ -30,13 +30,13 @@ experience in this field.
 ### Long-term Support and incremental enhancements
 
 We built software to exacting requirements, we use a highly agile approach
-that allows granular feature development so your bespoke application can
+that allows granular feature development so your applications can
 really do what you envisaged.
 
 ### Business productivity / systems integration
 
 Do you have existing internal and external systems that are not connected
-together?  We can create a bespoke framework that will increase you
+together?  We can create a bespoke framework that will increase your
 productivity and mesh together your system so that they work together
 seamlessly. A lot of small and mid sized business still have a lot of manual
 tasks that need to be performed again and again, we can automate your critical
