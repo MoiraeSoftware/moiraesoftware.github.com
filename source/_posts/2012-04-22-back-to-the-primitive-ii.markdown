@@ -73,32 +73,43 @@ signalled is false then we create a new `AsyncResultCell<_>` and add it to the q
 
 ###Set()
 
-For the `Set` we use the lock function to control access to the mutable queue `awaits`.  Once inside the lock we use pattern matching 
-to capture `awaits.Count` and `signalled`.  If there are waiters (`awaits.Count > 0`) then we dequeue an `AsyncResultCell<_>` from the
- queue and call `RegisterResult` passing in `AsyncOK(true)` to indicate a completion.  Notice that we also pass in the `reuseThread` 
-boolean that was declared as part of the constructor.  If `reuseThread` is true then the notification to the waiter happens 
-**synchronously**.  Please be aware that this causes the waiting asynchronous operation to happen **inside** the lock construct, use this 
-with care!  Personally I would stick with the default of false to ensure that the operation is completed via the thread pool, unless you
-have a performance critical reason and the waiting code that executes inside the lock is **very** fast.  
+We first declare a function called `getWaiter()`, we use this function to return an [option type](http://msdn.microsoft.com/en-us/library/dd233245.aspx)
+ that is either `Some AsyncResultCell<bool>` or `None`.  We use the lock function to control access to the mutable queue `lock awaits`.  Once 
+inside the lock we use pattern matching to capture `awaits.Count` and `signalled`:     
 
-The second pattern match checks whether `signalled` is set to false, we then change its value to true.  This causes next `WaitAsync()`
- caller to get the short-circuited return value `completed` so that they do not have to have a `AsyncResultCell<_>` created and go though
- the whole async mechanism.  
+*   The first pattern match `(x,_)` checks if there are any waiters (`awaits.Count > 0`) and then dequeues an `AsyncResultCell<bool>` from the 
+	queue and returns it within an option type: `Some <| awaits.Dequeue()`.  
+*   The second pattern match `(_,y)` checks whether `signalled` is set to false before setting its value to true.  This causes next `WaitAsync()` 
+	caller to get the short-circuited value `completed`.  This means that an `AsyncResultCell<bool>` does not need to be created and go though the 
+	whole async mechanism.  We then return `None` as there is no waiter to be notified.  
+*   The final pattern match `(_,_)` is used when there are no waiting callers and `signalled` has already being set, there is simply nothing to do in 
+	this situation so we return `None`.  
 
-The final pattern match is when there are no waiting callers and `signalled` has already being set, there is simply nothing to do in this situation.  
+We use the `getWaiter()` function via pattern match.  If we have a result i.e. Some AsyncResultCell<bool> then we call `RegisterResult` 
+passing in `AsyncOK(true)` to indicate a completion.  Notice that we also pass in the `reuseThread` boolean that was declared as part of the 
+constructor.  If `reuseThread` is true then the notification to the waiter happens **synchronously** use this with care!  Personally I would stick 
+with the default of false to ensure that the operation is completed via the thread pool, unless you have a performance critical reason and the 
+waiting code that executes is **very fast**.  
 
 {% codeblock lang:fsharp %}
-        member x.Set() =
-            lock awaits (fun () ->
-                match (awaits.Count, signalled) with
-                | (x,_) when x > 0 -> 
-                    let waiter = awaits.Dequeue()
-                    waiter.RegisterResult(AsyncOk(true), reuseThread)
-                | (_,y) when not y -> signalled <- true;()
-                | (_,_) -> ())
+		member x.Set() =
+		    let getWaiter()=
+		        lock awaits (fun () ->
+		            match (awaits.Count, signalled) with
+		            | (x,_) when x > 0 -> Some <| awaits.Dequeue()
+		            | (_,y) when not y -> signalled <- true;None
+		            | (_,_) -> None)
+		    match getWaiter() with
+		    | Some a -> a.RegisterResult(AsyncOk(true), reuseThread)
+		    | None _ -> ()
 {% endcodeblock %}
 
-So there we have it, I could go on in this series and convert the other primitives that Stephen Toub describes but there should be 
+The reason for using the `getWaiter()` function is to separate the locking function away from the notification, if `RegisterResult` 
+was called within the lock and `reuseThread` was true then the awaiting function would be called synchronously within the lock which 
+would not be a very good situation to be in.  
+
+
+So there we have it, I could take this series further and convert the other primitives that Stephen Toub describes but there should be 
 enough information in these two posts to set you on your way.  If anyone would like me to complete the series then let me know.  I 
 may well finish them off and post them on GitHub in the future, time permitting.
 
