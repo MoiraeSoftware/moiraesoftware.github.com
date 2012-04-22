@@ -8,7 +8,7 @@ comments: true
 categories: [Programming Tales]
 tags: [F#, C#, TPL, Async, Threading]
 ---
-In the last post I discussed an asynchronous version of the `ManualResetEvent`, as promised this time we will be looking at an
+In the last post I discussed an asynchronous version of the `ManualResetEvent` and as promised this time we will be looking at an
  asynchronous version of the `AutoResetEvent`.  I'm using [Stephen Toubs post](http://blogs.msdn.com/b/pfxteam/archive/2012/02/11/10266923.aspx) 
 as reference and we will be building a version that is functional in style that maps straight into asynchronous work flows without and conversion 
 or adaptors.  
