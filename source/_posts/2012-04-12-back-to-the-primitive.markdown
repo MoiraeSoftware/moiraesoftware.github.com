@@ -36,9 +36,7 @@ type asyncManualResetEvent() =
     member x.Reset() : unit -> unit
 {% endcodeblock %}
 
-That's what we want to see!  I don't want to get into the details of the description of how the C# version works as stephen does a very good job of that already.  What I 
-will explain though is how we essentially do the same thing while staying with the realm of functional programming.  As as we are getting into the lower lever details no 
-doubt we will have to start relying on some low level locking primitives like Monitors, Semaphores, and Interlocked operations, even the F# core libraries have a 
+That's what we want to see!  I don't want to get into the details of the description of how the C# version works as Stephen does a very good job of that already.  What I will explain though is how we essentially do the same thing while staying with the realm of functional programming.  As we are getting into the lower lever details no doubt we will have to start relying on some low level locking primitives like Monitors, Semaphores, and Interlocked operations, even the F# core libraries have a 
 cornucopia of those.  
 
 Lets look at the first member `WaitAsync()`.  The first step is to create a something to store the result of the operation, all we will just be storing and returning 
