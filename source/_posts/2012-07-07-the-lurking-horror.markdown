@@ -1,10 +1,9 @@
 ---
 author: 7sharp9
-date: 2012-07-13 23:13
 layout: post
-slug: The-Lurking-Horror
-status: publish
 title: "The Lurking Horror"
+slug: The-Lurking-Horror
+date: 2012-07-13 23:13
 comments: true
 categories: [Agents, Programming Tales]
 tags: [Async Workflows, asynchronous, F#, Agents, MailboxProcessor]
@@ -63,7 +62,7 @@ We have two main sections to the agents body which I will describe below.
 The purpose of the `working` function is to dequeue the messages from the agent and process them with pattern matching; `let! msg = agent.Receive()` is used to get the next message which is then pattern matched to be one of the three messages types of the `BadAgentMessage`.  When the `Lock` message is encountered `return! waiting()` is used to place the agent in a state where it is waiting for an `Unlock` message to arrive.  An `Unlock` message simply resumes processing by calling `return! working()`.  The only real purpose of the `Unlock` message is to exit from the locked state that is introduced by the `Lock` message.  The `Message` message simply starts a `StopWatch` on the first operation by using the Messages counter, and then stops it again on the 10,000th operation.  At this point the time taken is also printed to the console and the `StopWatch` is restarted before resuming the main processing loop by calling `return! working()`
 
 ###waiting
-This function is simply using the agents scan function to wait for an `Unlock` message to arrive, once it does it puts the agent back into normal operation by calling the `working()` function.  If the message does not match an `Unlock` message then `None` is returned and the agent simple waits for the next message before trying again.  
+This function is using the agents `Scan` function to wait for an `Unlock` message to arrive, once it does it puts the agent back into normal operation by calling returning `Some(working())` from the `Scan `function.  If the message does not match an `Unlock` message then `None` is returned and the agent simple waits for the next message before trying again.  
 
 The rest of the agent is just ancillary member functions to allow easy sending of the three message types.  
  
@@ -90,23 +89,22 @@ OK, so this is a very synthetic test but I just wanted to highlight some of the 
  
 {% img https://lh5.googleusercontent.com/-chMoEOya7CE/T_tRraiW_eI/AAAAAAAABbY/wsQkWbm4DJM/s677/ConsoleTimes.png %}
  
-You can see that the time to process the first 10,000 messages is 3083ms then it steadily decreases until the last 10,000 messages are processed in 94ms.  So the processing time for 10,000 messages is about 32 times slower at the beginning than as it is at the end.
+You can see that the time to process the first 10,000 messages is 3083ms then it steadily decreases until the last 10,000 messages are processed in 94ms.  So the processing time for 10,000 messages is about 33 times slower at the beginning than as it is at the end.
  
 ##Opening it up
-Let's take a look at some of the internals of the `MailboxProcessor` to understand what's going on. First of all the core functionality is contained within the `Mailbox` type, with the MailboxProcessot acting as an augmenter adding functionality to do the async reply for: TryPostAndReply, PostAndReply, PostAndTryAsyncReply, and PostAndAsyncReply.  the extra functionality
-added here revolves around the use of `ResultCell` and `AsyncReplyChannel` to control the synchronous and asynchronous results.  You might want to refer to my earlier series which describes implementing the MailboxProcessor with TPL Dataflow [Part 1][], [Part 2][], [Part 3][]
+Let's take a look at some of the internals of the `MailboxProcessor` to understand what's going on. First of all the core functionality is actually contained within the `Mailbox` type with the `MailboxProcessor` acting as an augmenter.  Functionality has been added to the `TryPostAndReply`, `PostAndReply`, `PostAndTryAsyncReply`, and `PostAndAsyncReply`.  The extra functionality added revolves around the use of `ResultCell` and `AsyncReplyChannel` to control the synchronous and asynchronous results.  You might want to refer to my earlier series which describes implementing the `MailboxProcessor` with [TPL Dataflow][] [Part 1][], [Part 2][], [Part 3][].  Below are some snippets of code from the `Mailbox` type you might want to take a peek yourself at the [FSharp repository][FSharpCode] over at [Github][Github] for a closer inspection, be warned thought there is a lot of code in there!  
  
+Here's the initial type definition for the Mailbox, you can see that  there are two mutable fields:
+
 {% codeblock lang:fsharp%}
 type Mailbox<'Msg>() = 
     let mutable inboxStore  = null
     let mutable arrivals = new Queue<'Msg>()
 {% endcodeblock %}
  
-Heres the initial type definition for the Mailbox, you can see that  there are two mutable fields:
+`inboxStore` Is a generic List type `System.Collection.Generic.List<T>` and `arrivals` is a `System.Collections.Generic.Queue<T>` type. 
  
-`inboxStore` Is a generic List type (System.Collection.Generic.List<T>) and `arrivals` is a `System.Collections.Generic.Queue<T>` type. 
- 
-For now the inboxStore is null and is only ever assigned via `Scan` or `TryScan` and this is indirectly via the `x.inbox` member shown here:
+For now the inboxStore is null and is only ever assigned via `Scan` or `TryScan` and this is done indirectly via the `x.inbox` member shown here:
  
 {% codeblock lang:fsharp %}
 member x.inbox =
@@ -116,14 +114,12 @@ member x.inbox =
     inboxStore
 {% endcodeblock %}
  
-The code in the Mailbox can quickly get out of hand if you try to keep all the function calls in your head at once, Ill outline
-the process as a series of sections below.
+The code in the Mailbox can quickly get out of hand if you try to keep all the function calls in your head at once, Ill try and outline only the functions we need in the sections below.
 
 ##Scan 
-First up there is `Scan` this member function is just an async wrapper around `TryScan` if `TryScan` returns None an exception is
-raised, if not then the result is returned from `TryScan`.
+First up there is `Scan` this member function is just an async wrapper around `TryScan` if `TryScan` returns None an exception is raised, if not then the result is returned from `TryScan`.
  
-So lets look at `TryScan`. 
+So now lets take a look at `TryScan`. 
  
 {% codeblock lang:fsharp %}
 member x.TryScan ((f: 'Msg -> (Async<'T>) option), timeout) : Async<'T option> =
@@ -141,16 +137,16 @@ member x.TryScan ((f: 'Msg -> (Async<'T>) option), timeout) : Async<'T option> =
                            return Some(res) }
 {% endcodeblock %}
  
-You can see here that an async workflow is declared that first pattern matches on `x.scanInbox`, passing in the predicate scan function `f` and 0.  If `None` is returned then there is no match and the recursive function `scan` is returned.  This time the function `x.scanArrivals` is be called, again passing in the predicate function `f`.  
+You can see here that an [async workflow][AsyncWorkflows] is declared that first pattern matches on `x.scanInbox`, passing in the predicate scan function `f` and 0.  If `None` is returned then there is no match and the recursive function `scan` is returned.  This time the function `x.scanArrivals` is be called, again passing in the predicate function `f`.  
 
-* An interesting point to note is that each message that arrives that doesn't match the predicate `f` resets the  timer `let! ok = waitOne(timeout)`, that means that any number of trivial messages that arrive keep the `x.TryScan` function running.  This was also  mentioned by Jon Harrop in a Stackoverflow question entitled [How to use TryScan in F# properly][Stackoverflow].  Jon also mentions locking which I will address in the scanArrivals section below.  
+* An interesting point to note, is that each message that arrives that doesn't match the predicate `f` resets the  timer: `let! ok = waitOne(timeout)`, this means that any number of trivial messages that arrive keep the `x.TryScan` function running.  This was also  mentioned by Jon Harrop in a Stackoverflow question entitled [How to use TryScan in F# properly][Stackoverflow].  Jon also mentions locking which I will address in the `scanArrivals` section below.  
  
 So what's the difference between `scanArrivals` and `scanInbox`?   
  
-`scanInbox` operates on the `inboxStore` which you might remember is a `List<T>` type and `scanArrivals` operates on the `arrivals` which is the `Queue<T>` type.  The big difference between these two is that messages that first arrive in the Mailbox get sent to the arrivals queue first and when messages are not matched by the predicate function `f` they are added to the `inboxStore` hence the need to always check the `inboxStore` before the `arrivals` queue otherwise previously unmatched scan messages would not be processed correctly.  
+`scanInbox` operates on the `inboxStore` which you might recall is a `List<T>` type, whereas `scanArrivals` operates on `arrivals` which is a `Queue<T>` type.  The big difference between these two is that as messages first arrive in the Mailbox they end up in the arrivals queue first, and when messages are not matched by the predicate function `f` they are added to the `inboxStore`, hence the need to always check the `inboxStore` before the `arrivals` queue otherwise previously unmatched scan messages would not be processed correctly.  
 
 ##scanArrivals / scanArrivalsUnsafe
-Lets look at the `x.scanArrivals` function, it's just a lock construct around the `x.scanArrivals` function.  This leads to an important point; the scan function is operating under a lock, effectively what this means is that user code is executed under the lock and you never know what is going to happen in the user code if they hold onto the scan operation for any length of time then there will be significant blocking at the normal receive mechanism into the queue will be backed up due to the lock which also uses the same lock `syncRoot` when receiving.  
+Lets look at the `x.scanArrivals` function, it's just a lock construct around the `x.scanArrivals` function.  This leads to an important point, the scan function is operating under a lock, which effectively means that end user code is also executed under the lock and if you hold onto the lock for any length of time then there will be significant blocking of the normal receive mechanism due to it also using the same lock when receiving.  
      
 {% codeblock lang:fsharp %}
 member x.scanArrivalsUnsafe(f) =
@@ -166,11 +162,13 @@ member x.scanArrivalsUnsafe(f) =
 member x.scanArrivals(f) = lock syncRoot (fun () -> x.scanArrivalsUnsafe(f))
 {% endcodeblock %}
  
-If you read the `MailBoxProcessor` documentation on [MSDN][MsdnMbp]: 
-{% blockquote %}For each agent, at most one concurrent reader may be active, so no more than one concurrent call to Receive, TryReceive, Scan or TryScan may be active.{% endblockquote %}
+If we pause for a second and review the `MailBoxProcessor` documentation on [MSDN][MsdnMbp]: 
+{% blockquote %}For each agent, at most one concurrent reader may be active, so no more than one concurrent call to Receive, TryReceive, Scan or TryScan may be active.  {% endblockquote %} 
+Obeying this rule should ensure that no deadlock situations will arise but lock contentions can still arise as messages will still be being posted to the mailbox, which will in turn attempt to acquire the same `syncRoot` lock.  
 
+Lets move onto the next function, I have saved this one for last as its the most interesting:
 ##scanInbox
-A quick glance at `x.scanInbox` reveals another function where there could be heavy weight performance implications.   The `inbox` is a `List<T>` type and the `RemoveAt` function does an internal `Array.Copy` for each removal.  This is an O(n) operation where n is (Count - index), so as soon as the list gets to a reasonable size then this then is going to really start chewing into your processing time. 
+If I quickly glance at `x.scanInbox` it reveals another function where to my eye there could be heavy weight performance implications.   The `inbox` is a `List<T>` type, and the `RemoveAt` function does an internal `Array.Copy` for each removal.  This is an O(n) operation where n is (Count - index), so as soon as the list gets to a reasonable size then this then is going to really start chewing into your processing time. 
 
 {% codeblock lang:fsharp %}
 member x.scanInbox(f,n) =
@@ -186,13 +184,13 @@ member x.scanInbox(f,n) =
             | res -> inbox.RemoveAt(n); res
 {% endcodeblock %}
  
-Just to check this theory out lets look at a profile run of the console test that we showed earlier:
+In order to check this theory lets do some quick profiling of the console test that we showed earlier:
  
-{% img /uploads/profile_run.png %}
+{% img https://lh5.googleusercontent.com/-HRwdmElTHzk/UACUh2a0mmI/AAAAAAAABb0/X-PXjabROOU/s658/profile_run.png %}
  
-Yeah there it is, a whopping 44.41% of the time is spent in Remove at.  Also notice that there were 200,000 calls which mirrors the number we placed in the queue before using the Lock/Unlock message types.
+Yeah there it is, a whopping 44.41% of the time is spent in `RemoveAt`.  Also notice that there were 200,000 calls which mirrors the number we placed in the queue before using the Lock/Unlock message types.
  
-One of the things that really stands out for me is that the `inbox` is a simple list and completely unbounded.  In a high throughput situation where a scan operation is being used it's perfectly feasible to get into a runaway memory and CPU condition, where the unmatched messages are sitting in the `inbox` taking longer and longer to processes due to the O(n) operation that takes place on the `RemoveAt` function.  
+One of the things that really stands out for me is that the `inbox` is a simple list and completely unbounded.  In a high throughput situation where the scan function is being used it's perfectly feasible to get into a runaway memory or CPU condition where the unmatched messages are sitting in the `inbox` taking longer and longer to processes due to the O(n) operation that takes place in the `RemoveAt` function.  Given a consistent throughput then eventually you are going to either run out memory, or the processing time will make throughput drop to dire levels which in turn will back up the `inbox` even further, effectively this is a death spiral.
 
 ##Conclusion
 So what conclusion can we draw from all of this?  
@@ -226,11 +224,17 @@ A message is dequeued on the line 4 with `let! msg = Async.AwaitTask ...`.  This
 
 One of the areas where I have a lot of experience is using pipelined operations based on input from network I/O.  One of the things that always causes a problem is unbounded situations such as having a queue with no absolute limit.  There comes a time when you have to protect yourself from what is effective a denial of service, you have to either destructively terminate messages or connections or route the overflowed data for processing later.  
 
-OK I'm starting to digress now, so I'll see you all next time...
+OK I'm going to stop now because I'm starting to digress into networking a little.  I hope you managed to follow me through all of this!
+
+Until next time...
 
 [MsdnMbp]: http://msdn.microsoft.com/en-us/library/ee353583.aspx "MSDN: F# MailbocProcessor"
 [Stackoverflow]: http://stackoverflow.com/a/4891920/607275 "How to use TryScan in F# properly"
+[TPL Dataflow]: http://msdn.microsoft.com/en-us/devlabs/gg585582.aspx "TPL Dataflow"
 [Part 1]: /blog/2012/01/22/FSharp-Dataflow-agents-I/ "FSharp Dataflow agents - Part 1"
 [Part 2]: /blog/2012/01/30/FSharp-Dataflow-agents-II/ "FSharp Dataflow agents - Part 2"
 [Part 3]: /blog/2012/02/20/fsharp-dataflow-agents-III/ "FSharp Dataflow agents - Part 3"
+[FSharpCode]: https://github.com/fsharp/fsharp/blob/master/src/fsharp/FSharp.Core/control.fs#L1854 "Mailbox code"
+[Github]: https://github.com/
+[AsyncWorkflows]: http://msdn.microsoft.com/en-us/library/dd233250.aspx "async workflows" 
 [UDP]: http://en.wikipedia.org/wiki/User_Datagram_Protocol "wikipedia Udp protocol"
