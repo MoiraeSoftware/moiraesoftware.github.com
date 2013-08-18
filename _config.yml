@@ -64,7 +64,7 @@ default_asides: [asides/recent_posts.html, asides/github.html, asides/delicious.
 
 # Github repositories
 github_user: 7sharp9
-github_repo_count: 0
+github_repo_count: 10
 github_show_profile_link: true
 github_skip_forks: false
 
