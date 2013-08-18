@@ -34,6 +34,11 @@ plugins: plugins
 code_dir: downloads/code
 category_dir: blog/categories
 markdown: rdiscount
+rdiscount:
+  extensions:
+    - autolink
+    - footnotes
+    - smart
 pygments: false # default python pygments have been replaced by pygments.rb
 
 paginate: 10          # Posts per page on the blog index
@@ -45,7 +50,7 @@ titlecase: true       # Converts page and post titles to tilecase
 
 # list each of the sidebar modules you want to include, in the order you want them to appear.
 # To add custom asides, create files in /source/_includes/custom/asides/ and add them to the list like 'custom/asides/custom_aside_name.html'
-default_asides: [asides/recent_posts.html, asides/github.html, asides/twitter.html, asides/delicious.html, asides/pinboard.html, asides/googleplus.html]
+default_asides: [asides/recent_posts.html, asides/github.html, asides/delicious.html, asides/pinboard.html, asides/googleplus.html]
 
 # Each layout uses the default asides, but they can have their own asides instead. Simply uncomment the lines below
 # and add an array with the asides you want to use.
@@ -62,18 +67,9 @@ github_user: 7sharp9
 github_repo_count: 0
 github_show_profile_link: true
 github_skip_forks: false
-github_blacklist: [nemerle, FSharp.Javascript, ServiceStack]
-# You can optionally blacklist repos from being displayed by putting their
-# names in the github_blacklist array, e.g.:
-#
-# github_blacklist: [dotfiles, username.github.com]
 
 # Twitter
 twitter_user:
-twitter_tweet_count: 0
-twitter_show_replies: false
-twitter_follow_button: false
-twitter_show_follower_count: false
 twitter_tweet_button: true
 
 # Google +1
