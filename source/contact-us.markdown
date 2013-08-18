@@ -1,14 +1,20 @@
 ---
-author: 7sharp9
-date: '2011-01-24 22:28:30'
+date: '2013-08-18 10:27:30'
 layout: page
 slug: contact-us
 status: publish
 title: Contact us
-wordpress_id: '166'
 ---
 
-You can contact us at the following email address:
+##Consultancy
+
+If you have any questions about the services we can provide, please e-mail us at:
+
+[MoiraeSoftware@googlemail.com](mailto:MoiraeSoftware@googlemail.com)
+
+##Training
+
+For questions about F# training programs we can provide, please e-mail us at:
 
 [MoiraeSoftware@googlemail.com](mailto:MoiraeSoftware@googlemail.com)
 

@@ -8,10 +8,9 @@ title: What we do
 wordpress_id: '20'
 ---
 
-We specialise in creating software that is built properly, tested properly, no
-hacks or shortcuts just professionally built software that the customer
-actually wants.
+We specialise in creating professionally built software that is thoroughly tested, no
+hacks or short cuts just software that the customer actually wants.
 
-We use agile methodologies to distill requirements from the start and
+We use agile methodologies to distil requirements from the start and
 iteratively build a product that is exactly to customer requirements.
 
