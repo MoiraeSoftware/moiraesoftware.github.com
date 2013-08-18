@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Pipelines | Moirae]]></title>
-  <link href="http://MoiraeSoftware.com/blog/categories/pipelines/atom.xml" rel="self"/>
-  <link href="http://MoiraeSoftware.com/"/>
-  <updated>2013-08-18T11:00:07+01:00</updated>
-  <id>http://MoiraeSoftware.com/</id>
+  <link href="http://MoiraeSoftware.github.io/blog/categories/pipelines/atom.xml" rel="self"/>
+  <link href="http://MoiraeSoftware.github.io/"/>
+  <updated>2013-08-18T22:46:30+01:00</updated>
+  <id>http://MoiraeSoftware.github.io/</id>
   <author>
     <name><![CDATA[Dave Thomas]]></name>
     
@@ -15,14 +15,14 @@
   
   <entry>
     <title type="html"><![CDATA[Pipeline processing 3]]></title>
-    <link href="http://MoiraeSoftware.com/blog/2011/04/04/pipeline-processing-3/"/>
+    <link href="http://MoiraeSoftware.github.io/blog/2011/04/04/pipeline-processing-3/"/>
     <updated>2011-04-04T21:56:33+01:00</updated>
-    <id>http://MoiraeSoftware.com/blog/2011/04/04/pipeline-processing-3</id>
+    <id>http://MoiraeSoftware.github.io/blog/2011/04/04/pipeline-processing-3</id>
     <content type="html"><![CDATA[<p>Ok so I have been offline for a while now, what with starting a new financial contract in London and not having any broadband access for a while.  I have
 been working on something, honest!</p>
 
 <p>Since the last post I have been reflecting on the pipeline design and it had a distinct object orientated feel to it that I wasnt happy with, so I have
-amended the structure of the code and come up with the following which simplifies in some areas and expands in others...<!-- more --></p>
+amended the structure of the code and come up with the following which simplifies in some areas and expands in others&hellip;<!-- more --></p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -121,26 +121,26 @@ amended the structure of the code and come up with the following which simplifie
 </span><span class='line'>  <span class="k">open</span> <span class="nn">System</span><span class="p">.</span><span class="nn">Collections</span><span class="p">.</span><span class="nc">Concurrent</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">[&lt;</span><span class="nc">Interface</span><span class="o">&gt;]</span>
-</span><span class='line'>  <span class="k">type</span> <span class="nc">IPipelineInput</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="k">type</span> <span class="nc">IPipelineInput</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;&amp;</span><span class="n">lsquo</span><span class="o">;</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">abstract</span> <span class="nc">Insert</span><span class="o">:</span> <span class="k">&#39;</span><span class="n">a</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="kt">unit</span>
 </span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">[&lt;</span><span class="nc">Interface</span><span class="o">&gt;]</span>
-</span><span class='line'>  <span class="k">type</span> <span class="nc">IPipelineConnection</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="k">type</span> <span class="nc">IPipelineConnection</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;&amp;</span><span class="n">lsquo</span><span class="o">;</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">abstract</span> <span class="nc">Attach</span><span class="o">:</span> <span class="nc">IPipelineInput</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="kt">unit</span>
 </span><span class='line'><span class="k">abstract</span> <span class="nc">Detach</span><span class="o">:</span> <span class="nc">IPipelineInput</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="kt">unit</span>
 </span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">[&lt;</span><span class="nc">Interface</span><span class="o">&gt;]</span>
-</span><span class='line'>  <span class="k">type</span> <span class="nc">IPipeline</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">,</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="k">type</span> <span class="nc">IPipeline</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;&amp;</span><span class="n">lsquo</span><span class="o">;</span><span class="n">a</span><span class="o">,</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">inherit</span> <span class="nc">IPipelineConnection</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span>
 </span><span class='line'><span class="k">inherit</span> <span class="nc">IPipelineInput</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span>
 </span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">type</span> <span class="nc">PipelineStage</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">,</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;(</span><span class="n">processor</span><span class="o">,</span> <span class="n">router</span><span class="o">:</span> <span class="n">seq</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="nc">IPipelineInput</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;&gt;</span> <span class="o">*</span> <span class="k">&#39;</span><span class="n">b</span> <span class="o">-&gt;</span> <span class="n">seq</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="nc">IPipelineInput</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;&gt;,</span> <span class="o">?</span><span class="n">overflow</span><span class="o">,</span> <span class="o">?</span><span class="n">capacity</span><span class="o">,</span> <span class="o">?</span><span class="n">blockingTime</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">type</span> <span class="nc">PipelineStage</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;&amp;</span><span class="n">lsquo</span><span class="o">;</span><span class="n">a</span><span class="o">,</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;(</span><span class="n">processor</span><span class="o">,</span> <span class="n">router</span><span class="o">:</span> <span class="n">seq</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="nc">IPipelineInput</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;&gt;</span> <span class="o">*</span> <span class="k">&#39;</span><span class="n">b</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;</span> <span class="n">seq</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="nc">IPipelineInput</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;&gt;,</span> <span class="o">?</span><span class="n">overflow</span><span class="o">,</span> <span class="o">?</span><span class="n">capacity</span><span class="o">,</span> <span class="o">?</span><span class="n">blockingTime</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">let</span> <span class="n">processor</span> <span class="o">=</span> <span class="n">processor</span>
 </span><span class='line'><span class="k">let</span> <span class="n">router</span> <span class="o">=</span> <span class="n">router</span>
@@ -219,7 +219,7 @@ see whats going on.</p>
 
 <h3>Interfaces</h3>
 
-<p>We have two main interfaces defined <strong>IPipelineInput&lt;'a></strong> and
+<p>We have two main interfaces defined <strong>IPipelineInput&lt;&lsquo;a></strong> and
 <strong>IPipelineConnection&lt;'a>, </strong>as you can tell by the names they are involved
 with connecting the pipeline together and getting information into the
 pipeline.  Those two interfaces are merged together in the IPipeline&lt;'a, 'b>
@@ -238,9 +238,9 @@ that are waiting to be processed.</p>
 from the blocking collection processing and routing each one to the next
 pipeline stage.</p>
 
-<p>The processor is a function that transforms from type 'a to type 'b.</p>
+<p>The processor is a function that transforms from type &lsquo;a to type 'b.</p>
 
-<p>The router is a function that takes a sequence of IPipelineInput&lt;'b> and also
+<p>The router is a function that takes a sequence of IPipelineInput&lt;&lsquo;b> and also
 the payload 'b it returns a sequence of IPipelineInput&lt;'b>.  What this
 effectively means is that we can route by the connected stages (i.e. round
 robin routing, multi-cast routing.)   Or we could route by payload contents
@@ -251,7 +251,7 @@ certain IPipelineInput&lt;'b>.)</p>
 Seq operations, recursively calling itself until an item can no longer be
 retrieved from the buffer.</p>
 
-<p>The implementation of IPipelineInput&lt;'a>.Insert is the counterpart to the
+<p>The implementation of IPipelineInput&lt;&lsquo;a>.Insert is the counterpart to the
 previous function. It first tries to inset the item into the bounded blocking
 queue, if this cannot be done then the overflow function is called if one is
 present. Next the async consumer loop is started if it is not already running.
@@ -266,7 +266,7 @@ follow.</p>
 <p>I also define some symbolic operations to simply constructing and using the
 pipeline:</p>
 
-<p><strong>++></strong> Attaches the pipeline stage on the right hand side to the one on the left. <strong>--></strong> Detaches the pipelinestage on the right from the one on the left. <strong>&lt;&lt;--</strong> Inserts a payload on the right into the pipeline stage on the left. <strong>-->></strong> Inserts a payload on the left hand side into the pipeline stage on the right.<br/>
+<p><strong>++></strong> Attaches the pipeline stage on the right hand side to the one on the left. <strong>&mdash;></strong> Detaches the pipelinestage on the right from the one on the left. <strong>&lt;&lt;&mdash;</strong> Inserts a payload on the right into the pipeline stage on the left. <strong>&mdash;>></strong> Inserts a payload on the left hand side into the pipeline stage on the right.<br/>
 These help to keep a nice terse description of the pipeline, once things get a little more complex other operators may be required, the now discontinued
 <a href="http://msdn.microsoft.com/en-us/devlabs/dd795202.aspx">Axiom</a> had a whole host of these, its a pity Microsoft dropped the language.</p>
 
@@ -275,7 +275,7 @@ These help to keep a nice terse description of the pipeline, once things get a l
 <p>Heres a quick sample pipeline showing the pipeline in use:</p>
 
 <ul>
-<li>Stage 1 takes a string and splits it based on the ','.</li>
+<li>Stage 1 takes a string and splits it based on the &lsquo;,&rsquo;.</li>
 <li>Stage 2 reverses each string.</li>
 <li>Stage 3 reverses the string back to the original.</li>
 </ul>
@@ -374,11 +374,11 @@ These help to keep a nice terse description of the pipeline, once things get a l
 </span><span class='line'><span class="nn">Seq</span><span class="p">.</span><span class="n">singleton</span> <span class="n">head</span>
 </span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">let</span> <span class="n">p1</span> <span class="o">=</span> <span class="nc">PipelineStage</span><span class="o">(</span> <span class="n">split</span> <span class="sc">&#39;,&#39;</span> <span class="s2">&quot;1&quot;</span><span class="o">,</span> <span class="n">basicRouter</span><span class="o">)</span>
-</span><span class='line'>  <span class="k">let</span> <span class="n">p2</span> <span class="o">=</span> <span class="nc">PipelineStage</span><span class="o">(</span> <span class="nc">OneToSeqRev</span> <span class="s2">&quot;2&quot;</span><span class="o">,</span> <span class="n">basicRouter</span><span class="o">)</span>
-</span><span class='line'>  <span class="k">let</span> <span class="n">p3</span> <span class="o">=</span> <span class="nc">PipelineStage</span><span class="o">(</span> <span class="nc">OneToSeqRev</span> <span class="s2">&quot;3&quot;</span><span class="o">,</span> <span class="n">basicRouter</span><span class="o">)&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">let</span> <span class="n">p1</span> <span class="o">=</span> <span class="nc">PipelineStage</span><span class="o">(</span> <span class="n">split</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="o">;,&amp;</span><span class="n">rsquo</span><span class="o">;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="mi">1</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;,</span> <span class="n">basicRouter</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">let</span> <span class="n">p2</span> <span class="o">=</span> <span class="nc">PipelineStage</span><span class="o">(</span> <span class="nc">OneToSeqRev</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="mi">2</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;,</span> <span class="n">basicRouter</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">let</span> <span class="n">p3</span> <span class="o">=</span> <span class="nc">PipelineStage</span><span class="o">(</span> <span class="nc">OneToSeqRev</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="mi">3</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;,</span> <span class="n">basicRouter</span><span class="o">)&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
 </span><span class='line'>  <span class="n">p1</span> <span class="o">++&gt;</span> <span class="n">p2</span> <span class="o">++&gt;</span> <span class="n">p3</span> <span class="o">|&gt;</span> <span class="n">ignore</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
-</span><span class='line'>  <span class="k">let</span> <span class="n">generateCircularSeq</span> <span class="o">(</span><span class="n">lst</span><span class="o">:</span><span class="k">&#39;</span><span class="n">a</span> <span class="kt">list</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="k">let</span> <span class="n">generateCircularSeq</span> <span class="o">(</span><span class="n">lst</span><span class="o">:&amp;</span><span class="n">lsquo</span><span class="o">;</span><span class="n">a</span> <span class="kt">list</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">let</span> <span class="k">rec</span> <span class="n">next</span> <span class="bp">()</span> <span class="o">=</span>
 </span><span class='line'>  <span class="n">seq</span> <span class="o">{</span>
@@ -389,7 +389,7 @@ These help to keep a nice terse description of the pipeline, once things get a l
 </span><span class='line'><span class="n">next</span><span class="bp">()</span>
 </span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">for</span> <span class="n">str</span> <span class="k">in</span> <span class="o">[</span><span class="s2">&quot;John,Paul,George,Ringo&quot;</span><span class="o">]</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">for</span> <span class="n">str</span> <span class="k">in</span> <span class="o">[&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">John</span><span class="o">,</span><span class="nc">Paul</span><span class="o">,</span><span class="nc">George</span><span class="o">,</span><span class="nc">Ringo</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;]</span>
 </span><span class='line'>  <span class="o">|&gt;</span> <span class="n">generateCircularSeq</span>
 </span><span class='line'>  <span class="o">|&gt;</span> <span class="nn">Seq</span><span class="p">.</span><span class="n">take</span> <span class="mi">10</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
@@ -406,26 +406,26 @@ a few weeks later.</p>
 <p>Hopefully I have whet your appetite with pipelines, in a future article I will be combining socket operations with pipeline stages to produce a flexible
 framework to deal with high throughput network applications.</p>
 
-<p>As always I appreciate any comments, until next time...</p>
+<p>As always I appreciate any comments, until next time&hellip;</p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[Pipeline processing 2]]></title>
-    <link href="http://MoiraeSoftware.com/blog/2011/02/13/pipeline-processing-2/"/>
+    <link href="http://MoiraeSoftware.github.io/blog/2011/02/13/pipeline-processing-2/"/>
     <updated>2011-02-13T12:32:38+00:00</updated>
-    <id>http://MoiraeSoftware.com/blog/2011/02/13/pipeline-processing-2</id>
+    <id>http://MoiraeSoftware.github.io/blog/2011/02/13/pipeline-processing-2</id>
     <content type="html"><![CDATA[<h3>Welcome to pipeline processing part 2.</h3>
 
 <p>I feel I need to backtrack slightly from the previous post, having worked with
 pipelines for quite some time I have the advantage of knowing all of the
 details that may be alluded to in these articles without being effected by any
-omissions I may make, obviously you guys aren't in that position, so I'm going
+omissions I may make, obviously you guys aren&rsquo;t in that position, so I&rsquo;m going
 to try and rectify that a bit now.  If you have any queries then please leave
 a comment and I will try to address them in further articles. Pipelines are a
 simple concept but in practice there can be some caveats and things to bear in
 mind, sometime the whole mindset of development team can be against them
-unless they can see the bigger picture...<!-- more --></p>
+unless they can see the bigger picture&hellip;<!-- more --></p>
 
 <p>First of all one of the most important things to bear in mind with a pipeline
 is that you are only going to be as fast as your slowest stage, if one stage
@@ -436,16 +436,16 @@ time, we need to make this more efficient.</p>
 
 <p>Lots of developers out there have the <a href="http://www.c2.com/cgi/wiki?PrematureOptimization">premature optimisation is the root of
 all evil</a> mindset and will
-quote this out loud to you when you mention performance early on.  I'm not
+quote this out loud to you when you mention performance early on.  I&rsquo;m not
 advocating premature optimisation, in this instance performance is key, if one
 stage is out of kilter with the rest then we are going to be running at that
-pace of the slowest stage, if that's too slow for the requirements then you
+pace of the slowest stage, if that&rsquo;s too slow for the requirements then you
 are screwed.</p>
 
 <p>The more I think about performance the more I believe its an essential part of
 creating code. There are too many developers these days that will produce
-sloppy unrefined plain bad code.  I'm a keen believer in producing quality
-code that you can be proud of, and part of that is having clean code that's
+sloppy unrefined plain bad code.  I&rsquo;m a keen believer in producing quality
+code that you can be proud of, and part of that is having clean code that&rsquo;s
 both efficient and works.  I think some of this boils down to a feature driven
 approach that measures developers solely in terms of features added, take the
 typical <a href="http://en.wikipedia.org/wiki/Burn_down_chart">burn down chart</a> that
@@ -456,21 +456,21 @@ you would use in <a href="http://en.wikipedia.org/wiki/Agile_software_developmen
 <p>There is nowhere on this chart that measures whether the code is good or bad or runs to performance requirements.  In the future I may do an article on
 integrating code quality into your build process, its something I have been thinking about doing for a while now.</p>
 
-<p>While I'm talking about performance you also might want to check out Joe Duffy's post on <a href="http://www.bluebyt%0Aesoftware.com/blog/2010/09/06/ThePrematureOptimizationIsEvilMyth.aspx">The 'premature optimization is evil' myth</a>, and also check out Joe's book on <a href="http://www.bluebytesoftw%0Aare.com/books/winconc/winconc_book_resources.html">concurrent programming</a>, put it on your wish list if you haven't already read it, its a great book.</p>
+<p>While I&rsquo;m talking about performance you also might want to check out Joe Duffy&rsquo;s post on <a href="http://www.bluebyt%0Aesoftware.com/blog/2010/09/06/ThePrematureOptimizationIsEvilMyth.aspx">The &lsquo;premature optimization is evil&rsquo; myth</a>, and also check out Joe&rsquo;s book on <a href="http://www.bluebytesoftw%0Aare.com/books/winconc/winconc_book_resources.html">concurrent programming</a>, put it on your wish list if you haven&rsquo;t already read it, its a great book.</p>
 
 <h4>Unbalanced pipelines</h4>
 
 <p>Data is received from the network via packets, each packet may contain one or more messages from a business systems or indeed a partial message.  We need to
 collect the packets either separate or combine them to form individual messages, deserialize them and finally log them.</p>
 
-<p>Here's a sample pipeline demonstrating an unbalanced pipeline:</p>
+<p>Here&rsquo;s a sample pipeline demonstrating an unbalanced pipeline:</p>
 
-<p><img src="https://lh6.googleusercontent.com/-HDFpPk4zBzY/TwTnGvEn9kI/AAAAAAAABPE/CcRYtQ4fsEQ/pipeline.png"></p>
+<p><img class="<a" src="href="https://lh6.googleusercontent.com/-HDFpPk4zBzY/TwTnGvEn9kI/AAAAAAAABPE/CcRYtQ4fsEQ/pipeline.png">https://lh6.googleusercontent.com/-HDFpPk4zBzY/TwTnGvEn9kI/AAAAAAAABPE/CcRYtQ4fsEQ/pipeline.png</a>"></p>
 
 <ol>
-<li>Stage 1 of the pipeline receives these packets and processes them into individual messages passing them onto Stage 2.</li>
-<li>We now have a complete message (in this instance the message will be XML) we want to turn it into a .Net type we now deserialize the message and pass it onto Stage 3.</li>
-<li>To keep this pipeline simple all we are going to do here is log type of message to disk or a database, the pipeline is now complete.</li>
+<li> Stage 1 of the pipeline receives these packets and processes them into individual messages passing them onto Stage 2.</li>
+<li> We now have a complete message (in this instance the message will be XML) we want to turn it into a .Net type we now deserialize the message and pass it onto Stage 3.</li>
+<li> To keep this pipeline simple all we are going to do here is log type of message to disk or a database, the pipeline is now complete.</li>
 </ol>
 
 
@@ -484,7 +484,7 @@ about 10% of what it could be, we must be able to do something about that.</p>
 
 <h4>Balanced pipelines</h4>
 
-<p><img src="https://lh4.googleusercontent.com/-8Pgq9ISPe4Q/TwTp1nwBzfI/AAAAAAAABPU/AUwLor1WI7o/balanced-pipeline.png"></p>
+<p><img class="<a" src="href="https://lh4.googleusercontent.com/-8Pgq9ISPe4Q/TwTp1nwBzfI/AAAAAAAABPU/AUwLor1WI7o/balanced-pipeline.png">https://lh4.googleusercontent.com/-8Pgq9ISPe4Q/TwTp1nwBzfI/AAAAAAAABPU/AUwLor1WI7o/balanced-pipeline.png</a>"></p>
 
 <p>You can see from this diagram that each stage processes the same number of
 transactions per second by introducing parallel stages.  This is called a
@@ -537,12 +537,12 @@ instrumentation, and visualisation.</p>
   
   <entry>
     <title type="html"><![CDATA[Pipeline processing 1]]></title>
-    <link href="http://MoiraeSoftware.com/blog/2011/02/01/pipeline-processing-1/"/>
+    <link href="http://MoiraeSoftware.github.io/blog/2011/02/01/pipeline-processing-1/"/>
     <updated>2011-02-01T01:13:43+00:00</updated>
-    <id>http://MoiraeSoftware.com/blog/2011/02/01/pipeline-processing-1</id>
+    <id>http://MoiraeSoftware.github.io/blog/2011/02/01/pipeline-processing-1</id>
     <content type="html"><![CDATA[<h3>Welcome to new series of articles on pipeline processing.</h3>
 
-<p>First up, what's a pipeline?  Well according to <a href="http://en.wikipedia.org/wiki/Pipeline_(computing">Wikipedia</a>):</p>
+<p>First up, what&rsquo;s a pipeline?  Well according to <a href="http://en.wikipedia.org/wiki/Pipeline_(computing">Wikipedia</a>):</p>
 
 <pre><code>A pipeline is a set of data processing elements connected in series, so that
 the output of one element is the input of the next one. The elements of a
@@ -569,9 +569,9 @@ passing the work onto the next stage.  There are many primitive types in the
 lightweight subset taking only a few core ideas and making sure we get a nice
 slick design that is both powerful and flexible.</p>
 
-<p>Here's a quick flow diagram of the sort of thing that we will be looking at:</p>
+<p>Here&rsquo;s a quick flow diagram of the sort of thing that we will be looking at:</p>
 
-<p><img src="https://lh5.googleusercontent.com/-55hM6Bez26w/TwTtHHXc-ZI/AAAAAAAABPo/LOgX1UywK0I/pipeline-tuv.png"></p>
+<p><img class="<a" src="href="https://lh5.googleusercontent.com/-55hM6Bez26w/TwTtHHXc-ZI/AAAAAAAABPo/LOgX1UywK0I/pipeline-tuv.png">https://lh5.googleusercontent.com/-55hM6Bez26w/TwTtHHXc-ZI/AAAAAAAABPo/LOgX1UywK0I/pipeline-tuv.png</a>"></p>
 
 <p>This is a generic asynchronous payload based pipeline.  Each stage is
 asynchronous and self contained and is connected to one or more other stages.
@@ -592,7 +592,7 @@ to construct the pipeline stages, maybe using a little bit of operator overloadi
 I will describe all of this in more detail next time as we dig into the code.  
 I want this to be just a brief introduction to what we are going to be doing.</p>
 
-<p>Here's a more detailed description of the components that are involved in each
+<p>Here&rsquo;s a more detailed description of the components that are involved in each
 stage:</p>
 
 <h2>Bounded Blocking Queue</h2>
@@ -650,7 +650,7 @@ get a feel of how to use them and the overall structure.</p>
 can be composed into single reusable blocks that as a whole, represent a
 single pipeline stage.  These composite stages can then be connected together
 to form a super pipeline stage, complexity is only visible when you start to
-drill down and becomes almost fractal like...</p>
+drill down and becomes almost fractal like&hellip;</p>
 
 <p>As always please leave any comments or suggestions.</p>
 ]]></content>

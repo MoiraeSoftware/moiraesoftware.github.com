@@ -19,13 +19,14 @@ have thought this was a recipe &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2012/03/11/black-scholes-taste-test/">
+  <link rel="canonical" href="http://MoiraeSoftware.github.io/blog/2012/03/11/black-scholes-taste-test">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
@@ -61,7 +62,7 @@ have thought this was a recipe &hellip;">
   
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input type="hidden" name="q" value="site:MoiraeSoftware.github.io" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -114,13 +115,13 @@ looking at code succinctness and the inherent suitability of the language for ca
 up being more to it than that.</p>
 
 <p>First of all I quickly set up a test rig to run 50 million iterations of the algorithm to see if there were any difference
-in the processing speed.  I want expecting any major differences at this point but here&#8217;s what I got:</p>
+in the processing speed.  I want expecting any major differences at this point but here&rsquo;s what I got:</p>
 
 <p>C# results for 50 million iterations <img src="https://lh6.googleusercontent.com/-cEzGoE_P2cE/T1vf_SxtGfI/AAAAAAAABRE/RE4ReRLAhu8/s531/csbs.png"></p>
 
 <p>F# results for 50 million iterations <img src="https://lh3.googleusercontent.com/-PLdltL0YiIs/T1vf_Wo2ZrI/AAAAAAAABRI/WijGdNaOnK4/s531/fsbs.png"></p>
 
-<p>I think you will agree that&#8217;s quite a difference, lets have a look at the code to see what&#8217;s going on.</p>
+<p>I think you will agree that&rsquo;s quite a difference, lets have a look at the code to see what&rsquo;s going on.</p>
 
 <h2>C# Implementation</h2>
 
@@ -375,7 +376,7 @@ opcode to jump table to jump to either position <code>IL_0064</code> or <code>IL
 </span><span class='line'>IL_0062:  br.s       IL_00a2</span></code></pre></td></tr></table></div></figure>
 
 
-<p>These are negligible, I&#8217;m mealy pointing out the differences in compilation between the two languages.<br/>
+<p>These are negligible, I&rsquo;m mealy pointing out the differences in compilation between the two languages.<br/>
 The F# compiler is more stringent when compiling the code.</p>
 
 <h3>The Cnd function</h3>
@@ -430,7 +431,7 @@ is where the performance differences occur.</p>
 </span><span class='line'>IL_001d:  stloc.2</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Interestingly the C# compiler optimises out the call to <code>Math.PI * 2</code> but the F# compiler doesn&#8217;t.</p>
+<p>Interestingly the C# compiler optimises out the call to <code>Math.PI * 2</code> but the F# compiler doesn&rsquo;t.</p>
 
 <figure class='code'><figcaption><span>F#  </span></figcaption>
 <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -541,7 +542,7 @@ the second.  This is negligible in normal runtime but it is interesting to note 
 <p>Wow, there was a lot of IL to get through, I hope you stayed with me!</p>
 
 <p>Although the difference in some areas are negligible, every little counts.  The implicit conversion of an integer
-field to a <code>float64</code> hides the fact that we were using an optimized integer power function in F#, that&#8217;s performance
+field to a <code>float64</code> hides the fact that we were using an optimized integer power function in F#, that&rsquo;s performance
 increase of 168%!  Some other side effects of implicit conversion can also lead to subtle bugs due to truncation
 and overflow.  The other benefits are the compiled code uses less instructions and the source code only uses 25
 lines compared to 44 in C#.</p>
@@ -583,7 +584,7 @@ lines compared to 44 in C#.</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2012/03/11/black-scholes-taste-test/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2012/03/11/black-scholes-taste-test/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.github.io/blog/2012/03/11/black-scholes-taste-test/" data-via="" data-counturl="http://MoiraeSoftware.github.io/blog/2012/03/11/black-scholes-taste-test/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -634,7 +635,7 @@ lines compared to 44 in C#.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow Agents III</a>
       </li>
     
       <li class="post">
@@ -646,15 +647,15 @@ lines compared to 44 in C#.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved to Octopress...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a Hole...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - a Quick Look</a>
       </li>
     
   </ul>
@@ -669,7 +670,7 @@ lines compared to 44 in C#.</p>
   <a href="https://github.com/7sharp9">@7sharp9</a> on Github
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -680,18 +681,10 @@ lines compared to 44 in C#.</p>
 
         var blacklist = [];
         
-          
-            blacklist.push('nemerle');
-          
-            blacklist.push('FSharp.Javascript');
-          
-            blacklist.push('ServiceStack');
-          
-        
 
         github.showRepos({
             user: '7sharp9',
-            count: 0,
+            count: 10,
             skip_forks: false,
             blacklist: blacklist,
             target: '#gh_repos'
@@ -700,7 +693,6 @@ lines compared to 44 in C#.</p>
   </script>
   <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
-
 
 
 
@@ -725,8 +717,8 @@ lines compared to 44 in C#.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2012/03/11/black-scholes-taste-test/';
-        var disqus_url = 'http://MoiraeSoftware.com/blog/2012/03/11/black-scholes-taste-test/';
+        var disqus_identifier = 'http://MoiraeSoftware.github.io/blog/2012/03/11/black-scholes-taste-test/';
+        var disqus_url = 'http://MoiraeSoftware.github.io/blog/2012/03/11/black-scholes-taste-test/';
         var disqus_script = 'embed.js';
       
     (function () {
@@ -755,7 +747,7 @@ lines compared to 44 in C#.</p>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

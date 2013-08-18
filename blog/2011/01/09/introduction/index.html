@@ -10,7 +10,7 @@
 
   
   <meta name="description" content="Let me spend a couple of minutes explaining what Im going to be posting about,
-heres a little bit of background&#8230; First of all I&#8217;m a &hellip;">
+heres a little bit of background&hellip; First of all I&rsquo;m a &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,13 +19,14 @@ heres a little bit of background&#8230; First of all I&#8217;m a &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2011/01/09/introduction/">
+  <link rel="canonical" href="http://MoiraeSoftware.github.io/blog/2011/01/09/introduction">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
@@ -61,7 +62,7 @@ heres a little bit of background&#8230; First of all I&#8217;m a &hellip;">
   
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input type="hidden" name="q" value="site:MoiraeSoftware.github.io" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -105,15 +106,15 @@ heres a little bit of background&#8230; First of all I&#8217;m a &hellip;">
 
 
 <div class="entry-content"><p>Let me spend a couple of minutes explaining what Im going to be posting about,
-heres a little bit of background&#8230;</p>
+heres a little bit of background&hellip;</p>
 
-<p>First of all I&#8217;m a seasoned C# programmer, I develop enterprise business
+<p>First of all I&rsquo;m a seasoned C# programmer, I develop enterprise business
 applications, mainly specialising in backend architectures, multithreading and
 generally poking about in the guts of things trying to wrangle out the last
 few drops of performance!</p>
 
 <p>At the beginning of last year I decided to catch up with some of the
-technologies that have reared their heads while I wasn&#8217;t looking, so I set
+technologies that have reared their heads while I wasn&rsquo;t looking, so I set
 about doing more research into Silverlight,WPF, and F#. Silverlight and WPF,
 and really enjoyed getting to grips with XAML and embracing the separation
 between UI and logic, but for me the real interesting thing was learning about
@@ -189,7 +190,7 @@ programming goodness!</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2011/01/09/introduction/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2011/01/09/introduction/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.github.io/blog/2011/01/09/introduction/" data-via="" data-counturl="http://MoiraeSoftware.github.io/blog/2011/01/09/introduction/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -240,7 +241,7 @@ programming goodness!</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow Agents III</a>
       </li>
     
       <li class="post">
@@ -252,15 +253,15 @@ programming goodness!</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved to Octopress...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a Hole...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - a Quick Look</a>
       </li>
     
   </ul>
@@ -275,7 +276,7 @@ programming goodness!</p>
   <a href="https://github.com/7sharp9">@7sharp9</a> on Github
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -286,18 +287,10 @@ programming goodness!</p>
 
         var blacklist = [];
         
-          
-            blacklist.push('nemerle');
-          
-            blacklist.push('FSharp.Javascript');
-          
-            blacklist.push('ServiceStack');
-          
-        
 
         github.showRepos({
             user: '7sharp9',
-            count: 0,
+            count: 10,
             skip_forks: false,
             blacklist: blacklist,
             target: '#gh_repos'
@@ -306,7 +299,6 @@ programming goodness!</p>
   </script>
   <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
-
 
 
 
@@ -331,8 +323,8 @@ programming goodness!</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2011/01/09/introduction/';
-        var disqus_url = 'http://MoiraeSoftware.com/blog/2011/01/09/introduction/';
+        var disqus_identifier = 'http://MoiraeSoftware.github.io/blog/2011/01/09/introduction/';
+        var disqus_url = 'http://MoiraeSoftware.github.io/blog/2011/01/09/introduction/';
         var disqus_script = 'embed.js';
       
     (function () {
@@ -361,7 +353,7 @@ programming goodness!</p>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

@@ -9,7 +9,7 @@
   <meta name="author" content="Dave Thomas">
 
   
-  <meta name="description" content="In this post we are going back to the primitive. No it&#8217;s not about the same named song by Soulfly, (which incidentally does contains F# notes) &hellip;">
+  <meta name="description" content="In this post we are going back to the primitive. No it&rsquo;s not about the same named song by Soulfly, (which incidentally does contains F# notes) &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,13 +18,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2012/04/12/back-to-the-primitive/">
+  <link rel="canonical" href="http://MoiraeSoftware.github.io/blog/2012/04/12/back-to-the-primitive">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
@@ -60,7 +61,7 @@
   
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input type="hidden" name="q" value="site:MoiraeSoftware.github.io" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -103,7 +104,7 @@
   </header>
 
 
-<div class="entry-content"><p>In this post we are going <strong>back to the primitive</strong>.  No it&#8217;s not about the same named song by Soulfly, <em>(which incidentally does contains F# notes)</em> but a return
+<div class="entry-content"><p>In this post we are going <strong>back to the primitive</strong>.  No it&rsquo;s not about the same named song by Soulfly, <em>(which incidentally does contains F# notes)</em> but a return
 to thread synchronisation primitives and their asynchronous counterparts.</p>
 
 <p>We are going to be looking at an asynchronous version of the <a href="http://msdn.microsoft.com/en-us/library/system.threading.manualresetevent.aspx">ManualResetEvent</a>.  This was
@@ -141,14 +142,14 @@ although this does work, what if you want to avoid the overhead of wrappers and 
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>That&#8217;s what we want to see!  I don&#8217;t want to get into the details of the description of how the C# version works as Stephen does a very good job of that already.  What I will explain though is how we essentially do the same thing while staying with the realm of functional programming.  As we are getting into the lower lever details no doubt we will have to start relying on some low level locking primitives like Monitors, Semaphores, and Interlocked operations, even the F# core libraries have a
+<p>That&rsquo;s what we want to see!  I don&rsquo;t want to get into the details of the description of how the C# version works as Stephen does a very good job of that already.  What I will explain though is how we essentially do the same thing while staying with the realm of functional programming.  As we are getting into the lower lever details no doubt we will have to start relying on some low level locking primitives like Monitors, Semaphores, and Interlocked operations, even the F# core libraries have a
 cornucopia of those.</p>
 
 <p>Lets look at the first member <code>WaitAsync()</code>.  The first step is to create a something to store the result of the operation, all we will just be storing and returning
 asynchronously is a boolean to indicate that the wait handle has been set.  To do this we use one of the types from the
 <a href="http://fsharppowerpack.codeplex.com/">F# power pack</a> <code>AsyncResultCell&lt;'T&gt;</code>.  I think that such a type should of been exposed from the F# core libraries but it was
 omitted for some reason.  There is a type called <code>ResultCell&lt;'T&gt;</code> with much the same functionality in the FSharp.Core.Control namespace but it is marked internal so
-it&#8217;s not available for our use.</p>
+it&rsquo;s not available for our use.</p>
 
 <p>We declare a <a href="http://msdn.microsoft.com/en-us/library/dd233186.aspx">reference cell</a> of type <code>AsyncResultCell&lt;'T&gt;</code> and then create the <code>WaitAsync()</code> member, all we have
 to do is dereference the value of the reference cell with <code>!</code> and call its <code>AsyncResult</code> member, this gives us an <code>Async&lt;bool&gt;</code> which we can easily use in an asynchronous workflow.</p>
@@ -182,7 +183,7 @@ by passing in a new <code>AsyncResultCell&lt;'T&gt;</code>.</p>
 <p>There are various other methods we could of used, for instance we could of wrapped a <code>ManualResetEvent</code> with a call to <code>Async.AwaitWaitHandle</code>, although this
 would of meant using the kernel mode locking of the <code>ManualResetEvent</code> which is a bit more expensive.</p>
 
-<p>In Stephen Toub&#8217;s post he mentions Task&#8217;s being orphaned due to the <code>Reset()</code> method being called before the <code>Task&lt;'T&gt;</code> has been completed, that shouldn&#8217;t happen in our
+<p>In Stephen Toub&rsquo;s post he mentions Task&rsquo;s being orphaned due to the <code>Reset()</code> method being called before the <code>Task&lt;'T&gt;</code> has been completed, that shouldn&rsquo;t happen in our
 implementation due the the closures being stored internally for completion by the async infrastructure.  Heres a quick test harness to make sure everything works as expected anyway.</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -268,14 +269,14 @@ implementation due the the closures being stored internally for completion by th
 <h4>Musical inspiration during the creation of this post:</h4>
 
 <ul>
-<li>Smashing Pumpkins - Zeitgeist</li>
-<li>Soulfly - Primitive</li>
-<li>FooFighters - FooFighters<br/>
+<li>Smashing Pumpkins &ndash; Zeitgeist</li>
+<li>Soulfly &ndash; Primitive</li>
+<li>FooFighters &ndash; FooFighters<br/>
 <img src="http://upload.wikimedia.org/wikipedia/en/f/fb/Zeitgeist_cover.png" width="125" title="Smashing Pumpkins Zeitgeist" ><img src="http://upload.wikimedia.org/wikipedia/en/3/34/Primitive.png" width="125" title="Soulfly Primitive" ><img src="http://upload.wikimedia.org/wikipedia/en/0/0d/FooFighters-FooFighters.jpg" width="125" title="FooFighters" ></li>
 </ul>
 
 
-<p>Until next time&#8230;</p>
+<p>Until next time&hellip;</p>
 </div>
 
 
@@ -312,7 +313,7 @@ implementation due the the closures being stored internally for completion by th
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2012/04/12/back-to-the-primitive/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2012/04/12/back-to-the-primitive/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.github.io/blog/2012/04/12/back-to-the-primitive/" data-via="" data-counturl="http://MoiraeSoftware.github.io/blog/2012/04/12/back-to-the-primitive/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -363,7 +364,7 @@ implementation due the the closures being stored internally for completion by th
       </li>
     
       <li class="post">
-        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow Agents III</a>
       </li>
     
       <li class="post">
@@ -375,15 +376,15 @@ implementation due the the closures being stored internally for completion by th
       </li>
     
       <li class="post">
-        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved to Octopress...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a Hole...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - a Quick Look</a>
       </li>
     
   </ul>
@@ -398,7 +399,7 @@ implementation due the the closures being stored internally for completion by th
   <a href="https://github.com/7sharp9">@7sharp9</a> on Github
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -409,18 +410,10 @@ implementation due the the closures being stored internally for completion by th
 
         var blacklist = [];
         
-          
-            blacklist.push('nemerle');
-          
-            blacklist.push('FSharp.Javascript');
-          
-            blacklist.push('ServiceStack');
-          
-        
 
         github.showRepos({
             user: '7sharp9',
-            count: 0,
+            count: 10,
             skip_forks: false,
             blacklist: blacklist,
             target: '#gh_repos'
@@ -429,7 +422,6 @@ implementation due the the closures being stored internally for completion by th
   </script>
   <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
-
 
 
 
@@ -454,8 +446,8 @@ implementation due the the closures being stored internally for completion by th
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2012/04/12/back-to-the-primitive/';
-        var disqus_url = 'http://MoiraeSoftware.com/blog/2012/04/12/back-to-the-primitive/';
+        var disqus_identifier = 'http://MoiraeSoftware.github.io/blog/2012/04/12/back-to-the-primitive/';
+        var disqus_url = 'http://MoiraeSoftware.github.io/blog/2012/04/12/back-to-the-primitive/';
         var disqus_script = 'embed.js';
       
     (function () {
@@ -484,7 +476,7 @@ implementation due the the closures being stored internally for completion by th
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

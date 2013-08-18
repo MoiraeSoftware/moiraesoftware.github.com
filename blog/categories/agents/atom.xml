@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Agents | Moirae]]></title>
-  <link href="http://MoiraeSoftware.com/blog/categories/agents/atom.xml" rel="self"/>
-  <link href="http://MoiraeSoftware.com/"/>
-  <updated>2013-08-18T11:00:07+01:00</updated>
-  <id>http://MoiraeSoftware.com/</id>
+  <link href="http://MoiraeSoftware.github.io/blog/categories/agents/atom.xml" rel="self"/>
+  <link href="http://MoiraeSoftware.github.io/"/>
+  <updated>2013-08-18T22:46:30+01:00</updated>
+  <id>http://MoiraeSoftware.github.io/</id>
   <author>
     <name><![CDATA[Dave Thomas]]></name>
     
@@ -15,10 +15,10 @@
   
   <entry>
     <title type="html"><![CDATA[The Lurking Horror]]></title>
-    <link href="http://MoiraeSoftware.com/blog/2012/07/15/the-lurking-horror/"/>
+    <link href="http://MoiraeSoftware.github.io/blog/2012/07/15/the-lurking-horror/"/>
     <updated>2012-07-15T20:13:00+01:00</updated>
-    <id>http://MoiraeSoftware.com/blog/2012/07/15/the-lurking-horror</id>
-    <content type="html"><![CDATA[<blockquote><p>Deep in the darkest depths lurks an ancient horror, when the time is right it will rise forth and leave you screaming for mercy and begging for forgiveness...</p></blockquote>
+    <id>http://MoiraeSoftware.github.io/blog/2012/07/15/the-lurking-horror</id>
+    <content type="html"><![CDATA[<blockquote><p>Deep in the darkest depths lurks an ancient horror, when the time is right it will rise forth and leave you screaming for mercy and begging for forgiveness&hellip;</p></blockquote>
 
 <p>OK, I have a penchant for being over dramatic but in this post I am going to reveal some little known caveats in a well known and much revelled area of F#, agents aka the <a href="http://msdn.microsoft.com/en-us/library/ee370357" title="Control.MailboxProcessor&lt;'Msg&gt;"><code>MailboxProcessor</code></a>. Gasp!</p>
 
@@ -68,7 +68,7 @@
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">type</span> <span class="nc">BadAgent</span><span class="bp">()</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">let</span> <span class="n">agent</span> <span class="o">=</span> <span class="nn">MailboxProcessor</span><span class="p">.</span><span class="nc">Start</span><span class="o">(</span><span class="k">fun</span> <span class="n">agent</span> <span class="o">-&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">let</span> <span class="n">agent</span> <span class="o">=</span> <span class="nn">MailboxProcessor</span><span class="p">.</span><span class="nc">Start</span><span class="o">(</span><span class="k">fun</span> <span class="n">agent</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">let</span> <span class="n">sw</span> <span class="o">=</span> <span class="nc">Stopwatch</span><span class="bp">()</span>
 </span><span class='line'><span class="k">let</span> <span class="k">rec</span> <span class="n">waiting</span> <span class="bp">()</span> <span class="o">=</span>
@@ -119,7 +119,7 @@
 
 <h3>Test Harness</h3>
 
-<p>And here's a very simple test harness:</p>
+<p>And here&rsquo;s a very simple test harness:</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -138,7 +138,7 @@
 <span class='line-number'>15</span>
 </pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">let</span> <span class="n">ba</span> <span class="o">=</span> <span class="nc">BadAgent</span><span class="bp">()</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">printfn</span> <span class="s2">&quot;Press and key to start&quot;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">printfn</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Press</span> <span class="k">and</span> <span class="n">key</span> <span class="k">to</span> <span class="n">start</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span>
 </span><span class='line'><span class="nn">Console</span><span class="p">.</span><span class="nc">ReadLine</span><span class="bp">()</span> <span class="o">|&gt;</span> <span class="n">ignore</span>
 </span><span class='line'><span class="k">let</span> <span class="n">dump</span> <span class="n">number</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
@@ -155,17 +155,17 @@
 
 <p>OK, so this is a very synthetic test but I just wanted to highlight some of the internal behaviour.  If I run this code I get the following console output:</p>
 
-<p><img src="https://lh5.googleusercontent.com/-chMoEOya7CE/T_tRraiW_eI/AAAAAAAABbY/wsQkWbm4DJM/s677/ConsoleTimes.png"></p>
+<p><img class="<a" src="href="https://lh5.googleusercontent.com/-chMoEOya7CE/T_tRraiW_eI/AAAAAAAABbY/wsQkWbm4DJM/s677/ConsoleTimes.png">https://lh5.googleusercontent.com/-chMoEOya7CE/T_tRraiW_eI/AAAAAAAABbY/wsQkWbm4DJM/s677/ConsoleTimes.png</a>"></p>
 
 <p>You can see that the time to process the first 10,000 messages is 3083ms then it steadily decreases until the last 10,000 messages are processed in 94ms.  The processing time for 10,000 messages is about 33 times slower at the beginning than as it is at the end.  Why?</p>
 
 <h2>Opening it up</h2>
 
-<p>Let's take a look at some of the internals of the <code>MailboxProcessor</code> to understand what's going on.  First of all the core functionality is actually contained within the <code>Mailbox</code> type with the <code>MailboxProcessor</code> acting as an augmenter.  <code>TryPostAndReply</code>, <code>PostAndReply</code>, <code>PostAndTryAsyncReply</code>, and <code>PostAndAsyncReply</code> all add a single functionality to the <code>Mailbox</code> type; the ability to synchronously or asynchronously reply to a message once it arrives.  <code>TryPostAndReply</code> and <code>PostAndReply</code> both wait synchronously for a message to arrive before replying, whereas <code>PostAndTryAsyncReply</code> and <code>PostAndAsyncReply</code> both reply asynchronously.  This functionality is achieved with the use of the <code>ResultCell</code> and <code>AsyncReplyChannel</code> types.  For an in-depth discussion on this you might want to refer to my earlier series which describes implementing the <code>MailboxProcessor</code> with <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582.aspx" title="TPL Dataflow">TPL Dataflow</a> (see <a href="/blog/2012/01/22/FSharp-Dataflow-agents-I/" title="FSharp Dataflow agents - Part 1">Part 1</a>, <a href="/blog/2012/01/30/FSharp-Dataflow-agents-II/" title="FSharp Dataflow agents - Part 2">Part 2</a> and <a href="/blog/2012/02/20/fsharp-dataflow-agents-III/" title="FSharp Dataflow agents - Part 3">Part 3</a>).</p>
+<p>Let&rsquo;s take a look at some of the internals of the <code>MailboxProcessor</code> to understand what&rsquo;s going on.  First of all the core functionality is actually contained within the <code>Mailbox</code> type with the <code>MailboxProcessor</code> acting as an augmenter.  <code>TryPostAndReply</code>, <code>PostAndReply</code>, <code>PostAndTryAsyncReply</code>, and <code>PostAndAsyncReply</code> all add a single functionality to the <code>Mailbox</code> type; the ability to synchronously or asynchronously reply to a message once it arrives.  <code>TryPostAndReply</code> and <code>PostAndReply</code> both wait synchronously for a message to arrive before replying, whereas <code>PostAndTryAsyncReply</code> and <code>PostAndAsyncReply</code> both reply asynchronously.  This functionality is achieved with the use of the <code>ResultCell</code> and <code>AsyncReplyChannel</code> types.  For an in-depth discussion on this you might want to refer to my earlier series which describes implementing the <code>MailboxProcessor</code> with <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582.aspx" title="TPL Dataflow">TPL Dataflow</a> (see <a href="/blog/2012/01/22/FSharp-Dataflow-agents-I/" title="FSharp Dataflow agents - Part 1">Part 1</a>, <a href="/blog/2012/01/30/FSharp-Dataflow-agents-II/" title="FSharp Dataflow agents - Part 2">Part 2</a> and <a href="/blog/2012/02/20/fsharp-dataflow-agents-III/" title="FSharp Dataflow agents - Part 3">Part 3</a>).</p>
 
 <p>Below are some snippets of code from the <code>Mailbox</code> type you might want to take a peek yourself at the <a href="https://github.com/fsharp/fsharp/blob/master/src/fsharp/FSharp.Core/control.fs#L1854" title="Mailbox code">FSharp repository</a> over at <a href="https://github.com/">Github</a> for a closer inspection, be warned thought there is a lot of code in there!</p>
 
-<p>Here's the initial type definition for the <code>Mailbox</code>, you can see that  there are two mutable fields:</p>
+<p>Here&rsquo;s the initial type definition for the <code>Mailbox</code>, you can see that  there are two mutable fields:</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -174,7 +174,7 @@
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="nc">Mailbox</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="nc">Msg</span><span class="o">&gt;</span><span class="bp">()</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="nc">Mailbox</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;&amp;</span><span class="n">lsquo</span><span class="o">;</span><span class="nc">Msg</span><span class="o">&gt;</span><span class="bp">()</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">let</span> <span class="k">mutable</span> <span class="n">inboxStore</span>  <span class="o">=</span> <span class="k">null</span>
 </span><span class='line'><span class="k">let</span> <span class="k">mutable</span> <span class="n">arrivals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Queue</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="nc">Msg</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span><span class="bp">()</span>
@@ -187,7 +187,7 @@
 
 <p>For now the <code>inboxStore</code> is null and is only ever assigned via <code>Scan</code> or <code>TryScan</code> and this is done indirectly via the <code>inbox</code> member shown here:</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>inbox  </span></figcaption>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>inbox </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -208,7 +208,7 @@
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>Understanding the code in the <code>Mailbox</code> can be difficult given the amount of code, so I'll highlight the key functions in the sections below to make it a little easier.</p>
+<p>Understanding the code in the <code>Mailbox</code> can be difficult given the amount of code, so I&rsquo;ll highlight the key functions in the sections below to make it a little easier.</p>
 
 <h3>Scan / TryScan</h3>
 
@@ -216,7 +216,7 @@
 
 <p>So now lets take a look at the source of <code>TryScan</code>.</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>TryScan  </span></figcaption>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>TryScan </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -234,7 +234,7 @@
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">TryScan</span> <span class="o">((</span><span class="n">f</span><span class="o">:</span> <span class="k">&#39;</span><span class="nc">Msg</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="nc">Async</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="nc">T</span><span class="o">&gt;)</span> <span class="n">option</span><span class="o">),</span> <span class="n">timeout</span><span class="o">)</span> <span class="o">:</span> <span class="nc">Async</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="nc">T</span> <span class="n">option</span><span class="o">&gt;</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">TryScan</span> <span class="o">((</span><span class="n">f</span><span class="o">:</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="o">;</span><span class="nc">Msg</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;</span> <span class="o">(</span><span class="nc">Async</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;&amp;</span><span class="n">rsquo</span><span class="o">;</span><span class="nc">T</span><span class="o">&gt;)</span> <span class="n">option</span><span class="o">),</span> <span class="n">timeout</span><span class="o">)</span> <span class="o">:</span> <span class="nc">Async</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;&amp;</span><span class="n">rsquo</span><span class="o">;</span><span class="nc">T</span> <span class="n">option</span><span class="o">&gt;</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">let</span> <span class="k">rec</span> <span class="n">scan</span><span class="bp">()</span> <span class="o">=</span>
 </span><span class='line'>    <span class="n">async</span> <span class="o">{</span> <span class="k">match</span> <span class="n">x</span><span class="o">.</span><span class="n">scanArrivals</span><span class="o">(</span><span class="n">f</span><span class="o">)</span> <span class="k">with</span>
@@ -256,19 +256,19 @@
 <p>You can see here that an <a href="http://msdn.microsoft.com/en-us/library/dd233250.aspx" title="async workflows">async workflow</a> is declared that first pattern matches on <code>x.scanInbox</code>, passing in the predicate scan function <code>f</code> and the literal <code>0</code>.  If <code>None</code> is returned then there is no match and the recursive function <code>scan</code> is returned.  This time the function <code>x.scanArrivals</code> is be called, again passing in the predicate function <code>f</code>.</p>
 
 <ul>
-<li>An interesting point to note, is that each message that arrives that doesn't match the predicate <code>f</code> resets the  timer: <code>let! ok = waitOne(timeout)</code>, this means that any number of trivial messages that arrive keep the <code>TryScan</code> function running.  This was also mentioned by Jon Harrop in a Stackoverflow question entitled <a href="http://stackoverflow.com/a/4891920/607275" title="How to use TryScan in F# properly">How to use TryScan in F# properly</a>.  Jon also mentions locking which I will address in the <code>scanArrivals</code> section below.</li>
+<li>An interesting point to note, is that each message that arrives that doesn&rsquo;t match the predicate <code>f</code> resets the  timer: <code>let! ok = waitOne(timeout)</code>, this means that any number of trivial messages that arrive keep the <code>TryScan</code> function running.  This was also mentioned by Jon Harrop in a Stackoverflow question entitled <a href="http://stackoverflow.com/a/4891920/607275" title="How to use TryScan in F# properly">How to use TryScan in F# properly</a>.  Jon also mentions locking which I will address in the <code>scanArrivals</code> section below.</li>
 </ul>
 
 
-<p>So what's the difference between <code>scanArrivals</code> and <code>scanInbox</code>?</p>
+<p>So what&rsquo;s the difference between <code>scanArrivals</code> and <code>scanInbox</code>?</p>
 
-<p><code>scanInbox</code> operates on the <code>inboxStore</code> which you might recall is a <code>List&lt;T&gt;</code> type, whereas <code>scanArrivals</code> operates on <code>arrivals</code> which is a <code>Queue&lt;T&gt;</code> type.  The big difference between these two is that as messages first arrive in the Mailbox they end up in the arrivals queue first, and when messages are not matched by the predicate function <code>f</code> they are added to the <code>inboxStore</code>, hence the need to always check the <code>inboxStore</code> before the <code>arrivals</code> queue otherwise previously unmatched scan messages would not be processed correctly.  You might be asking yourself why not use a <code>Queue&lt;T&gt;</code> for both the <code>inbox</code> and the <code>arrivals</code>?  It comes down to the fact that it's not possible to easily use a <code>Queue&lt;T&gt;</code> for <code>arrivals</code> because of the way that Scan works.  At any point in the queue there could do a potential match so each item would have to be dequeued and processed separately, an indexed <code>List&lt;T&gt;</code> type is the best fit for this situation.</p>
+<p><code>scanInbox</code> operates on the <code>inboxStore</code> which you might recall is a <code>List&lt;T&gt;</code> type, whereas <code>scanArrivals</code> operates on <code>arrivals</code> which is a <code>Queue&lt;T&gt;</code> type.  The big difference between these two is that as messages first arrive in the Mailbox they end up in the arrivals queue first, and when messages are not matched by the predicate function <code>f</code> they are added to the <code>inboxStore</code>, hence the need to always check the <code>inboxStore</code> before the <code>arrivals</code> queue otherwise previously unmatched scan messages would not be processed correctly.  You might be asking yourself why not use a <code>Queue&lt;T&gt;</code> for both the <code>inbox</code> and the <code>arrivals</code>?  It comes down to the fact that it&rsquo;s not possible to easily use a <code>Queue&lt;T&gt;</code> for <code>arrivals</code> because of the way that Scan works.  At any point in the queue there could do a potential match so each item would have to be dequeued and processed separately, an indexed <code>List&lt;T&gt;</code> type is the best fit for this situation.</p>
 
 <h3>scanArrivals / scanArrivalsUnsafe</h3>
 
-<p>Lets look at the <code>scanArrivals</code> function, it's just a lock construct around the <code>scanArrivals</code> function.  This leads to an important point, the scan function is operating under a lock, which effectively means that end user code is also executed under the lock and if you hold onto the lock for any length of time then there will be significant blocking of the normal receive mechanism due to it also using the same lock when receiving.</p>
+<p>Lets look at the <code>scanArrivals</code> function, it&rsquo;s just a lock construct around the <code>scanArrivals</code> function.  This leads to an important point, the scan function is operating under a lock, which effectively means that end user code is also executed under the lock and if you hold onto the lock for any length of time then there will be significant blocking of the normal receive mechanism due to it also using the same lock when receiving.</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>scanArrivals/scanArrivalsUnsafe  </span></figcaption>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>scanArrivals/scanArrivalsUnsafe </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -294,7 +294,7 @@
 </span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">// Lock the arrivals queue while we scan that</span>
-</span><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="n">scanArrivals</span><span class="o">(</span><span class="n">f</span><span class="o">)</span> <span class="o">=</span> <span class="n">lock</span> <span class="n">syncRoot</span> <span class="o">(</span><span class="k">fun</span> <span class="bp">()</span> <span class="o">-&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">scanArrivalsUnsafe</span><span class="o">(</span><span class="n">f</span><span class="o">))</span>
+</span><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="n">scanArrivals</span><span class="o">(</span><span class="n">f</span><span class="o">)</span> <span class="o">=</span> <span class="n">lock</span> <span class="n">syncRoot</span> <span class="o">(</span><span class="k">fun</span> <span class="bp">()</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">scanArrivalsUnsafe</span><span class="o">(</span><span class="n">f</span><span class="o">))</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>If we pause for a second and review the <code>MailBoxProcessor</code> documentation on <a href="http://msdn.microsoft.com/en-us/library/ee353583.aspx" title="MSDN: F# MailbocProcessor">MSDN</a>:</p>
@@ -307,7 +307,7 @@
 
 <h3>scanInbox</h3>
 
-<p>A quick glance at <code>scanInbox</code> reveals another function which, to my eye, could have heavy-weight performance implications.   The <code>inbox</code> is a <code>List&lt;T&gt;</code> type, and the <code>RemoveAt</code> function does an internal <code>Array.Copy</code> for each removal.  This is an O(n) operation where n is (Count - index), so as soon as the list gets to a reasonable size then this then is going to really start chewing into your processing time.</p>
+<p>A quick glance at <code>scanInbox</code> reveals another function which, to my eye, could have heavy-weight performance implications.   The <code>inbox</code> is a <code>List&lt;T&gt;</code> type, and the <code>RemoveAt</code> function does an internal <code>Array.Copy</code> for each removal.  This is an O(n) operation where n is (Count &ndash; index), so as soon as the list gets to a reasonable size then this then is going to really start chewing into your processing time.</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -343,13 +343,13 @@
 
 <p>In order to check this theory lets do some quick profiling of the console test that we showed earlier:</p>
 
-<p><img src="https://lh5.googleusercontent.com/-HRwdmElTHzk/UACUh2a0mmI/AAAAAAAABb0/X-PXjabROOU/s658/profile_run.png"></p>
+<p><img class="<a" src="href="https://lh5.googleusercontent.com/-HRwdmElTHzk/UACUh2a0mmI/AAAAAAAABb0/X-PXjabROOU/s658/profile_run.png">https://lh5.googleusercontent.com/-HRwdmElTHzk/UACUh2a0mmI/AAAAAAAABb0/X-PXjabROOU/s658/profile_run.png</a>"></p>
 
 <p>This screen shot was taken using <a href="http://www.jetbrains.com/profiler/" title="Jet Brains Performance Profiling">Jet Brains DotTrace 5.1</a>.  This is one of my favourite performance profilers because it captures results to line level and maps back to the F# source code relatively easily.</p>
 
 <p>Yeah there it is, a whopping 44.41% of the time is spent in <code>RemoveAt</code>.  Also notice that there were 200,000 calls which mirrors the number we placed in the queue before using the Lock/Unlock message types.</p>
 
-<p>One of the things that really stands out for me is that the <code>inbox</code> is a simple list and completely unbounded.  In a high throughput situation where the scan function is being used it's perfectly feasible to get into a runaway memory or CPU condition where the unmatched messages are sitting in the <code>inbox</code> taking longer and longer to processes due to the O(n) operation that takes place in the <code>RemoveAt</code> function.  Given a consistent throughput then eventually you are going to either run out memory, or the processing time will make throughput drop to dire levels which in turn will back up the <code>inbox</code> even further, effectively this is a death spiral.</p>
+<p>One of the things that really stands out for me is that the <code>inbox</code> is a simple list and completely unbounded.  In a high throughput situation where the scan function is being used it&rsquo;s perfectly feasible to get into a runaway memory or CPU condition where the unmatched messages are sitting in the <code>inbox</code> taking longer and longer to processes due to the O(n) operation that takes place in the <code>RemoveAt</code> function.  Given a consistent throughput then eventually you are going to either run out memory, or the processing time will make throughput drop to dire levels which in turn will back up the <code>inbox</code> even further, effectively this is a death spiral.</p>
 
 <h2>Conclusion</h2>
 
@@ -357,17 +357,17 @@
 
 <ul>
 <li>Firstly be careful with usage of <code>Scan</code> and <code>TryScan</code>, in certain situations the internal queue could back up to a certain size where you will be constantly struggling against the O(n) operation cost.</li>
-<li>Agents are not a silver bullet solution. They cannot solve every problem.  Although it's possible to use agent based techniques to solve various problems like blocking collections and such like, you have to use care and diligence in the solution to avoid introducing another problems into the mix.  I have seen several implementations that I have been able to break relatively easily.</li>
+<li>Agents are not a silver bullet solution. They cannot solve every problem.  Although it&rsquo;s possible to use agent based techniques to solve various problems like blocking collections and such like, you have to use care and diligence in the solution to avoid introducing another problems into the mix.  I have seen several implementations that I have been able to break relatively easily.</li>
 <li>Do I still use agents?  <strong>Absolutely!</strong>  Agents are a fabulous tool to have in our toolbox and some extremely elegant solution exist to solve very complex problems.</li>
 <li>Do I use <code>Scan</code> or <code>TryScan</code>?  Not in its current form in the <code>MailboxProcessor</code>.  I chose to implement a destructive scan in my <a href="/blog/2012/02/20/fsharp-dataflow-agents-III/" title="FSharp Dataflow agents - Part 3">TDF agent</a> for the reasons discussed here.</li>
 </ul>
 
 
-<p>Before we finish, I'd like to briefly cover <code>TryScan</code> from my <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582.aspx" title="TPL Dataflow">TDF</a> based agent to complete the picture.</p>
+<p>Before we finish, I&rsquo;d like to briefly cover <code>TryScan</code> from my <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582.aspx" title="TPL Dataflow">TDF</a> based agent to complete the picture.</p>
 
 <h3>Destructive TryScan</h3>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>TryScan  </span></figcaption>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>TryScan </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -386,7 +386,7 @@
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
 <span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">TryScan</span><span class="o">((</span><span class="n">scanner</span><span class="o">:</span> <span class="k">&#39;</span><span class="nc">Msg</span> <span class="o">-&gt;</span> <span class="nc">Async</span><span class="o">&lt;_&gt;</span> <span class="n">option</span><span class="o">),</span> <span class="n">timeout</span><span class="o">):</span> <span class="nc">Async</span><span class="o">&lt;_</span> <span class="n">option</span><span class="o">&gt;</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">TryScan</span><span class="o">((</span><span class="n">scanner</span><span class="o">:</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="o">;</span><span class="nc">Msg</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;</span> <span class="nc">Async</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;&lt;</span><span class="n">em</span><span class="o">&gt;&gt;</span> <span class="n">option</span><span class="o">),</span> <span class="n">timeout</span><span class="o">):</span> <span class="nc">Async</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;&lt;/</span><span class="n">em</span><span class="o">&gt;</span> <span class="n">option</span><span class="o">&gt;</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">let</span> <span class="n">ts</span> <span class="o">=</span> <span class="nn">TimeSpan</span><span class="p">.</span><span class="nc">FromMilliseconds</span><span class="o">(</span><span class="kt">float</span> <span class="n">timeout</span><span class="o">)</span>
 </span><span class='line'><span class="k">let</span> <span class="k">rec</span> <span class="n">loopForMsg</span> <span class="o">=</span> <span class="n">async</span> <span class="o">{</span>
@@ -410,19 +410,19 @@
 
 <p>One of the areas where I have a lot of experience is using pipelined operations based on input from network I/O.  One of the things that always causes a problem is unbounded situations such as having a queue with no absolute limit.  There comes a time when you have to protect yourself from what is effective a denial of service, you have to either destructively terminate messages or connections or route the overflowed data for processing later.</p>
 
-<p>Until next time...</p>
+<p>Until next time&hellip;</p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[FSharp Dataflow agents III]]></title>
-    <link href="http://MoiraeSoftware.com/blog/2012/02/20/fsharp-dataflow-agents-iii/"/>
+    <link href="http://MoiraeSoftware.github.io/blog/2012/02/20/fsharp-dataflow-agents-iii/"/>
     <updated>2012-02-20T07:30:00+00:00</updated>
-    <id>http://MoiraeSoftware.com/blog/2012/02/20/fsharp-dataflow-agents-iii</id>
+    <id>http://MoiraeSoftware.github.io/blog/2012/02/20/fsharp-dataflow-agents-iii</id>
     <content type="html"><![CDATA[<p>This will be the last post on rebuilding the <code>MailboxProcessor</code> using <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582">TDF</a>,
-here's a quick discussion of the missing pieces...</p>
+here&rsquo;s a quick discussion of the missing pieces&hellip;</p>
 
-<p>First, lets start with the simple ones, these don't really require much discussion.</p>
+<p>First, lets start with the simple ones, these don&rsquo;t really require much discussion.</p>
 
 <h3>DefaultTimeout</h3>
 
@@ -435,7 +435,7 @@ here's a quick discussion of the missing pieces...</p>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">DefaultTimeout</span>
 </span><span class='line'>   <span class="k">with</span> <span class="n">get</span><span class="bp">()</span> <span class="o">=</span> <span class="n">defaultTimeout</span>
-</span><span class='line'>   <span class="k">and</span> <span class="n">set</span><span class="o">(</span><span class="n">value</span><span class="o">)</span> <span class="o">=</span> <span class="n">defaultTimeout</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;-</span> <span class="n">value</span>
+</span><span class='line'>   <span class="k">and</span> <span class="n">set</span><span class="o">(</span><span class="n">value</span><span class="o">)</span> <span class="o">=</span> <span class="n">defaultTimeout</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;&amp;</span><span class="n">ndash</span><span class="o">;</span> <span class="n">value</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 This simply provides a mutable property using <code>Timeout.Infinite</code> as a default setting.</p>
 
@@ -499,7 +499,7 @@ using <code>ContinueWith</code>.  We use a lambda to return either <code>None</c
 <span class='line-number'>23</span>
 <span class='line-number'>24</span>
 <span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="nc">AsyncResultCell</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span><span class="bp">()</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="nc">AsyncResultCell</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;&amp;</span><span class="n">lsquo</span><span class="o">;</span><span class="n">a</span><span class="o">&gt;</span><span class="bp">()</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;...</span>
 </span><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">TryWaitResultSynchronously</span><span class="o">(</span><span class="n">timeout</span><span class="o">:</span><span class="kt">int</span><span class="o">)</span> <span class="o">=</span>
@@ -513,7 +513,7 @@ using <code>ContinueWith</code>.  We use a lambda to return either <code>None</c
 </span><span class='line'>        <span class="k">else</span> <span class="nc">None</span>
 </span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">TryPostAndReply</span><span class="o">(</span><span class="n">replyChannelMsg</span><span class="o">,</span> <span class="o">?</span><span class="n">timeout</span><span class="o">)</span> <span class="o">:</span><span class="k">&#39;</span><span class="nc">Reply</span> <span class="n">option</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">TryPostAndReply</span><span class="o">(</span><span class="n">replyChannelMsg</span><span class="o">,</span> <span class="o">?</span><span class="n">timeout</span><span class="o">)</span> <span class="o">:&amp;</span><span class="n">lsquo</span><span class="o">;</span><span class="nc">Reply</span> <span class="n">option</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">let</span> <span class="n">timeout</span> <span class="o">=</span> <span class="n">defaultArg</span> <span class="n">timeout</span> <span class="n">defaultTimeout</span>
 </span><span class='line'><span class="k">let</span> <span class="n">resultCell</span> <span class="o">=</span> <span class="nc">AsyncResultCell</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;_&amp;</span><span class="n">gt</span><span class="o">;</span><span class="bp">()</span>
@@ -525,7 +525,7 @@ using <code>ContinueWith</code>.  We use a lambda to return either <code>None</c
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
-Things get a little more interesting from here on in.  Firstly we need to add a new synchronisation member to the <code>AsyncResultCell&lt;'a&gt;</code> type: <code>TryWaitResultSynchronously</code>.   We again enlist the help of the TPL primitives to check for the early completion using <code>source.Task.IsCompleted</code> returning the result if it is there, otherwise we use the <code>Task</code> property's <code>Wait</code> method to check the item returns within the time out interval.  In the usual manner, <code>Some source.Task.Result</code> is returned or <code>None</code> for a failure.</p>
+Things get a little more interesting from here on in.  Firstly we need to add a new synchronisation member to the <code>AsyncResultCell&lt;'a&gt;</code> type: <code>TryWaitResultSynchronously</code>.   We again enlist the help of the TPL primitives to check for the early completion using <code>source.Task.IsCompleted</code> returning the result if it is there, otherwise we use the <code>Task</code> property&rsquo;s <code>Wait</code> method to check the item returns within the time out interval.  In the usual manner, <code>Some source.Task.Result</code> is returned or <code>None</code> for a failure.</p>
 
 <h3>PostAndReply</h3>
 
@@ -537,7 +537,7 @@ Things get a little more interesting from here on in.  Firstly we need to add a 
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">PostAndReply</span><span class="o">(</span><span class="n">replyChannelMsg</span><span class="o">,</span> <span class="o">?</span><span class="n">timeout</span><span class="o">)</span> <span class="o">:</span> <span class="k">&#39;</span><span class="nc">Reply</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">PostAndReply</span><span class="o">(</span><span class="n">replyChannelMsg</span><span class="o">,</span> <span class="o">?</span><span class="n">timeout</span><span class="o">)</span> <span class="o">:</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="o">;</span><span class="nc">Reply</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">match</span> <span class="n">x</span><span class="o">.</span><span class="nc">TryPostAndReply</span><span class="o">(</span><span class="n">replyChannelMsg</span><span class="o">,</span> <span class="o">?</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span><span class="o">)</span> <span class="k">with</span>
 </span><span class='line'><span class="o">|</span> <span class="nc">None</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="o">;</span>  <span class="n">raise</span> <span class="o">(</span><span class="nc">TimeoutException</span><span class="o">(</span><span class="s2">&quot;PostAndReply timed out&quot;</span><span class="o">))</span>
@@ -568,7 +568,7 @@ This one wraps a call to <code>TryPostAndReply</code> with some pattern matching
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
 <span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">TryScan</span><span class="o">((</span><span class="n">scanner</span><span class="o">:</span> <span class="k">&#39;</span><span class="nc">Msg</span> <span class="o">-&gt;</span> <span class="nc">Async</span><span class="o">&lt;_&gt;</span> <span class="n">option</span><span class="o">),</span> <span class="n">timeout</span><span class="o">):</span> <span class="nc">Async</span><span class="o">&lt;_</span> <span class="n">option</span><span class="o">&gt;</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">TryScan</span><span class="o">((</span><span class="n">scanner</span><span class="o">:</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="o">;</span><span class="nc">Msg</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;</span> <span class="nc">Async</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;&lt;</span><span class="n">em</span><span class="o">&gt;&gt;</span> <span class="n">option</span><span class="o">),</span> <span class="n">timeout</span><span class="o">):</span> <span class="nc">Async</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;&lt;/</span><span class="n">em</span><span class="o">&gt;</span> <span class="n">option</span><span class="o">&gt;</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">let</span> <span class="n">ts</span> <span class="o">=</span> <span class="nn">TimeSpan</span><span class="p">.</span><span class="nc">FromMilliseconds</span><span class="o">(</span> <span class="kt">float</span> <span class="n">timeout</span><span class="o">)</span>
 </span><span class='line'><span class="k">let</span> <span class="k">rec</span> <span class="n">loopForMsg</span> <span class="o">=</span> <span class="n">async</span> <span class="o">{</span>
@@ -588,7 +588,7 @@ This one wraps a call to <code>TryPostAndReply</code> with some pattern matching
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 This one also uses the same <code>ContinueWith</code> functionality in the recursive <code>loopForMsg</code> function, perhaps some
-of these functions could extracted out and refactored but I prefer to keep the code like this to better explain what's going
+of these functions could extracted out and refactored but I prefer to keep the code like this to better explain what&rsquo;s going
 on.  The the code is available on GitHub anyway so feel free to clean up any detritus and send me a pull request.  Again we use pattern matching to keep calling the <code>loopForMsg</code> function until the result is returned or a time out occurs.</p>
 
 <h3>Scan</h3>
@@ -615,28 +615,28 @@ on.  The the code is available on GitHub anyway so feel free to clean up any det
 Finally we have Scan, this is much like PostAndReply in that it just acts as a wrapper around <code>TryScan</code> making use of
 pattern matching throwing an exception on a time out.</p>
 
-<p>That sums up the last few pieces, completing the TDF implementation of the <code>MailboxProcessor</code>.  I think this series of posts has shown the elegance of F#'s asynchronous workflows.  The use of recursive functions and the compositional nature of asynchronous workflows really helps when you are doing this type of programming.  It's also very nice on the eye, each section being clearly defined.</p>
+<p>That sums up the last few pieces, completing the TDF implementation of the <code>MailboxProcessor</code>.  I think this series of posts has shown the elegance of F#&rsquo;s asynchronous workflows.  The use of recursive functions and the compositional nature of asynchronous workflows really helps when you are doing this type of programming.  It&rsquo;s also very nice on the eye, each section being clearly defined.</p>
 
 <p>The more astute of you may have noticed something a little different.  <code>Scan</code> and <code>TryScan</code> are destructive in this implementation, the unmatched messages are purged from the internal queue.  Although I could have mirrored the same functionality of the <code>MailboxProcessor</code> by using an internal list to keep track of unmatched messages, this leads to performing checks during <code>Receive</code> and <code>Scan</code> and their derivatives to make sure that this list is used first when switching from <code>Scan</code> and <code>Receive</code> functionality.</p>
 
-<p>I think the separation of concerns are a little fuzzy in the <code>MailboxProcessor</code>.  The <code>scan</code> function seems like an after thought, even if you don't use <code>Scan</code> you still pay a price for it as there are numerous checks between the internal queue and the unmatched messages list.  You can also run into issues while using <code>Scan</code> and <code>TryScan</code> that can result in out of memory conditions due to the inherent unbounded nature.  I will briefly describe and explore the conditions that can lead to that in the next post.  In the implementation presented here we can get bounded checking by passing in an optional <code>DataflowBlockOptions</code> and setting a value for the <code>BoundedCapacity</code> property.</p>
+<p>I think the separation of concerns are a little fuzzy in the <code>MailboxProcessor</code>.  The <code>scan</code> function seems like an after thought, even if you don&rsquo;t use <code>Scan</code> you still pay a price for it as there are numerous checks between the internal queue and the unmatched messages list.  You can also run into issues while using <code>Scan</code> and <code>TryScan</code> that can result in out of memory conditions due to the inherent unbounded nature.  I will briefly describe and explore the conditions that can lead to that in the next post.  In the implementation presented here we can get bounded checking by passing in an optional <code>DataflowBlockOptions</code> and setting a value for the <code>BoundedCapacity</code> property.</p>
 
 <p><strong>EDIT:</strong> The code for this series of articles is now available on GitHub: <a href="https://github.com/7sharp9/FSharpDataflow">FSharpDataflow</a></p>
 
-<p>Until next time...</p>
+<p>Until next time&hellip;</p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[F# Dataflow Agents Part II]]></title>
-    <link href="http://MoiraeSoftware.com/blog/2012/01/30/FSharp-Dataflow-agents-II/"/>
+    <link href="http://MoiraeSoftware.github.io/blog/2012/01/30/FSharp-Dataflow-agents-II/"/>
     <updated>2012-01-30T07:49:00+00:00</updated>
-    <id>http://MoiraeSoftware.com/blog/2012/01/30/FSharp-Dataflow-agents-II</id>
+    <id>http://MoiraeSoftware.github.io/blog/2012/01/30/FSharp-Dataflow-agents-II</id>
     <content type="html"><![CDATA[<p>Right, no messing about this time, straight to the code.</p>
 
 <h2>Construction</h2>
 
-<p>This is pretty straight forward and I don't want to detract from the important bits of this post, the only thing
+<p>This is pretty straight forward and I don&rsquo;t want to detract from the important bits of this post, the only thing
 of note is the <code>cancellationToken</code> which is initialized to a default value using the <code>defaultArg</code> function if the
 optional parameter  <code>cancellationToken</code> is not supplied. The TDF construct that we to use to perform most of the hard
 work is <code>incomingMessages</code> which is a <code>BufferBlock&lt;'Msg&gt;</code>.
@@ -651,7 +651,7 @@ work is <code>incomingMessages</code> which is a <code>BufferBlock&lt;'Msg&gt;</
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="nc">DataflowAgent</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="nc">Msg</span><span class="o">&gt;(</span><span class="n">initial</span><span class="o">,</span> <span class="o">?</span><span class="n">cancellationToken</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="nc">DataflowAgent</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;&amp;</span><span class="n">lsquo</span><span class="o">;</span><span class="nc">Msg</span><span class="o">&gt;(</span><span class="n">initial</span><span class="o">,</span> <span class="o">?</span><span class="n">cancellationToken</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">let</span> <span class="n">cancellationToken</span> <span class="o">=</span>
 </span><span class='line'>    <span class="n">defaultArg</span> <span class="n">cancellationToken</span> <span class="nn">Async</span><span class="p">.</span><span class="nc">DefaultCancellationToken</span>
@@ -743,7 +743,7 @@ a message to arrive.  The integration between F# async and TDF is nice and succi
 
 <h2>PostAndTryAsyncReply / PostAndAsyncReply</h2>
 
-<p>I'm grouping both of these together as they are related in functionality.  In the previous post I purposely left
+<p>I&rsquo;m grouping both of these together as they are related in functionality.  In the previous post I purposely left
 out some ancillary code as it added unnecessary complexity to the introduction.  There are a two types we need to be able to replicate the <code>PostAndTryAsyncReply</code> and <code>PostAndAsyncReply</code> members of the <code>MailboxProcessor</code>.</p>
 
 <h3>AsyncReplyChannel</h3>
@@ -758,7 +758,7 @@ out some ancillary code as it added unnecessary complexity to the introduction. 
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="nc">AsyncReplyChannel</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="nc">Reply</span><span class="o">&gt;(</span><span class="n">replyf</span> <span class="o">:</span> <span class="k">&#39;</span><span class="nc">Reply</span> <span class="o">-&gt;</span> <span class="kt">unit</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="nc">AsyncReplyChannel</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;&amp;</span><span class="n">lsquo</span><span class="o">;</span><span class="nc">Reply</span><span class="o">&gt;(</span><span class="n">replyf</span> <span class="o">:</span> <span class="k">&#39;</span><span class="nc">Reply</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;</span> <span class="kt">unit</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">Reply</span><span class="o">(</span><span class="n">reply</span><span class="o">)</span> <span class="o">=</span> <span class="n">replyf</span><span class="o">(</span><span class="n">reply</span><span class="o">)</span>
 </span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
@@ -795,7 +795,7 @@ out some ancillary code as it added unnecessary complexity to the introduction. 
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
 <span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="nc">AsyncResultCell</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span><span class="bp">()</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="nc">AsyncResultCell</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;&amp;</span><span class="n">lsquo</span><span class="o">;</span><span class="n">a</span><span class="o">&gt;</span><span class="bp">()</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">let</span> <span class="n">source</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TaskCompletionSource</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span><span class="bp">()</span>
 </span><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">RegisterResult</span> <span class="n">result</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="nc">SetResult</span><span class="o">(</span><span class="n">result</span><span class="o">)</span>
@@ -936,15 +936,15 @@ difference is that an asynchronous workflow is created that wraps a call to <cod
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>Until next time...</p>
+<p>Until next time&hellip;</p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[F# Dataflow Agents Part I]]></title>
-    <link href="http://MoiraeSoftware.com/blog/2012/01/22/FSharp-Dataflow-agents-I/"/>
+    <link href="http://MoiraeSoftware.github.io/blog/2012/01/22/FSharp-Dataflow-agents-I/"/>
     <updated>2012-01-22T12:28:00+00:00</updated>
-    <id>http://MoiraeSoftware.com/blog/2012/01/22/FSharp-Dataflow-agents-I</id>
+    <id>http://MoiraeSoftware.github.io/blog/2012/01/22/FSharp-Dataflow-agents-I</id>
     <content type="html"><![CDATA[<p>This is going to be a new series on using TPL Dataflow with F#.  First a little bit of history and background.</p>
 
 <h2>TPL Dataflows heritage and background</h2>
@@ -958,7 +958,7 @@ be part of the <code>System.Threading.Tasks.Dataflow</code> namespace.  Elements
 <h3>Concurrency and Coordination Runtime (CCR)</h3>
 
 <p>CCR is a library that deals with asynchrony, concurrency, and coordination between blocks of asynchronous
-code so that the programmer doesn't have to.  All of the low level details of synchronization and error
+code so that the programmer doesn&rsquo;t have to.  All of the low level details of synchronization and error
 propagation are taken care of in a consistent fashion.  CCR is still is included in
 <a href="ttp://www.microsoft.com/robotics/">Microsoft Robotics Studio</a> where it is used extensively to exploit
 parallel hardware and deal with partial failure of systems.</p>
@@ -985,10 +985,10 @@ different categories of blocks are as follows:</p>
 <p>Buffering blocks simply buffer data in various ways before passing the data on to another block.</p>
 
 <ul>
-<li> <code>BufferBlock&lt;'T&gt;</code>  - The BufferBlock act as a first-in-first-out (FIFO) queue, buffering each input.</li>
-<li> <code>BroadcastBlock&lt;'T&gt;</code> - The BroadcastBlock linking to multiple targets copying the data to each of the
+<li> <code>BufferBlock&lt;'T&gt;</code>  &ndash; The BufferBlock act as a first-in-first-out (FIFO) queue, buffering each input.</li>
+<li> <code>BroadcastBlock&lt;'T&gt;</code> &ndash; The BroadcastBlock linking to multiple targets copying the data to each of the
 connected blocks.</li>
-<li> <code>WriteOnceBlock&lt;'T&gt;</code> - The WriteOnceBlock acts like an immutable target, after an item first item
+<li> <code>WriteOnceBlock&lt;'T&gt;</code> &ndash; The WriteOnceBlock acts like an immutable target, after an item first item
 is passed to it, it effectively becomes read only.</li>
 </ul>
 
@@ -998,11 +998,11 @@ is passed to it, it effectively becomes read only.</li>
 <p>The executor blocks run user supplied code in the form of a lambda expressions or a <code>Task&lt;'T&gt;</code>.</p>
 
 <ul>
-<li> <code>ActionBlock&lt;'TInput&gt;</code> - The ActionBlock acts like the <code>Action&lt;'T&gt;</code> delegate performing an action
+<li> <code>ActionBlock&lt;'TInput&gt;</code> &ndash; The ActionBlock acts like the <code>Action&lt;'T&gt;</code> delegate performing an action
 on each datum posted to it.</li>
-<li> <code>TransformBlock&lt;'TInput,'TOutput&gt;</code> - The TransformBlock acts just like the ActionBlock except
+<li> <code>TransformBlock&lt;'TInput,'TOutput&gt;</code> &ndash; The TransformBlock acts just like the ActionBlock except
 that the action performed can have an output, this output is buffered and behaves just like a BufferBlock.</li>
-<li> <code>TransformManyBlock&lt;'TInput,'TOutput&gt;</code> - The TransformManyBlock is just like a TransformBlock except
+<li> <code>TransformManyBlock&lt;'TInput,'TOutput&gt;</code> &ndash; The TransformManyBlock is just like a TransformBlock except
 that is can produce more than one output for a given datum.</li>
 </ul>
 
@@ -1012,10 +1012,10 @@ that is can produce more than one output for a given datum.</li>
 <p>The Joining Blocks Combining or join data together in different ways.</p>
 
 <ul>
-<li> <code>BatchBlock&lt;'T&gt;</code> - The BatchBlock Combines multiple single items together, the items are
+<li> <code>BatchBlock&lt;'T&gt;</code> &ndash; The BatchBlock Combines multiple single items together, the items are
 represented by arrays of elements.  The items are grouped together is batches and then passed on to
 another block.</li>
-<li> <code>JoinBlock&lt;'T1,'T2,…&gt;</code> - The JoinBlock acts as a form of <code>Enumerable.Zip&lt;'T1,'T2,'TResult&gt;</code>
+<li> <code>JoinBlock&lt;'T1,'T2,…&gt;</code> &ndash; The JoinBlock acts as a form of <code>Enumerable.Zip&lt;'T1,'T2,'TResult&gt;</code>
 except the zip operation is performed on the items in the source array.</li>
 <li> <code>BatchedJoinBlock&lt;'T1,'T2,…&gt;</code> This block as the name suggests simply aggregates the JoinBlock and
 the BatchBlock together.</li>
@@ -1025,7 +1025,7 @@ the BatchBlock together.</li>
 <p>Thats an ultra high level tour thats only just scratches the surface.  I recommend you check out the
 <a href="http://www.microsoft.com/download/en/details.aspx?id=14782">Introduction to TPL Dataflow</a> document to read
 up on the details.  Theres a few more resources in the <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582">DevLabs area</a>
-that you might find useful.  Hopefully this series should also shed a bit more light on TDF as we go along...</p>
+that you might find useful.  Hopefully this series should also shed a bit more light on TDF as we go along&hellip;</p>
 
 <h3>F# Asynchronous Workflows and Agents</h3>
 
@@ -1051,14 +1051,14 @@ properties which we will look at in future posts:</p>
 
 <h3>Implementation</h3>
 
-<p>In this post we are going replicate the MailboxProcessor, we will be using Tomas Petricek's caching agent
-example from <a href="http://fssnip.net/8V">FSSnip</a>).  I have made a couple of modification to Tomas's code.<br/>
+<p>In this post we are going replicate the MailboxProcessor, we will be using Tomas Petricek&rsquo;s caching agent
+example from <a href="http://fssnip.net/8V">FSSnip</a>).  I have made a couple of modification to Tomas&rsquo;s code.<br/>
 I replaced the Dictionary type with a ConcurrentDictionary so that the caching agent could be called multiple
 times successively without the dictionary throwing an exception due to it already containing a key from a
 previous cached result.  I also changed the example code so that it requests cached HTML from the caching
 agent ten times with a 400ms interval in between each.</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Caching Agent Implementation  </span></figcaption>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Caching Agent Implementation </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -1106,7 +1106,7 @@ agent ten times with a 400ms interval in between each.</p>
 </span><span class='line'><span class="o">|</span> <span class="nc">Get</span> <span class="k">of</span> <span class="kt">string</span> <span class="o">*</span> <span class="nc">AsyncReplyChannel</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">option</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;&gt;</span>
 </span><span class='line'><span class="o">|</span> <span class="nc">Clear</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">let</span> <span class="n">caching</span> <span class="o">=</span> <span class="nn">DataflowAgent</span><span class="p">.</span><span class="nc">Start</span><span class="o">(</span><span class="k">fun</span> <span class="n">agent</span> <span class="o">-&gt;</span> <span class="n">async</span> <span class="o">{</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">let</span> <span class="n">caching</span> <span class="o">=</span> <span class="nn">DataflowAgent</span><span class="p">.</span><span class="nc">Start</span><span class="o">(</span><span class="k">fun</span> <span class="n">agent</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;</span> <span class="n">async</span> <span class="o">{</span>
 </span><span class='line'>   <span class="k">let</span> <span class="n">table</span> <span class="o">=</span> <span class="nc">ConcurrentDictionary</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="kt">string</span><span class="o">,</span> <span class="kt">string</span><span class="o">&gt;</span><span class="bp">()</span>
 </span><span class='line'>   <span class="k">while</span> <span class="bp">true</span> <span class="k">do</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
@@ -1129,7 +1129,7 @@ agent ten times with a 400ms interval in between each.</p>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Caching Agent Example  </span></figcaption>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Caching Agent Example </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -1171,9 +1171,9 @@ agent ten times with a 400ms interval in between each.</p>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">/// Prints information about the specified web site using cache</span>
 </span><span class='line'><span class="k">let</span> <span class="n">printInfo</span> <span class="n">url</span> <span class="o">=</span> <span class="n">async</span> <span class="o">{</span>
 </span><span class='line'>   <span class="c1">// Try to get the cached HTML from the caching agent</span>
-</span><span class='line'>   <span class="k">let</span><span class="o">!</span> <span class="n">htmlOpt</span> <span class="o">=</span> <span class="n">caching</span><span class="o">.</span><span class="nc">PostAndAsyncReply</span><span class="o">(</span><span class="k">fun</span> <span class="n">ch</span> <span class="o">-&gt;</span> <span class="nc">Get</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">ch</span><span class="o">))</span>
+</span><span class='line'>   <span class="k">let</span><span class="o">!</span> <span class="n">htmlOpt</span> <span class="o">=</span> <span class="n">caching</span><span class="o">.</span><span class="nc">PostAndAsyncReply</span><span class="o">(</span><span class="k">fun</span> <span class="n">ch</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;</span> <span class="nc">Get</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">ch</span><span class="o">))</span>
 </span><span class='line'>   <span class="k">match</span> <span class="n">htmlOpt</span> <span class="k">with</span>
-</span><span class='line'>   <span class="o">|</span> <span class="nc">None</span> <span class="o">-&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>   <span class="o">|</span> <span class="nc">None</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="c1">// New url - download it and add it to the cache</span>
 </span><span class='line'>   <span class="k">use</span> <span class="n">wc</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">WebClient</span><span class="bp">()</span>
@@ -1182,22 +1182,22 @@ agent ten times with a 400ms interval in between each.</p>
 </span><span class='line'>   <span class="nn">Console</span><span class="p">.</span><span class="nc">WriteLine</span><span class="o">(</span> <span class="n">sprintf</span> <span class="s2">&quot;Download: %s (%d)&quot;</span> <span class="n">url</span> <span class="n">text</span><span class="o">.</span><span class="nc">Length</span><span class="o">)</span>
 </span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>   <span class="o">|</span> <span class="nc">Some</span> <span class="n">html</span> <span class="o">-&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>   <span class="o">|</span> <span class="nc">Some</span> <span class="n">html</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="c1">// The url was downloaded earlier </span>
 </span><span class='line'>   <span class="nn">Console</span><span class="p">.</span><span class="nc">WriteLine</span><span class="o">(</span> <span class="n">sprintf</span> <span class="s2">&quot;Cached: %s (%d)&quot;</span> <span class="n">url</span> <span class="n">html</span><span class="o">.</span><span class="nc">Length</span><span class="o">)</span> <span class="o">}</span>
 </span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">let</span> <span class="n">printfuncpro</span> <span class="o">=</span> <span class="n">printInfo</span> <span class="s2">&quot;http://functional-programming.net&quot;</span>
-</span><span class='line'><span class="c1">// Print information about a web site -</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">let</span> <span class="n">printfuncpro</span> <span class="o">=</span> <span class="n">printInfo</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;http://functional-programming.net&quot;</span><span class="o">&gt;</span><span class="n">http</span><span class="o">:</span><span class="c1">//functional-programming.net&lt;/a&gt;&amp;rdquo;</span>
+</span><span class='line'><span class="c1">// Print information about a web site &amp;ndash;</span>
 </span><span class='line'><span class="c1">// Run this repeatedly to use cached value</span>
 </span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="mi">10</span> <span class="k">do</span>
 </span><span class='line'>   <span class="n">printfuncpro</span> <span class="o">|&gt;</span> <span class="nn">Async</span><span class="p">.</span><span class="nc">Start</span>
 </span><span class='line'>   <span class="nn">Async</span><span class="p">.</span><span class="nc">RunSynchronously</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;|</span> <span class="nn">Async</span><span class="p">.</span><span class="nc">Sleep</span> <span class="mi">400</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">// Clear the cache - &#39;printInfo&#39; will need to</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">// Clear the cache &amp;ndash; &amp;lsquo;printInfo&amp;rsquo; will need to</span>
 </span><span class='line'><span class="c1">// download data from the web site again</span>
-</span><span class='line'><span class="nn">Console</span><span class="p">.</span><span class="nc">WriteLine</span><span class="o">(</span><span class="n">sprintf</span> <span class="s2">&quot;Clearing the cache&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="nn">Console</span><span class="p">.</span><span class="nc">WriteLine</span><span class="o">(</span><span class="n">sprintf</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Clearing</span> <span class="n">the</span> <span class="n">cache</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;)</span>
 </span><span class='line'><span class="n">caching</span><span class="o">.</span><span class="nc">Post</span><span class="o">(</span><span class="nc">Clear</span><span class="o">)</span>
 </span><span class='line'><span class="n">printfuncpro</span> <span class="o">|&gt;</span> <span class="nn">Async</span><span class="p">.</span><span class="nc">Start</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
@@ -1216,7 +1216,7 @@ agent ten times with a 400ms interval in between each.</p>
 </ul>
 
 
-<p>These are the only members we need to complete the caching agent example, I didn't want bamboozle everyone
+<p>These are the only members we need to complete the caching agent example, I didn&rsquo;t want bamboozle everyone
 with an explosion of code from the onset so the remaining members will be implemented as and when we need
 them.  When we have implemented all the members from MailboxProcessor Ill post the full source on my
  <a href="https://github.com/7sharp9">GitHub</a> account.</p>
@@ -1236,7 +1236,7 @@ them.  When we have implemented all the members from MailboxProcessor Ill post t
 
 
 <p>So here we go, this is the Dataflow implementation of the MailboxProcessor:
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Dataflow Agent  </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Dataflow Agent </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -1321,7 +1321,7 @@ them.  When we have implemented all the members from MailboxProcessor Ill post t
 </span><span class='line'><span class="k">open</span> <span class="nn">System</span><span class="p">.</span><span class="nn">Threading</span><span class="p">.</span><span class="nn">Tasks</span><span class="p">.</span><span class="nc">Dataflow</span>
 </span><span class='line'><span class="k">open</span> <span class="nn">System</span><span class="p">.</span><span class="nn">Collections</span><span class="p">.</span><span class="nc">Concurrent</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">type</span> <span class="nc">DataflowAgent</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">&#39;</span><span class="nc">Msg</span><span class="o">&gt;(</span><span class="n">initial</span><span class="o">,</span> <span class="o">?</span><span class="n">cancellationToken</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">type</span> <span class="nc">DataflowAgent</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;&amp;</span><span class="n">lsquo</span><span class="o">;</span><span class="nc">Msg</span><span class="o">&gt;(</span><span class="n">initial</span><span class="o">,</span> <span class="o">?</span><span class="n">cancellationToken</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">let</span> <span class="n">cancellationToken</span> <span class="o">=</span>
 </span><span class='line'>    <span class="n">defaultArg</span> <span class="n">cancellationToken</span> <span class="nn">Async</span><span class="p">.</span><span class="nc">DefaultCancellationToken</span>
@@ -1393,26 +1393,26 @@ them.  When we have implemented all the members from MailboxProcessor Ill post t
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>The crux of the implementation from TDF's point of view is the use of the BufferBlock.<br/>
+<p>The crux of the implementation from TDF&rsquo;s point of view is the use of the BufferBlock.<br/>
 This is one of the most fundamental blocks within TDF.  Its the equivalent of the <code>Port&lt;'T&gt;</code>
 type from CCR and the <code>Mailbox</code> type from F# which is used internally within the
 MailboxProcessor.  As mentioned abouve the BufferBlock type is a first-in-first-out (FIFO) buffer
 and is responsible for buffering any data that is Posted to it.</p>
 
-<p>OK, I'm going to leave it at that for now while you digest the code presented here.</p>
+<p>OK, I&rsquo;m going to leave it at that for now while you digest the code presented here.</p>
 
 <p>In part II I will be drilling into the detail on whats going on internally and also describing more
 of the TDF model, so tune in soon for Part II.</p>
 
-<p>Until next time...</p>
+<p>Until next time&hellip;</p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[Agent based scheduling]]></title>
-    <link href="http://MoiraeSoftware.com/blog/2011/07/03/agent-based-scheduling/"/>
+    <link href="http://MoiraeSoftware.github.io/blog/2011/07/03/agent-based-scheduling/"/>
     <updated>2011-07-03T17:28:29+01:00</updated>
-    <id>http://MoiraeSoftware.com/blog/2011/07/03/agent-based-scheduling</id>
+    <id>http://MoiraeSoftware.github.io/blog/2011/07/03/agent-based-scheduling</id>
     <content type="html"><![CDATA[<p>One of the areas that I am very interested in is agents and I have been doing
 quite a lot of work in this area lately.</p>
 
@@ -1425,7 +1425,7 @@ into lately is agent based scheduling.<!-- more --></p>
 
 <p><strong><strong>Listing 1</strong></strong> shows a simple Agent based scheduler:</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>listing 1  </span></figcaption>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>listing 1 </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -1567,10 +1567,10 @@ union of two different types of Schedule message.</p>
 <p>ScheduleOnce has four parameters:</p>
 
 <ol>
-<li>A function which is called at the schedule time ('a -> unit).</li>
-<li>The message that is sent at the schedules time ('a).</li>
-<li>A TimeSpan which is the length of time to wait before triggering the schedule.</li>
-<li>An AsyncReplyChannel<CancellationTokenSource>(CancellationTokenSource AsyncReplyChannel).  This is used to return a CancellationTokenSource which can be used to cancel the Schedule.</li>
+<li> A function which is called at the schedule time (&lsquo;a &ndash;> unit).</li>
+<li> The message that is sent at the schedules time (&lsquo;a).</li>
+<li> A TimeSpan which is the length of time to wait before triggering the schedule.</li>
+<li> An AsyncReplyChannel<CancellationTokenSource>(CancellationTokenSource AsyncReplyChannel).  This is used to return a CancellationTokenSource which can be used to cancel the Schedule.</li>
 </ol>
 
 
@@ -1579,11 +1579,11 @@ union of two different types of Schedule message.</p>
 <p>Schedule has five parameters which are as follows:</p>
 
 <ol>
-<li>A function which is called at the schedule time ('a -> unit).</li>
-<li>The message that is sent at the schedules time ('a).</li>
-<li>A TimeSpan which is the initial length of time to wait before first triggering the schedule function.</li>
-<li>A TimeSpan which is used as an interval between each subsequent triggering of the schedule function.</li>
-<li>An AsyncReplyChannel<CancellationTokenSource>(CancellationTokenSource AsyncReplyChannel).  This is used to return a CancellationTokenSource which can be used to cancel the Schedule.</li>
+<li> A function which is called at the schedule time (&lsquo;a &ndash;> unit).</li>
+<li> The message that is sent at the schedules time (&lsquo;a).</li>
+<li> A TimeSpan which is the initial length of time to wait before first triggering the schedule function.</li>
+<li> A TimeSpan which is used as an interval between each subsequent triggering of the schedule function.</li>
+<li> An AsyncReplyChannel<CancellationTokenSource>(CancellationTokenSource AsyncReplyChannel).  This is used to return a CancellationTokenSource which can be used to cancel the Schedule.</li>
 </ol>
 
 
@@ -1591,11 +1591,11 @@ union of two different types of Schedule message.</p>
 
 <h3>scheduleOnce</h3>
 
-<p>Lines <strong>16-20</strong> define an async workflow, which asynchronously sleeps for the specified time before checking that the schedule hasn't been cancelled before finally calling the schedule function.</p>
+<p>Lines <strong>16-20</strong> define an async workflow, which asynchronously sleeps for the specified time before checking that the schedule hasn&rsquo;t been cancelled before finally calling the schedule function.</p>
 
 <h3>scheduleMany</h3>
 
-<p>Lines <strong>22-29</strong> define a recursive async workflow, which asynchronously sleeps for the specified interval (<em>3rd Parameter</em>) before checking the schedule hasn't been cancelled before finally calling the schedule function. The <strong>loop</strong> function is then called passing in the second TimeSpan interval <em>(4th Parameter)</em>.</p>
+<p>Lines <strong>22-29</strong> define a recursive async workflow, which asynchronously sleeps for the specified interval (<em>3rd Parameter</em>) before checking the schedule hasn&rsquo;t been cancelled before finally calling the schedule function. The <strong>loop</strong> function is then called passing in the second TimeSpan interval <em>(4th Parameter)</em>.</p>
 
 <h3>scheduler</h3>
 
@@ -1634,7 +1634,7 @@ can be used to cancel a running schedule.</p>
 
 <p><strong>Listing 2</strong> shows a test harness that creates and uses a simple string based message scheduler.</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Listing 2  </span></figcaption>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Listing 2 </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -1697,7 +1697,7 @@ scheduler agent would be even more powerful in this environment.  I could
 envisage them used for a many different things in this environment:  heart
 beat messages, performance sampling, diagnostics and testing.</p>
 
-<p>Until next time...</p>
+<p>Until next time&hellip;</p>
 ]]></content>
   </entry>
   

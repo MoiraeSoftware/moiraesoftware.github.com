@@ -9,8 +9,8 @@
   <meta name="author" content="Dave Thomas">
 
   
-  <meta name="description" content="Due to popular demand&#8230; well, I had a couple of requests anyway :-) Heres
-a post inspired by my recent encounters profiling some of the code in &hellip;">
+  <meta name="description" content="Due to popular demand&hellip; well, I had a couple of requests anyway :&ndash;) Heres
+a post inspired by my recent encounters profiling some of the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,13 +19,14 @@ a post inspired by my recent encounters profiling some of the code in &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2011/12/11/fixing-a-hole/">
+  <link rel="canonical" href="http://MoiraeSoftware.github.io/blog/2011/12/11/fixing-a-hole">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
@@ -61,7 +62,7 @@ a post inspired by my recent encounters profiling some of the code in &hellip;">
   
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input type="hidden" name="q" value="site:MoiraeSoftware.github.io" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -104,7 +105,7 @@ a post inspired by my recent encounters profiling some of the code in &hellip;">
   </header>
 
 
-<div class="entry-content"><p>Due to popular demand&#8230; well, I had a couple of requests anyway :-) Heres
+<div class="entry-content"><p>Due to popular demand&hellip; well, I had a couple of requests anyway :&ndash;) Heres
 a post inspired by my recent encounters profiling some of the code in
 <a href="https://github.com/fractureio/fracture">Fracture-IO</a>.  <!-- more -->I have recently been
 profiling the code in fracture to remove any so called low hanging fruits.
@@ -112,7 +113,7 @@ During this time I also noticed an increase in memory allocation.  I
 remembered I had recently been experimenting in a branch using pipelets as a
 buffer between the send and receive stages in the Http Server, so I set up a
 simple test to see if pipelets were contributing to the memory allocation
-issues I was seeing.  Here&#8217;s the simple iteration test code I used for the
+issues I was seeing.  Here&rsquo;s the simple iteration test code I used for the
 memory profiling:</p>
 
 <div><script src='https://gist.github.com/1557610.js?file=test_code.fs'></script>
@@ -199,7 +200,7 @@ To demonstrate finding the leak I will be using <a href="http://www.red-gate.co
 
 <p>First of all we launch the profiler and set it up to profile the application,
 this is just a simple case of browsing to the release folder and picking the
-application so I won&#8217;t bore with those trivial details here. Now that the
+application so I won&rsquo;t bore with those trivial details here. Now that the
 application is running we hit any key which caused the test application to
 post 100 operations into the pipeline.  We want to create a baseline snapshot
 of the memory allocation so we can see where our leak is.  To do this click
@@ -222,7 +223,7 @@ the Class List:</p>
 
 <p><img src="https://lh4.googleusercontent.com/-UDU20rPk7ck/TuS7xvK_67I/AAAAAAAABNg/tnxTlpBYBJg/s912/4%2Bclass%2Blist.png"></p>
 
-<p>Here things start to get interesting.  If you click on the instance Diff (+/-)
+<p>Here things start to get interesting.  If you click on the instance Diff (+/&ndash;)
 column you can sort the list of classed by the differences to the last
 snapshot.</p>
 
@@ -367,7 +368,7 @@ let mailbox = MailboxProcessor.Start(fun inbox -&gt;
 stemming from, and also some of the little known and often forgotten caveats
 with tail recursion.</p>
 
-<p>Until next time&#8230;</p>
+<p>Until next time&hellip;</p>
 
 <p><strong>EDIT</strong>: Just to make things a little bit clearer.  The memory leak here is caused by the async block being transformed into chains of continuation passing-style functions, and due to tail call elimination not being possible inside of the try catch blocks, the continuation grows and grows during each recursion.</p>
 </div>
@@ -406,7 +407,7 @@ with tail recursion.</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2011/12/11/fixing-a-hole/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2011/12/11/fixing-a-hole/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.github.io/blog/2011/12/11/fixing-a-hole/" data-via="" data-counturl="http://MoiraeSoftware.github.io/blog/2011/12/11/fixing-a-hole/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -457,7 +458,7 @@ with tail recursion.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow Agents III</a>
       </li>
     
       <li class="post">
@@ -469,15 +470,15 @@ with tail recursion.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved to Octopress...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a Hole...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - a Quick Look</a>
       </li>
     
   </ul>
@@ -492,7 +493,7 @@ with tail recursion.</p>
   <a href="https://github.com/7sharp9">@7sharp9</a> on Github
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -503,18 +504,10 @@ with tail recursion.</p>
 
         var blacklist = [];
         
-          
-            blacklist.push('nemerle');
-          
-            blacklist.push('FSharp.Javascript');
-          
-            blacklist.push('ServiceStack');
-          
-        
 
         github.showRepos({
             user: '7sharp9',
-            count: 0,
+            count: 10,
             skip_forks: false,
             blacklist: blacklist,
             target: '#gh_repos'
@@ -523,7 +516,6 @@ with tail recursion.</p>
   </script>
   <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
-
 
 
 
@@ -548,8 +540,8 @@ with tail recursion.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2011/12/11/fixing-a-hole/';
-        var disqus_url = 'http://MoiraeSoftware.com/blog/2011/12/11/fixing-a-hole/';
+        var disqus_identifier = 'http://MoiraeSoftware.github.io/blog/2011/12/11/fixing-a-hole/';
+        var disqus_url = 'http://MoiraeSoftware.github.io/blog/2011/12/11/fixing-a-hole/';
         var disqus_script = 'embed.js';
       
     (function () {
@@ -578,7 +570,7 @@ with tail recursion.</p>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

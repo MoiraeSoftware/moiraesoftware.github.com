@@ -18,13 +18,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2012/01/22/FSharp-Dataflow-agents-I/">
+  <link rel="canonical" href="http://MoiraeSoftware.github.io/blog/2012/01/22/FSharp-Dataflow-agents-I">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
@@ -60,7 +61,7 @@
   
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input type="hidden" name="q" value="site:MoiraeSoftware.github.io" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -116,7 +117,7 @@ be part of the <code>System.Threading.Tasks.Dataflow</code> namespace.  Elements
 <h3>Concurrency and Coordination Runtime (CCR)</h3>
 
 <p>CCR is a library that deals with asynchrony, concurrency, and coordination between blocks of asynchronous
-code so that the programmer doesn&#8217;t have to.  All of the low level details of synchronization and error
+code so that the programmer doesn&rsquo;t have to.  All of the low level details of synchronization and error
 propagation are taken care of in a consistent fashion.  CCR is still is included in
 <a href="ttp://www.microsoft.com/robotics/">Microsoft Robotics Studio</a> where it is used extensively to exploit
 parallel hardware and deal with partial failure of systems.</p>
@@ -143,10 +144,10 @@ different categories of blocks are as follows:</p>
 <p>Buffering blocks simply buffer data in various ways before passing the data on to another block.</p>
 
 <ul>
-<li> <code>BufferBlock&lt;'T&gt;</code>  - The BufferBlock act as a first-in-first-out (FIFO) queue, buffering each input.</li>
-<li> <code>BroadcastBlock&lt;'T&gt;</code> - The BroadcastBlock linking to multiple targets copying the data to each of the
+<li> <code>BufferBlock&lt;'T&gt;</code>  &ndash; The BufferBlock act as a first-in-first-out (FIFO) queue, buffering each input.</li>
+<li> <code>BroadcastBlock&lt;'T&gt;</code> &ndash; The BroadcastBlock linking to multiple targets copying the data to each of the
 connected blocks.</li>
-<li> <code>WriteOnceBlock&lt;'T&gt;</code> - The WriteOnceBlock acts like an immutable target, after an item first item
+<li> <code>WriteOnceBlock&lt;'T&gt;</code> &ndash; The WriteOnceBlock acts like an immutable target, after an item first item
 is passed to it, it effectively becomes read only.</li>
 </ul>
 
@@ -156,11 +157,11 @@ is passed to it, it effectively becomes read only.</li>
 <p>The executor blocks run user supplied code in the form of a lambda expressions or a <code>Task&lt;'T&gt;</code>.</p>
 
 <ul>
-<li> <code>ActionBlock&lt;'TInput&gt;</code> - The ActionBlock acts like the <code>Action&lt;'T&gt;</code> delegate performing an action
+<li> <code>ActionBlock&lt;'TInput&gt;</code> &ndash; The ActionBlock acts like the <code>Action&lt;'T&gt;</code> delegate performing an action
 on each datum posted to it.</li>
-<li> <code>TransformBlock&lt;'TInput,'TOutput&gt;</code> - The TransformBlock acts just like the ActionBlock except
+<li> <code>TransformBlock&lt;'TInput,'TOutput&gt;</code> &ndash; The TransformBlock acts just like the ActionBlock except
 that the action performed can have an output, this output is buffered and behaves just like a BufferBlock.</li>
-<li> <code>TransformManyBlock&lt;'TInput,'TOutput&gt;</code> - The TransformManyBlock is just like a TransformBlock except
+<li> <code>TransformManyBlock&lt;'TInput,'TOutput&gt;</code> &ndash; The TransformManyBlock is just like a TransformBlock except
 that is can produce more than one output for a given datum.</li>
 </ul>
 
@@ -170,10 +171,10 @@ that is can produce more than one output for a given datum.</li>
 <p>The Joining Blocks Combining or join data together in different ways.</p>
 
 <ul>
-<li> <code>BatchBlock&lt;'T&gt;</code> - The BatchBlock Combines multiple single items together, the items are
+<li> <code>BatchBlock&lt;'T&gt;</code> &ndash; The BatchBlock Combines multiple single items together, the items are
 represented by arrays of elements.  The items are grouped together is batches and then passed on to
 another block.</li>
-<li> <code>JoinBlock&lt;'T1,'T2,…&gt;</code> - The JoinBlock acts as a form of <code>Enumerable.Zip&lt;'T1,'T2,'TResult&gt;</code>
+<li> <code>JoinBlock&lt;'T1,'T2,…&gt;</code> &ndash; The JoinBlock acts as a form of <code>Enumerable.Zip&lt;'T1,'T2,'TResult&gt;</code>
 except the zip operation is performed on the items in the source array.</li>
 <li> <code>BatchedJoinBlock&lt;'T1,'T2,…&gt;</code> This block as the name suggests simply aggregates the JoinBlock and
 the BatchBlock together.</li>
@@ -183,7 +184,7 @@ the BatchBlock together.</li>
 <p>Thats an ultra high level tour thats only just scratches the surface.  I recommend you check out the
 <a href="http://www.microsoft.com/download/en/details.aspx?id=14782">Introduction to TPL Dataflow</a> document to read
 up on the details.  Theres a few more resources in the <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582">DevLabs area</a>
-that you might find useful.  Hopefully this series should also shed a bit more light on TDF as we go along&#8230;</p>
+that you might find useful.  Hopefully this series should also shed a bit more light on TDF as we go along&hellip;</p>
 
 <h3>F# Asynchronous Workflows and Agents</h3>
 
@@ -209,14 +210,14 @@ properties which we will look at in future posts:</p>
 
 <h3>Implementation</h3>
 
-<p>In this post we are going replicate the MailboxProcessor, we will be using Tomas Petricek&#8217;s caching agent
-example from <a href="http://fssnip.net/8V">FSSnip</a>).  I have made a couple of modification to Tomas&#8217;s code.<br/>
+<p>In this post we are going replicate the MailboxProcessor, we will be using Tomas Petricek&rsquo;s caching agent
+example from <a href="http://fssnip.net/8V">FSSnip</a>).  I have made a couple of modification to Tomas&rsquo;s code.<br/>
 I replaced the Dictionary type with a ConcurrentDictionary so that the caching agent could be called multiple
 times successively without the dictionary throwing an exception due to it already containing a key from a
 previous cached result.  I also changed the example code so that it requests cached HTML from the caching
 agent ten times with a 400ms interval in between each.</p>
 
-<figure class='code'><figcaption><span>Caching Agent Implementation  </span></figcaption>
+<figure class='code'><figcaption><span>Caching Agent Implementation </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -282,7 +283,7 @@ agent ten times with a 400ms interval in between each.</p>
 
 
 
-<figure class='code'><figcaption><span>Caching Agent Example  </span></figcaption>
+<figure class='code'><figcaption><span>Caching Agent Example </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -356,7 +357,7 @@ agent ten times with a 400ms interval in between each.</p>
 </ul>
 
 
-<p>These are the only members we need to complete the caching agent example, I didn&#8217;t want bamboozle everyone
+<p>These are the only members we need to complete the caching agent example, I didn&rsquo;t want bamboozle everyone
 with an explosion of code from the onset so the remaining members will be implemented as and when we need
 them.  When we have implemented all the members from MailboxProcessor Ill post the full source on my
  <a href="https://github.com/7sharp9">GitHub</a> account.</p>
@@ -377,7 +378,7 @@ them.  When we have implemented all the members from MailboxProcessor Ill post t
 
 <p>So here we go, this is the Dataflow implementation of the MailboxProcessor:</p>
 
-<figure class='code'><figcaption><span>Dataflow Agent  </span></figcaption>
+<figure class='code'><figcaption><span>Dataflow Agent </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -527,18 +528,18 @@ them.  When we have implemented all the members from MailboxProcessor Ill post t
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>The crux of the implementation from TDF&#8217;s point of view is the use of the BufferBlock.<br/>
+<p>The crux of the implementation from TDF&rsquo;s point of view is the use of the BufferBlock.<br/>
 This is one of the most fundamental blocks within TDF.  Its the equivalent of the <code>Port&lt;'T&gt;</code>
 type from CCR and the <code>Mailbox</code> type from F# which is used internally within the
 MailboxProcessor.  As mentioned abouve the BufferBlock type is a first-in-first-out (FIFO) buffer
 and is responsible for buffering any data that is Posted to it.</p>
 
-<p>OK, I&#8217;m going to leave it at that for now while you digest the code presented here.</p>
+<p>OK, I&rsquo;m going to leave it at that for now while you digest the code presented here.</p>
 
 <p>In part II I will be drilling into the detail on whats going on internally and also describing more
 of the TDF model, so tune in soon for Part II.</p>
 
-<p>Until next time&#8230;</p>
+<p>Until next time&hellip;</p>
 </div>
 
 
@@ -575,7 +576,7 @@ of the TDF model, so tune in soon for Part II.</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2012/01/22/FSharp-Dataflow-agents-I/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2012/01/22/FSharp-Dataflow-agents-I/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.github.io/blog/2012/01/22/FSharp-Dataflow-agents-I/" data-via="" data-counturl="http://MoiraeSoftware.github.io/blog/2012/01/22/FSharp-Dataflow-agents-I/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -626,7 +627,7 @@ of the TDF model, so tune in soon for Part II.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow Agents III</a>
       </li>
     
       <li class="post">
@@ -638,15 +639,15 @@ of the TDF model, so tune in soon for Part II.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved to Octopress...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a Hole...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - a Quick Look</a>
       </li>
     
   </ul>
@@ -661,7 +662,7 @@ of the TDF model, so tune in soon for Part II.</p>
   <a href="https://github.com/7sharp9">@7sharp9</a> on Github
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -672,18 +673,10 @@ of the TDF model, so tune in soon for Part II.</p>
 
         var blacklist = [];
         
-          
-            blacklist.push('nemerle');
-          
-            blacklist.push('FSharp.Javascript');
-          
-            blacklist.push('ServiceStack');
-          
-        
 
         github.showRepos({
             user: '7sharp9',
-            count: 0,
+            count: 10,
             skip_forks: false,
             blacklist: blacklist,
             target: '#gh_repos'
@@ -692,7 +685,6 @@ of the TDF model, so tune in soon for Part II.</p>
   </script>
   <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
-
 
 
 
@@ -717,8 +709,8 @@ of the TDF model, so tune in soon for Part II.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2012/01/22/FSharp-Dataflow-agents-I/';
-        var disqus_url = 'http://MoiraeSoftware.com/blog/2012/01/22/FSharp-Dataflow-agents-I/';
+        var disqus_identifier = 'http://MoiraeSoftware.github.io/blog/2012/01/22/FSharp-Dataflow-agents-I/';
+        var disqus_url = 'http://MoiraeSoftware.github.io/blog/2012/01/22/FSharp-Dataflow-agents-I/';
         var disqus_script = 'embed.js';
       
     (function () {
@@ -747,7 +739,7 @@ of the TDF model, so tune in soon for Part II.</p>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

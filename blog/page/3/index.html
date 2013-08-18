@@ -9,7 +9,7 @@
   <meta name="author" content="Dave Thomas">
 
   
-  <meta name="description" content="Welcome to part two Lets jump in at the deep end and take a look at some code&#8230; When you look at the method syntax for the xxxAsync methods you &hellip;">
+  <meta name="description" content="Welcome to part two Lets jump in at the deep end and take a look at some code&hellip; When you look at the method syntax for the xxxAsync methods you &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,13 +18,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://MoiraeSoftware.com/blog/page/3/">
+  <link rel="canonical" href="http://MoiraeSoftware.github.io/blog/page/3">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
@@ -60,7 +61,7 @@
   
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input type="hidden" name="q" value="site:MoiraeSoftware.github.io" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -108,7 +109,7 @@
 
   <div class="entry-content"><h3>Welcome to part two</h3>
 
-<p>Lets jump in at the deep end and take a look at some code&#8230;</p>
+<p>Lets jump in at the deep end and take a look at some code&hellip;</p>
 
 <p>When you look at the method syntax for the xxxAsync methods you will notice
 they return a boolean value that indicates if the method completed
@@ -166,7 +167,7 @@ produces nice clean simple code compared to the C# version which uses lambda
 expressions, the code looks quite ugly in this style!  However thats not the
 end of the story, a lot of memory fragmentation can occur using the APM model
 when there is a high throughput, so I thought I would see if I could take this
-a step further&#8230;</div>
+a step further&hellip;</div>
   
   
     <footer>
@@ -206,15 +207,15 @@ a step further&#8230;</div>
 
 
   <div class="entry-content"><p>Let me spend a couple of minutes explaining what Im going to be posting about,
-heres a little bit of background&#8230;</p>
+heres a little bit of background&hellip;</p>
 
-<p>First of all I&#8217;m a seasoned C# programmer, I develop enterprise business
+<p>First of all I&rsquo;m a seasoned C# programmer, I develop enterprise business
 applications, mainly specialising in backend architectures, multithreading and
 generally poking about in the guts of things trying to wrangle out the last
 few drops of performance!</p>
 
 <p>At the beginning of last year I decided to catch up with some of the
-technologies that have reared their heads while I wasn&#8217;t looking, so I set
+technologies that have reared their heads while I wasn&rsquo;t looking, so I set
 about doing more research into Silverlight,WPF, and F#. Silverlight and WPF,
 and really enjoyed getting to grips with XAML and embracing the separation
 between UI and logic, but for me the real interesting thing was learning about
@@ -303,7 +304,7 @@ analysis, F#, C#, Silverlight etc.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow Agents III</a>
       </li>
     
       <li class="post">
@@ -315,15 +316,15 @@ analysis, F#, C#, Silverlight etc.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress&#8230;</a>
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved to Octopress&#8230;</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole&#8230;</a>
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a Hole&#8230;</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - a Quick Look</a>
       </li>
     
   </ul>
@@ -338,7 +339,7 @@ analysis, F#, C#, Silverlight etc.</p>
   <a href="https://github.com/7sharp9">@7sharp9</a> on Github
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -349,18 +350,10 @@ analysis, F#, C#, Silverlight etc.</p>
 
         var blacklist = [];
         
-          
-            blacklist.push('nemerle');
-          
-            blacklist.push('FSharp.Javascript');
-          
-            blacklist.push('ServiceStack');
-          
-        
 
         github.showRepos({
             user: '7sharp9',
-            count: 0,
+            count: 10,
             skip_forks: false,
             blacklist: blacklist,
             target: '#gh_repos'
@@ -369,7 +362,6 @@ analysis, F#, C#, Silverlight etc.</p>
   </script>
   <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
-
 
 
 
@@ -420,7 +412,7 @@ analysis, F#, C#, Silverlight etc.</p>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

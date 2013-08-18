@@ -10,7 +10,7 @@
 
   
   <meta name="description" content="This will be the last post on rebuilding the MailboxProcessor using TDF,
-here&#8217;s a quick discussion of the missing pieces&#8230; First, lets &hellip;">
+here&rsquo;s a quick discussion of the missing pieces&hellip; First, lets &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,13 +19,14 @@ here&#8217;s a quick discussion of the missing pieces&#8230; First, lets &hellip
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2012/02/20/fsharp-dataflow-agents-iii/">
+  <link rel="canonical" href="http://MoiraeSoftware.github.io/blog/2012/02/20/fsharp-dataflow-agents-iii">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
@@ -61,7 +62,7 @@ here&#8217;s a quick discussion of the missing pieces&#8230; First, lets &hellip
   
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input type="hidden" name="q" value="site:MoiraeSoftware.github.io" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -105,9 +106,9 @@ here&#8217;s a quick discussion of the missing pieces&#8230; First, lets &hellip
 
 
 <div class="entry-content"><p>This will be the last post on rebuilding the <code>MailboxProcessor</code> using <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582">TDF</a>,
-here&#8217;s a quick discussion of the missing pieces&#8230;</p>
+here&rsquo;s a quick discussion of the missing pieces&hellip;</p>
 
-<p>First, lets start with the simple ones, these don&#8217;t really require much discussion.</p>
+<p>First, lets start with the simple ones, these don&rsquo;t really require much discussion.</p>
 
 <h3>DefaultTimeout</h3>
 
@@ -198,7 +199,7 @@ using <code>ContinueWith</code>.  We use a lambda to return either <code>None</c
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Things get a little more interesting from here on in.  Firstly we need to add a new synchronisation member to the <code>AsyncResultCell&lt;'a&gt;</code> type: <code>TryWaitResultSynchronously</code>.   We again enlist the help of the TPL primitives to check for the early completion using <code>source.Task.IsCompleted</code> returning the result if it is there, otherwise we use the <code>Task</code> property&#8217;s <code>Wait</code> method to check the item returns within the time out interval.  In the usual manner, <code>Some source.Task.Result</code> is returned or <code>None</code> for a failure.</p>
+<p>Things get a little more interesting from here on in.  Firstly we need to add a new synchronisation member to the <code>AsyncResultCell&lt;'a&gt;</code> type: <code>TryWaitResultSynchronously</code>.   We again enlist the help of the TPL primitives to check for the early completion using <code>source.Task.IsCompleted</code> returning the result if it is there, otherwise we use the <code>Task</code> property&rsquo;s <code>Wait</code> method to check the item returns within the time out interval.  In the usual manner, <code>Some source.Task.Result</code> is returned or <code>None</code> for a failure.</p>
 
 <h3>PostAndReply</h3>
 
@@ -249,7 +250,7 @@ using <code>ContinueWith</code>.  We use a lambda to return either <code>None</c
 
 
 <p>This one also uses the same <code>ContinueWith</code> functionality in the recursive <code>loopForMsg</code> function, perhaps some
-of these functions could extracted out and refactored but I prefer to keep the code like this to better explain what&#8217;s going
+of these functions could extracted out and refactored but I prefer to keep the code like this to better explain what&rsquo;s going
 on.  The the code is available on GitHub anyway so feel free to clean up any detritus and send me a pull request.  Again we use pattern matching to keep calling the <code>loopForMsg</code> function until the result is returned or a time out occurs.</p>
 
 <h3>Scan</h3>
@@ -270,15 +271,15 @@ on.  The the code is available on GitHub anyway so feel free to clean up any det
 <p>Finally we have Scan, this is much like PostAndReply in that it just acts as a wrapper around <code>TryScan</code> making use of
 pattern matching throwing an exception on a time out.</p>
 
-<p>That sums up the last few pieces, completing the TDF implementation of the <code>MailboxProcessor</code>.  I think this series of posts has shown the elegance of F#&#8217;s asynchronous workflows.  The use of recursive functions and the compositional nature of asynchronous workflows really helps when you are doing this type of programming.  It&#8217;s also very nice on the eye, each section being clearly defined.</p>
+<p>That sums up the last few pieces, completing the TDF implementation of the <code>MailboxProcessor</code>.  I think this series of posts has shown the elegance of F#&rsquo;s asynchronous workflows.  The use of recursive functions and the compositional nature of asynchronous workflows really helps when you are doing this type of programming.  It&rsquo;s also very nice on the eye, each section being clearly defined.</p>
 
 <p>The more astute of you may have noticed something a little different.  <code>Scan</code> and <code>TryScan</code> are destructive in this implementation, the unmatched messages are purged from the internal queue.  Although I could have mirrored the same functionality of the <code>MailboxProcessor</code> by using an internal list to keep track of unmatched messages, this leads to performing checks during <code>Receive</code> and <code>Scan</code> and their derivatives to make sure that this list is used first when switching from <code>Scan</code> and <code>Receive</code> functionality.</p>
 
-<p>I think the separation of concerns are a little fuzzy in the <code>MailboxProcessor</code>.  The <code>scan</code> function seems like an after thought, even if you don&#8217;t use <code>Scan</code> you still pay a price for it as there are numerous checks between the internal queue and the unmatched messages list.  You can also run into issues while using <code>Scan</code> and <code>TryScan</code> that can result in out of memory conditions due to the inherent unbounded nature.  I will briefly describe and explore the conditions that can lead to that in the next post.  In the implementation presented here we can get bounded checking by passing in an optional <code>DataflowBlockOptions</code> and setting a value for the <code>BoundedCapacity</code> property.</p>
+<p>I think the separation of concerns are a little fuzzy in the <code>MailboxProcessor</code>.  The <code>scan</code> function seems like an after thought, even if you don&rsquo;t use <code>Scan</code> you still pay a price for it as there are numerous checks between the internal queue and the unmatched messages list.  You can also run into issues while using <code>Scan</code> and <code>TryScan</code> that can result in out of memory conditions due to the inherent unbounded nature.  I will briefly describe and explore the conditions that can lead to that in the next post.  In the implementation presented here we can get bounded checking by passing in an optional <code>DataflowBlockOptions</code> and setting a value for the <code>BoundedCapacity</code> property.</p>
 
 <p><strong>EDIT:</strong> The code for this series of articles is now available on GitHub: <a href="https://github.com/7sharp9/FSharpDataflow">FSharpDataflow</a></p>
 
-<p>Until next time&#8230;</p>
+<p>Until next time&hellip;</p>
 </div>
 
 
@@ -315,7 +316,7 @@ pattern matching throwing an exception on a time out.</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2012/02/20/fsharp-dataflow-agents-iii/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2012/02/20/fsharp-dataflow-agents-iii/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.github.io/blog/2012/02/20/fsharp-dataflow-agents-iii/" data-via="" data-counturl="http://MoiraeSoftware.github.io/blog/2012/02/20/fsharp-dataflow-agents-iii/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -366,7 +367,7 @@ pattern matching throwing an exception on a time out.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow Agents III</a>
       </li>
     
       <li class="post">
@@ -378,15 +379,15 @@ pattern matching throwing an exception on a time out.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved to Octopress...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a Hole...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - a Quick Look</a>
       </li>
     
   </ul>
@@ -401,7 +402,7 @@ pattern matching throwing an exception on a time out.</p>
   <a href="https://github.com/7sharp9">@7sharp9</a> on Github
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -412,18 +413,10 @@ pattern matching throwing an exception on a time out.</p>
 
         var blacklist = [];
         
-          
-            blacklist.push('nemerle');
-          
-            blacklist.push('FSharp.Javascript');
-          
-            blacklist.push('ServiceStack');
-          
-        
 
         github.showRepos({
             user: '7sharp9',
-            count: 0,
+            count: 10,
             skip_forks: false,
             blacklist: blacklist,
             target: '#gh_repos'
@@ -432,7 +425,6 @@ pattern matching throwing an exception on a time out.</p>
   </script>
   <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
-
 
 
 
@@ -457,8 +449,8 @@ pattern matching throwing an exception on a time out.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2012/02/20/fsharp-dataflow-agents-iii/';
-        var disqus_url = 'http://MoiraeSoftware.com/blog/2012/02/20/fsharp-dataflow-agents-iii/';
+        var disqus_identifier = 'http://MoiraeSoftware.github.io/blog/2012/02/20/fsharp-dataflow-agents-iii/';
+        var disqus_url = 'http://MoiraeSoftware.github.io/blog/2012/02/20/fsharp-dataflow-agents-iii/';
         var disqus_script = 'embed.js';
       
     (function () {
@@ -487,7 +479,7 @@ pattern matching throwing an exception on a time out.</p>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

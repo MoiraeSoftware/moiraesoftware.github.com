@@ -19,13 +19,14 @@ quite a lot of work in this area lately. Agents can be used for a &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2011/07/03/agent-based-scheduling/">
+  <link rel="canonical" href="http://MoiraeSoftware.github.io/blog/2011/07/03/agent-based-scheduling">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
@@ -61,7 +62,7 @@ quite a lot of work in this area lately. Agents can be used for a &hellip;">
   
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input type="hidden" name="q" value="site:MoiraeSoftware.github.io" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -116,7 +117,7 @@ into lately is agent based scheduling.<!-- more --></p>
 
 <p><strong><strong>Listing 1</strong></strong> shows a simple Agent based scheduler:</p>
 
-<figure class='code'><figcaption><span>listing 1  </span></figcaption>
+<figure class='code'><figcaption><span>listing 1 </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -250,10 +251,10 @@ union of two different types of Schedule message.</p>
 <p>ScheduleOnce has four parameters:</p>
 
 <ol>
-<li>A function which is called at the schedule time (&#8216;a -> unit).</li>
-<li>The message that is sent at the schedules time (&#8216;a).</li>
-<li>A TimeSpan which is the length of time to wait before triggering the schedule.</li>
-<li>An AsyncReplyChannel<CancellationTokenSource>(CancellationTokenSource AsyncReplyChannel).  This is used to return a CancellationTokenSource which can be used to cancel the Schedule.</li>
+<li> A function which is called at the schedule time (&lsquo;a &ndash;> unit).</li>
+<li> The message that is sent at the schedules time (&lsquo;a).</li>
+<li> A TimeSpan which is the length of time to wait before triggering the schedule.</li>
+<li> An AsyncReplyChannel<CancellationTokenSource>(CancellationTokenSource AsyncReplyChannel).  This is used to return a CancellationTokenSource which can be used to cancel the Schedule.</li>
 </ol>
 
 
@@ -262,11 +263,11 @@ union of two different types of Schedule message.</p>
 <p>Schedule has five parameters which are as follows:</p>
 
 <ol>
-<li>A function which is called at the schedule time (&#8216;a -> unit).</li>
-<li>The message that is sent at the schedules time (&#8216;a).</li>
-<li>A TimeSpan which is the initial length of time to wait before first triggering the schedule function.</li>
-<li>A TimeSpan which is used as an interval between each subsequent triggering of the schedule function.</li>
-<li>An AsyncReplyChannel<CancellationTokenSource>(CancellationTokenSource AsyncReplyChannel).  This is used to return a CancellationTokenSource which can be used to cancel the Schedule.</li>
+<li> A function which is called at the schedule time (&lsquo;a &ndash;> unit).</li>
+<li> The message that is sent at the schedules time (&lsquo;a).</li>
+<li> A TimeSpan which is the initial length of time to wait before first triggering the schedule function.</li>
+<li> A TimeSpan which is used as an interval between each subsequent triggering of the schedule function.</li>
+<li> An AsyncReplyChannel<CancellationTokenSource>(CancellationTokenSource AsyncReplyChannel).  This is used to return a CancellationTokenSource which can be used to cancel the Schedule.</li>
 </ol>
 
 
@@ -274,11 +275,11 @@ union of two different types of Schedule message.</p>
 
 <h3>scheduleOnce</h3>
 
-<p>Lines <strong>16-20</strong> define an async workflow, which asynchronously sleeps for the specified time before checking that the schedule hasn&#8217;t been cancelled before finally calling the schedule function.</p>
+<p>Lines <strong>16-20</strong> define an async workflow, which asynchronously sleeps for the specified time before checking that the schedule hasn&rsquo;t been cancelled before finally calling the schedule function.</p>
 
 <h3>scheduleMany</h3>
 
-<p>Lines <strong>22-29</strong> define a recursive async workflow, which asynchronously sleeps for the specified interval (<em>3rd Parameter</em>) before checking the schedule hasn&#8217;t been cancelled before finally calling the schedule function. The <strong>loop</strong> function is then called passing in the second TimeSpan interval <em>(4th Parameter)</em>.</p>
+<p>Lines <strong>22-29</strong> define a recursive async workflow, which asynchronously sleeps for the specified interval (<em>3rd Parameter</em>) before checking the schedule hasn&rsquo;t been cancelled before finally calling the schedule function. The <strong>loop</strong> function is then called passing in the second TimeSpan interval <em>(4th Parameter)</em>.</p>
 
 <h3>scheduler</h3>
 
@@ -317,7 +318,7 @@ can be used to cancel a running schedule.</p>
 
 <p><strong>Listing 2</strong> shows a test harness that creates and uses a simple string based message scheduler.</p>
 
-<figure class='code'><figcaption><span>Listing 2  </span></figcaption>
+<figure class='code'><figcaption><span>Listing 2 </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -371,7 +372,7 @@ scheduler agent would be even more powerful in this environment.  I could
 envisage them used for a many different things in this environment:  heart
 beat messages, performance sampling, diagnostics and testing.</p>
 
-<p>Until next time&#8230;</p>
+<p>Until next time&hellip;</p>
 </div>
 
 
@@ -408,7 +409,7 @@ beat messages, performance sampling, diagnostics and testing.</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2011/07/03/agent-based-scheduling/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2011/07/03/agent-based-scheduling/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.github.io/blog/2011/07/03/agent-based-scheduling/" data-via="" data-counturl="http://MoiraeSoftware.github.io/blog/2011/07/03/agent-based-scheduling/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -459,7 +460,7 @@ beat messages, performance sampling, diagnostics and testing.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow Agents III</a>
       </li>
     
       <li class="post">
@@ -471,15 +472,15 @@ beat messages, performance sampling, diagnostics and testing.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved to Octopress...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a Hole...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - a Quick Look</a>
       </li>
     
   </ul>
@@ -494,7 +495,7 @@ beat messages, performance sampling, diagnostics and testing.</p>
   <a href="https://github.com/7sharp9">@7sharp9</a> on Github
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -505,18 +506,10 @@ beat messages, performance sampling, diagnostics and testing.</p>
 
         var blacklist = [];
         
-          
-            blacklist.push('nemerle');
-          
-            blacklist.push('FSharp.Javascript');
-          
-            blacklist.push('ServiceStack');
-          
-        
 
         github.showRepos({
             user: '7sharp9',
-            count: 0,
+            count: 10,
             skip_forks: false,
             blacklist: blacklist,
             target: '#gh_repos'
@@ -525,7 +518,6 @@ beat messages, performance sampling, diagnostics and testing.</p>
   </script>
   <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
-
 
 
 
@@ -550,8 +542,8 @@ beat messages, performance sampling, diagnostics and testing.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2011/07/03/agent-based-scheduling/';
-        var disqus_url = 'http://MoiraeSoftware.com/blog/2011/07/03/agent-based-scheduling/';
+        var disqus_identifier = 'http://MoiraeSoftware.github.io/blog/2011/07/03/agent-based-scheduling/';
+        var disqus_url = 'http://MoiraeSoftware.github.io/blog/2011/07/03/agent-based-scheduling/';
         var disqus_script = 'embed.js';
       
     (function () {
@@ -580,7 +572,7 @@ beat messages, performance sampling, diagnostics and testing.</p>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

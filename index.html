@@ -18,13 +18,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://MoiraeSoftware.com/">
+  <link rel="canonical" href="http://MoiraeSoftware.github.io">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
@@ -60,7 +61,7 @@
   
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input type="hidden" name="q" value="site:MoiraeSoftware.github.io" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -106,7 +107,7 @@
   </header>
 
 
-  <div class="entry-content"><blockquote><p>Deep in the darkest depths lurks an ancient horror, when the time is right it will rise forth and leave you screaming for mercy and begging for forgiveness&#8230;</p></blockquote>
+  <div class="entry-content"><blockquote><p>Deep in the darkest depths lurks an ancient horror, when the time is right it will rise forth and leave you screaming for mercy and begging for forgiveness&hellip;</p></blockquote>
 
 <p>OK, I have a penchant for being over dramatic but in this post I am going to reveal some little known caveats in a well known and much revelled area of F#, agents aka the <a href="http://msdn.microsoft.com/en-us/library/ee370357" title="Control.MailboxProcessor&lt;'Msg&gt;"><code>MailboxProcessor</code></a>. Gasp!</p>
 
@@ -204,7 +205,7 @@
 
 <h3>Test Harness</h3>
 
-<p>And here&#8217;s a very simple test harness:</p>
+<p>And here&rsquo;s a very simple test harness:</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -243,11 +244,11 @@
 
 <h2>Opening it up</h2>
 
-<p>Let&#8217;s take a look at some of the internals of the <code>MailboxProcessor</code> to understand what&#8217;s going on.  First of all the core functionality is actually contained within the <code>Mailbox</code> type with the <code>MailboxProcessor</code> acting as an augmenter.  <code>TryPostAndReply</code>, <code>PostAndReply</code>, <code>PostAndTryAsyncReply</code>, and <code>PostAndAsyncReply</code> all add a single functionality to the <code>Mailbox</code> type; the ability to synchronously or asynchronously reply to a message once it arrives.  <code>TryPostAndReply</code> and <code>PostAndReply</code> both wait synchronously for a message to arrive before replying, whereas <code>PostAndTryAsyncReply</code> and <code>PostAndAsyncReply</code> both reply asynchronously.  This functionality is achieved with the use of the <code>ResultCell</code> and <code>AsyncReplyChannel</code> types.  For an in-depth discussion on this you might want to refer to my earlier series which describes implementing the <code>MailboxProcessor</code> with <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582.aspx" title="TPL Dataflow">TPL Dataflow</a> (see <a href="/blog/2012/01/22/FSharp-Dataflow-agents-I/" title="FSharp Dataflow agents - Part 1">Part 1</a>, <a href="/blog/2012/01/30/FSharp-Dataflow-agents-II/" title="FSharp Dataflow agents - Part 2">Part 2</a> and <a href="/blog/2012/02/20/fsharp-dataflow-agents-III/" title="FSharp Dataflow agents - Part 3">Part 3</a>).</p>
+<p>Let&rsquo;s take a look at some of the internals of the <code>MailboxProcessor</code> to understand what&rsquo;s going on.  First of all the core functionality is actually contained within the <code>Mailbox</code> type with the <code>MailboxProcessor</code> acting as an augmenter.  <code>TryPostAndReply</code>, <code>PostAndReply</code>, <code>PostAndTryAsyncReply</code>, and <code>PostAndAsyncReply</code> all add a single functionality to the <code>Mailbox</code> type; the ability to synchronously or asynchronously reply to a message once it arrives.  <code>TryPostAndReply</code> and <code>PostAndReply</code> both wait synchronously for a message to arrive before replying, whereas <code>PostAndTryAsyncReply</code> and <code>PostAndAsyncReply</code> both reply asynchronously.  This functionality is achieved with the use of the <code>ResultCell</code> and <code>AsyncReplyChannel</code> types.  For an in-depth discussion on this you might want to refer to my earlier series which describes implementing the <code>MailboxProcessor</code> with <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582.aspx" title="TPL Dataflow">TPL Dataflow</a> (see <a href="/blog/2012/01/22/FSharp-Dataflow-agents-I/" title="FSharp Dataflow agents - Part 1">Part 1</a>, <a href="/blog/2012/01/30/FSharp-Dataflow-agents-II/" title="FSharp Dataflow agents - Part 2">Part 2</a> and <a href="/blog/2012/02/20/fsharp-dataflow-agents-III/" title="FSharp Dataflow agents - Part 3">Part 3</a>).</p>
 
 <p>Below are some snippets of code from the <code>Mailbox</code> type you might want to take a peek yourself at the <a href="https://github.com/fsharp/fsharp/blob/master/src/fsharp/FSharp.Core/control.fs#L1854" title="Mailbox code">FSharp repository</a> over at <a href="https://github.com/">Github</a> for a closer inspection, be warned thought there is a lot of code in there!</p>
 
-<p>Here&#8217;s the initial type definition for the <code>Mailbox</code>, you can see that  there are two mutable fields:</p>
+<p>Here&rsquo;s the initial type definition for the <code>Mailbox</code>, you can see that  there are two mutable fields:</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -262,7 +263,7 @@
 
 <p>For now the <code>inboxStore</code> is null and is only ever assigned via <code>Scan</code> or <code>TryScan</code> and this is done indirectly via the <code>inbox</code> member shown here:</p>
 
-<figure class='code'><figcaption><span>inbox  </span></figcaption>
+<figure class='code'><figcaption><span>inbox </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -276,7 +277,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Understanding the code in the <code>Mailbox</code> can be difficult given the amount of code, so I&#8217;ll highlight the key functions in the sections below to make it a little easier.</p>
+<p>Understanding the code in the <code>Mailbox</code> can be difficult given the amount of code, so I&rsquo;ll highlight the key functions in the sections below to make it a little easier.</p>
 
 <h3>Scan / TryScan</h3>
 
@@ -284,7 +285,7 @@
 
 <p>So now lets take a look at the source of <code>TryScan</code>.</p>
 
-<figure class='code'><figcaption><span>TryScan  </span></figcaption>
+<figure class='code'><figcaption><span>TryScan </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -317,19 +318,19 @@
 <p>You can see here that an <a href="http://msdn.microsoft.com/en-us/library/dd233250.aspx" title="async workflows">async workflow</a> is declared that first pattern matches on <code>x.scanInbox</code>, passing in the predicate scan function <code>f</code> and the literal <code>0</code>.  If <code>None</code> is returned then there is no match and the recursive function <code>scan</code> is returned.  This time the function <code>x.scanArrivals</code> is be called, again passing in the predicate function <code>f</code>.</p>
 
 <ul>
-<li>An interesting point to note, is that each message that arrives that doesn&#8217;t match the predicate <code>f</code> resets the  timer: <code>let! ok = waitOne(timeout)</code>, this means that any number of trivial messages that arrive keep the <code>TryScan</code> function running.  This was also mentioned by Jon Harrop in a Stackoverflow question entitled <a href="http://stackoverflow.com/a/4891920/607275" title="How to use TryScan in F# properly">How to use TryScan in F# properly</a>.  Jon also mentions locking which I will address in the <code>scanArrivals</code> section below.</li>
+<li>An interesting point to note, is that each message that arrives that doesn&rsquo;t match the predicate <code>f</code> resets the  timer: <code>let! ok = waitOne(timeout)</code>, this means that any number of trivial messages that arrive keep the <code>TryScan</code> function running.  This was also mentioned by Jon Harrop in a Stackoverflow question entitled <a href="http://stackoverflow.com/a/4891920/607275" title="How to use TryScan in F# properly">How to use TryScan in F# properly</a>.  Jon also mentions locking which I will address in the <code>scanArrivals</code> section below.</li>
 </ul>
 
 
-<p>So what&#8217;s the difference between <code>scanArrivals</code> and <code>scanInbox</code>?</p>
+<p>So what&rsquo;s the difference between <code>scanArrivals</code> and <code>scanInbox</code>?</p>
 
-<p><code>scanInbox</code> operates on the <code>inboxStore</code> which you might recall is a <code>List&lt;T&gt;</code> type, whereas <code>scanArrivals</code> operates on <code>arrivals</code> which is a <code>Queue&lt;T&gt;</code> type.  The big difference between these two is that as messages first arrive in the Mailbox they end up in the arrivals queue first, and when messages are not matched by the predicate function <code>f</code> they are added to the <code>inboxStore</code>, hence the need to always check the <code>inboxStore</code> before the <code>arrivals</code> queue otherwise previously unmatched scan messages would not be processed correctly.  You might be asking yourself why not use a <code>Queue&lt;T&gt;</code> for both the <code>inbox</code> and the <code>arrivals</code>?  It comes down to the fact that it&#8217;s not possible to easily use a <code>Queue&lt;T&gt;</code> for <code>arrivals</code> because of the way that Scan works.  At any point in the queue there could do a potential match so each item would have to be dequeued and processed separately, an indexed <code>List&lt;T&gt;</code> type is the best fit for this situation.</p>
+<p><code>scanInbox</code> operates on the <code>inboxStore</code> which you might recall is a <code>List&lt;T&gt;</code> type, whereas <code>scanArrivals</code> operates on <code>arrivals</code> which is a <code>Queue&lt;T&gt;</code> type.  The big difference between these two is that as messages first arrive in the Mailbox they end up in the arrivals queue first, and when messages are not matched by the predicate function <code>f</code> they are added to the <code>inboxStore</code>, hence the need to always check the <code>inboxStore</code> before the <code>arrivals</code> queue otherwise previously unmatched scan messages would not be processed correctly.  You might be asking yourself why not use a <code>Queue&lt;T&gt;</code> for both the <code>inbox</code> and the <code>arrivals</code>?  It comes down to the fact that it&rsquo;s not possible to easily use a <code>Queue&lt;T&gt;</code> for <code>arrivals</code> because of the way that Scan works.  At any point in the queue there could do a potential match so each item would have to be dequeued and processed separately, an indexed <code>List&lt;T&gt;</code> type is the best fit for this situation.</p>
 
 <h3>scanArrivals / scanArrivalsUnsafe</h3>
 
-<p>Lets look at the <code>scanArrivals</code> function, it&#8217;s just a lock construct around the <code>scanArrivals</code> function.  This leads to an important point, the scan function is operating under a lock, which effectively means that end user code is also executed under the lock and if you hold onto the lock for any length of time then there will be significant blocking of the normal receive mechanism due to it also using the same lock when receiving.</p>
+<p>Lets look at the <code>scanArrivals</code> function, it&rsquo;s just a lock construct around the <code>scanArrivals</code> function.  This leads to an important point, the scan function is operating under a lock, which effectively means that end user code is also executed under the lock and if you hold onto the lock for any length of time then there will be significant blocking of the normal receive mechanism due to it also using the same lock when receiving.</p>
 
-<figure class='code'><figcaption><span>scanArrivals/scanArrivalsUnsafe  </span></figcaption>
+<figure class='code'><figcaption><span>scanArrivals/scanArrivalsUnsafe </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -365,7 +366,7 @@
 
 <h3>scanInbox</h3>
 
-<p>A quick glance at <code>scanInbox</code> reveals another function which, to my eye, could have heavy-weight performance implications.   The <code>inbox</code> is a <code>List&lt;T&gt;</code> type, and the <code>RemoveAt</code> function does an internal <code>Array.Copy</code> for each removal.  This is an O(n) operation where n is (Count - index), so as soon as the list gets to a reasonable size then this then is going to really start chewing into your processing time.</p>
+<p>A quick glance at <code>scanInbox</code> reveals another function which, to my eye, could have heavy-weight performance implications.   The <code>inbox</code> is a <code>List&lt;T&gt;</code> type, and the <code>RemoveAt</code> function does an internal <code>Array.Copy</code> for each removal.  This is an O(n) operation where n is (Count &ndash; index), so as soon as the list gets to a reasonable size then this then is going to really start chewing into your processing time.</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -400,7 +401,7 @@
 
 <p>Yeah there it is, a whopping 44.41% of the time is spent in <code>RemoveAt</code>.  Also notice that there were 200,000 calls which mirrors the number we placed in the queue before using the Lock/Unlock message types.</p>
 
-<p>One of the things that really stands out for me is that the <code>inbox</code> is a simple list and completely unbounded.  In a high throughput situation where the scan function is being used it&#8217;s perfectly feasible to get into a runaway memory or CPU condition where the unmatched messages are sitting in the <code>inbox</code> taking longer and longer to processes due to the O(n) operation that takes place in the <code>RemoveAt</code> function.  Given a consistent throughput then eventually you are going to either run out memory, or the processing time will make throughput drop to dire levels which in turn will back up the <code>inbox</code> even further, effectively this is a death spiral.</p>
+<p>One of the things that really stands out for me is that the <code>inbox</code> is a simple list and completely unbounded.  In a high throughput situation where the scan function is being used it&rsquo;s perfectly feasible to get into a runaway memory or CPU condition where the unmatched messages are sitting in the <code>inbox</code> taking longer and longer to processes due to the O(n) operation that takes place in the <code>RemoveAt</code> function.  Given a consistent throughput then eventually you are going to either run out memory, or the processing time will make throughput drop to dire levels which in turn will back up the <code>inbox</code> even further, effectively this is a death spiral.</p>
 
 <h2>Conclusion</h2>
 
@@ -408,17 +409,17 @@
 
 <ul>
 <li>Firstly be careful with usage of <code>Scan</code> and <code>TryScan</code>, in certain situations the internal queue could back up to a certain size where you will be constantly struggling against the O(n) operation cost.</li>
-<li>Agents are not a silver bullet solution. They cannot solve every problem.  Although it&#8217;s possible to use agent based techniques to solve various problems like blocking collections and such like, you have to use care and diligence in the solution to avoid introducing another problems into the mix.  I have seen several implementations that I have been able to break relatively easily.</li>
+<li>Agents are not a silver bullet solution. They cannot solve every problem.  Although it&rsquo;s possible to use agent based techniques to solve various problems like blocking collections and such like, you have to use care and diligence in the solution to avoid introducing another problems into the mix.  I have seen several implementations that I have been able to break relatively easily.</li>
 <li>Do I still use agents?  <strong>Absolutely!</strong>  Agents are a fabulous tool to have in our toolbox and some extremely elegant solution exist to solve very complex problems.</li>
 <li>Do I use <code>Scan</code> or <code>TryScan</code>?  Not in its current form in the <code>MailboxProcessor</code>.  I chose to implement a destructive scan in my <a href="/blog/2012/02/20/fsharp-dataflow-agents-III/" title="FSharp Dataflow agents - Part 3">TDF agent</a> for the reasons discussed here.</li>
 </ul>
 
 
-<p>Before we finish, I&#8217;d like to briefly cover <code>TryScan</code> from my <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582.aspx" title="TPL Dataflow">TDF</a> based agent to complete the picture.</p>
+<p>Before we finish, I&rsquo;d like to briefly cover <code>TryScan</code> from my <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582.aspx" title="TPL Dataflow">TDF</a> based agent to complete the picture.</p>
 
 <h3>Destructive TryScan</h3>
 
-<figure class='code'><figcaption><span>TryScan  </span></figcaption>
+<figure class='code'><figcaption><span>TryScan </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -454,7 +455,7 @@
 
 <p>One of the areas where I have a lot of experience is using pipelined operations based on input from network I/O.  One of the things that always causes a problem is unbounded situations such as having a queue with no absolute limit.  There comes a time when you have to protect yourself from what is effective a denial of service, you have to either destructively terminate messages or connections or route the overflowed data for processing later.</p>
 
-<p>Until next time&#8230;</p>
+<p>Until next time&hellip;</p>
 </div>
   
   
@@ -491,7 +492,7 @@
 
 
   <div class="entry-content"><p>In the last post I discussed an asynchronous version of the <code>ManualResetEvent</code> and as promised this time we will be looking at an
- asynchronous version of the <code>AutoResetEvent</code>.  I&#8217;m using <a href="http://blogs.msdn.com/b/pfxteam/archive/2012/02/11/10266923.aspx">Stephen Toubs post</a>
+ asynchronous version of the <code>AutoResetEvent</code>.  I&rsquo;m using <a href="http://blogs.msdn.com/b/pfxteam/archive/2012/02/11/10266923.aspx">Stephen Toubs post</a>
 as reference and we will be building a version that is functional in style that maps straight into asynchronous work flows without and conversion
 or adaptors.</p>
 
@@ -523,8 +524,8 @@ the gate, allowing any number of threads that are waiting to be let through. Cal
 <p>Thinking about this logically we may need the following items:</p>
 
 <ul>
-<li>A queue mechanism to store asynchronous waiters - <code>let mutable awaits = Queue&lt;_&gt;()</code>.</li>
-<li>A way of knowing if a signal has been made in the absence of any waiters - <code>let mutable signalled = false</code>.</li>
+<li>A queue mechanism to store asynchronous waiters &ndash; <code>let mutable awaits = Queue&lt;_&gt;()</code>.</li>
+<li>A way of knowing if a signal has been made in the absence of any waiters &ndash; <code>let mutable signalled = false</code>.</li>
 <li>We can also declare a short-circuit asynchronous workflow for the situation that <code>Set()</code> is called before <code>WaitAsync()</code></li>
 <li><code>let completed = async.Return true</code>.  This will save us constructing an <code>AsyncResultCell&lt;_&gt;</code> and going though the
 rest of the asynchronous mechanism.</li>
@@ -642,14 +643,14 @@ may well finish them off and post them on GitHub in the future, time permitting.
 <h4>Musical inspiration during the creation of this post:</h4>
 
 <ul>
-<li>Pantera - Cowboys From Hell</li>
-<li>Cacophony - Go Off<br/>
+<li>Pantera &ndash; Cowboys From Hell</li>
+<li>Cacophony &ndash; Go Off<br/>
 <img src="http://upload.wikimedia.org/wikipedia/en/a/a8/CowboysFromHell.jpg" width="125" title="Pantera - Cowboys From Hell" >
 <img src="http://upload.wikimedia.org/wikipedia/en/0/09/Cacophony_-_1988_-_Go_Off%21.jpg" width="125" title="Cacophony - Go Off" ></li>
 </ul>
 
 
-<p>Thanks for tuning in, until next time&#8230;</p>
+<p>Thanks for tuning in, until next time&hellip;</p>
 </div>
   
   
@@ -685,7 +686,7 @@ may well finish them off and post them on GitHub in the future, time permitting.
   </header>
 
 
-  <div class="entry-content"><p>In this post we are going <strong>back to the primitive</strong>.  No it&#8217;s not about the same named song by Soulfly, <em>(which incidentally does contains F# notes)</em> but a return
+  <div class="entry-content"><p>In this post we are going <strong>back to the primitive</strong>.  No it&rsquo;s not about the same named song by Soulfly, <em>(which incidentally does contains F# notes)</em> but a return
 to thread synchronisation primitives and their asynchronous counterparts.</p>
 
 <p>We are going to be looking at an asynchronous version of the <a href="http://msdn.microsoft.com/en-us/library/system.threading.manualresetevent.aspx">ManualResetEvent</a>.  This was
@@ -723,14 +724,14 @@ although this does work, what if you want to avoid the overhead of wrappers and 
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>That&#8217;s what we want to see!  I don&#8217;t want to get into the details of the description of how the C# version works as Stephen does a very good job of that already.  What I will explain though is how we essentially do the same thing while staying with the realm of functional programming.  As we are getting into the lower lever details no doubt we will have to start relying on some low level locking primitives like Monitors, Semaphores, and Interlocked operations, even the F# core libraries have a
+<p>That&rsquo;s what we want to see!  I don&rsquo;t want to get into the details of the description of how the C# version works as Stephen does a very good job of that already.  What I will explain though is how we essentially do the same thing while staying with the realm of functional programming.  As we are getting into the lower lever details no doubt we will have to start relying on some low level locking primitives like Monitors, Semaphores, and Interlocked operations, even the F# core libraries have a
 cornucopia of those.</p>
 
 <p>Lets look at the first member <code>WaitAsync()</code>.  The first step is to create a something to store the result of the operation, all we will just be storing and returning
 asynchronously is a boolean to indicate that the wait handle has been set.  To do this we use one of the types from the
 <a href="http://fsharppowerpack.codeplex.com/">F# power pack</a> <code>AsyncResultCell&lt;'T&gt;</code>.  I think that such a type should of been exposed from the F# core libraries but it was
 omitted for some reason.  There is a type called <code>ResultCell&lt;'T&gt;</code> with much the same functionality in the FSharp.Core.Control namespace but it is marked internal so
-it&#8217;s not available for our use.</p>
+it&rsquo;s not available for our use.</p>
 
 <p>We declare a <a href="http://msdn.microsoft.com/en-us/library/dd233186.aspx">reference cell</a> of type <code>AsyncResultCell&lt;'T&gt;</code> and then create the <code>WaitAsync()</code> member, all we have
 to do is dereference the value of the reference cell with <code>!</code> and call its <code>AsyncResult</code> member, this gives us an <code>Async&lt;bool&gt;</code> which we can easily use in an asynchronous workflow.</p>
@@ -764,7 +765,7 @@ by passing in a new <code>AsyncResultCell&lt;'T&gt;</code>.</p>
 <p>There are various other methods we could of used, for instance we could of wrapped a <code>ManualResetEvent</code> with a call to <code>Async.AwaitWaitHandle</code>, although this
 would of meant using the kernel mode locking of the <code>ManualResetEvent</code> which is a bit more expensive.</p>
 
-<p>In Stephen Toub&#8217;s post he mentions Task&#8217;s being orphaned due to the <code>Reset()</code> method being called before the <code>Task&lt;'T&gt;</code> has been completed, that shouldn&#8217;t happen in our
+<p>In Stephen Toub&rsquo;s post he mentions Task&rsquo;s being orphaned due to the <code>Reset()</code> method being called before the <code>Task&lt;'T&gt;</code> has been completed, that shouldn&rsquo;t happen in our
 implementation due the the closures being stored internally for completion by the async infrastructure.  Heres a quick test harness to make sure everything works as expected anyway.</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -850,14 +851,14 @@ implementation due the the closures being stored internally for completion by th
 <h4>Musical inspiration during the creation of this post:</h4>
 
 <ul>
-<li>Smashing Pumpkins - Zeitgeist</li>
-<li>Soulfly - Primitive</li>
-<li>FooFighters - FooFighters<br/>
+<li>Smashing Pumpkins &ndash; Zeitgeist</li>
+<li>Soulfly &ndash; Primitive</li>
+<li>FooFighters &ndash; FooFighters<br/>
 <img src="http://upload.wikimedia.org/wikipedia/en/f/fb/Zeitgeist_cover.png" width="125" title="Smashing Pumpkins Zeitgeist" ><img src="http://upload.wikimedia.org/wikipedia/en/3/34/Primitive.png" width="125" title="Soulfly Primitive" ><img src="http://upload.wikimedia.org/wikipedia/en/0/0d/FooFighters-FooFighters.jpg" width="125" title="FooFighters" ></li>
 </ul>
 
 
-<p>Until next time&#8230;</p>
+<p>Until next time&hellip;</p>
 </div>
   
   
@@ -903,13 +904,13 @@ looking at code succinctness and the inherent suitability of the language for ca
 up being more to it than that.</p>
 
 <p>First of all I quickly set up a test rig to run 50 million iterations of the algorithm to see if there were any difference
-in the processing speed.  I want expecting any major differences at this point but here&#8217;s what I got:</p>
+in the processing speed.  I want expecting any major differences at this point but here&rsquo;s what I got:</p>
 
 <p>C# results for 50 million iterations <img src="https://lh6.googleusercontent.com/-cEzGoE_P2cE/T1vf_SxtGfI/AAAAAAAABRE/RE4ReRLAhu8/s531/csbs.png"></p>
 
 <p>F# results for 50 million iterations <img src="https://lh3.googleusercontent.com/-PLdltL0YiIs/T1vf_Wo2ZrI/AAAAAAAABRI/WijGdNaOnK4/s531/fsbs.png"></p>
 
-<p>I think you will agree that&#8217;s quite a difference, lets have a look at the code to see what&#8217;s going on.</p>
+<p>I think you will agree that&rsquo;s quite a difference, lets have a look at the code to see what&rsquo;s going on.</p>
 
 <h2>C# Implementation</h2>
 
@@ -1164,7 +1165,7 @@ opcode to jump table to jump to either position <code>IL_0064</code> or <code>IL
 </span><span class='line'>IL_0062:  br.s       IL_00a2</span></code></pre></td></tr></table></div></figure>
 
 
-<p>These are negligible, I&#8217;m mealy pointing out the differences in compilation between the two languages.<br/>
+<p>These are negligible, I&rsquo;m mealy pointing out the differences in compilation between the two languages.<br/>
 The F# compiler is more stringent when compiling the code.</p>
 
 <h3>The Cnd function</h3>
@@ -1219,7 +1220,7 @@ is where the performance differences occur.</p>
 </span><span class='line'>IL_001d:  stloc.2</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Interestingly the C# compiler optimises out the call to <code>Math.PI * 2</code> but the F# compiler doesn&#8217;t.</p>
+<p>Interestingly the C# compiler optimises out the call to <code>Math.PI * 2</code> but the F# compiler doesn&rsquo;t.</p>
 
 <figure class='code'><figcaption><span>F#  </span></figcaption>
 <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -1330,7 +1331,7 @@ the second.  This is negligible in normal runtime but it is interesting to note 
 <p>Wow, there was a lot of IL to get through, I hope you stayed with me!</p>
 
 <p>Although the difference in some areas are negligible, every little counts.  The implicit conversion of an integer
-field to a <code>float64</code> hides the fact that we were using an optimized integer power function in F#, that&#8217;s performance
+field to a <code>float64</code> hides the fact that we were using an optimized integer power function in F#, that&rsquo;s performance
 increase of 168%!  Some other side effects of implicit conversion can also lead to subtle bugs due to truncation
 and overflow.  The other benefits are the compiled code uses less instructions and the source code only uses 25
 lines compared to 44 in C#.</p>
@@ -1372,9 +1373,9 @@ lines compared to 44 in C#.</p>
 
 
   <div class="entry-content"><p>This will be the last post on rebuilding the <code>MailboxProcessor</code> using <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582">TDF</a>,
-here&#8217;s a quick discussion of the missing pieces&#8230;</p>
+here&rsquo;s a quick discussion of the missing pieces&hellip;</p>
 
-<p>First, lets start with the simple ones, these don&#8217;t really require much discussion.</p>
+<p>First, lets start with the simple ones, these don&rsquo;t really require much discussion.</p>
 
 <h3>DefaultTimeout</h3>
 
@@ -1465,7 +1466,7 @@ using <code>ContinueWith</code>.  We use a lambda to return either <code>None</c
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Things get a little more interesting from here on in.  Firstly we need to add a new synchronisation member to the <code>AsyncResultCell&lt;'a&gt;</code> type: <code>TryWaitResultSynchronously</code>.   We again enlist the help of the TPL primitives to check for the early completion using <code>source.Task.IsCompleted</code> returning the result if it is there, otherwise we use the <code>Task</code> property&#8217;s <code>Wait</code> method to check the item returns within the time out interval.  In the usual manner, <code>Some source.Task.Result</code> is returned or <code>None</code> for a failure.</p>
+<p>Things get a little more interesting from here on in.  Firstly we need to add a new synchronisation member to the <code>AsyncResultCell&lt;'a&gt;</code> type: <code>TryWaitResultSynchronously</code>.   We again enlist the help of the TPL primitives to check for the early completion using <code>source.Task.IsCompleted</code> returning the result if it is there, otherwise we use the <code>Task</code> property&rsquo;s <code>Wait</code> method to check the item returns within the time out interval.  In the usual manner, <code>Some source.Task.Result</code> is returned or <code>None</code> for a failure.</p>
 
 <h3>PostAndReply</h3>
 
@@ -1516,7 +1517,7 @@ using <code>ContinueWith</code>.  We use a lambda to return either <code>None</c
 
 
 <p>This one also uses the same <code>ContinueWith</code> functionality in the recursive <code>loopForMsg</code> function, perhaps some
-of these functions could extracted out and refactored but I prefer to keep the code like this to better explain what&#8217;s going
+of these functions could extracted out and refactored but I prefer to keep the code like this to better explain what&rsquo;s going
 on.  The the code is available on GitHub anyway so feel free to clean up any detritus and send me a pull request.  Again we use pattern matching to keep calling the <code>loopForMsg</code> function until the result is returned or a time out occurs.</p>
 
 <h3>Scan</h3>
@@ -1537,15 +1538,15 @@ on.  The the code is available on GitHub anyway so feel free to clean up any det
 <p>Finally we have Scan, this is much like PostAndReply in that it just acts as a wrapper around <code>TryScan</code> making use of
 pattern matching throwing an exception on a time out.</p>
 
-<p>That sums up the last few pieces, completing the TDF implementation of the <code>MailboxProcessor</code>.  I think this series of posts has shown the elegance of F#&#8217;s asynchronous workflows.  The use of recursive functions and the compositional nature of asynchronous workflows really helps when you are doing this type of programming.  It&#8217;s also very nice on the eye, each section being clearly defined.</p>
+<p>That sums up the last few pieces, completing the TDF implementation of the <code>MailboxProcessor</code>.  I think this series of posts has shown the elegance of F#&rsquo;s asynchronous workflows.  The use of recursive functions and the compositional nature of asynchronous workflows really helps when you are doing this type of programming.  It&rsquo;s also very nice on the eye, each section being clearly defined.</p>
 
 <p>The more astute of you may have noticed something a little different.  <code>Scan</code> and <code>TryScan</code> are destructive in this implementation, the unmatched messages are purged from the internal queue.  Although I could have mirrored the same functionality of the <code>MailboxProcessor</code> by using an internal list to keep track of unmatched messages, this leads to performing checks during <code>Receive</code> and <code>Scan</code> and their derivatives to make sure that this list is used first when switching from <code>Scan</code> and <code>Receive</code> functionality.</p>
 
-<p>I think the separation of concerns are a little fuzzy in the <code>MailboxProcessor</code>.  The <code>scan</code> function seems like an after thought, even if you don&#8217;t use <code>Scan</code> you still pay a price for it as there are numerous checks between the internal queue and the unmatched messages list.  You can also run into issues while using <code>Scan</code> and <code>TryScan</code> that can result in out of memory conditions due to the inherent unbounded nature.  I will briefly describe and explore the conditions that can lead to that in the next post.  In the implementation presented here we can get bounded checking by passing in an optional <code>DataflowBlockOptions</code> and setting a value for the <code>BoundedCapacity</code> property.</p>
+<p>I think the separation of concerns are a little fuzzy in the <code>MailboxProcessor</code>.  The <code>scan</code> function seems like an after thought, even if you don&rsquo;t use <code>Scan</code> you still pay a price for it as there are numerous checks between the internal queue and the unmatched messages list.  You can also run into issues while using <code>Scan</code> and <code>TryScan</code> that can result in out of memory conditions due to the inherent unbounded nature.  I will briefly describe and explore the conditions that can lead to that in the next post.  In the implementation presented here we can get bounded checking by passing in an optional <code>DataflowBlockOptions</code> and setting a value for the <code>BoundedCapacity</code> property.</p>
 
 <p><strong>EDIT:</strong> The code for this series of articles is now available on GitHub: <a href="https://github.com/7sharp9/FSharpDataflow">FSharpDataflow</a></p>
 
-<p>Until next time&#8230;</p>
+<p>Until next time&hellip;</p>
 </div>
   
   
@@ -1585,7 +1586,7 @@ pattern matching throwing an exception on a time out.</p>
 
 <h2>Construction</h2>
 
-<p>This is pretty straight forward and I don&#8217;t want to detract from the important bits of this post, the only thing
+<p>This is pretty straight forward and I don&rsquo;t want to detract from the important bits of this post, the only thing
 of note is the <code>cancellationToken</code> which is initialized to a default value using the <code>defaultArg</code> function if the
 optional parameter  <code>cancellationToken</code> is not supplied. The TDF construct that we to use to perform most of the hard
 work is <code>incomingMessages</code> which is a <code>BufferBlock&lt;'Msg&gt;</code>.</p>
@@ -1670,7 +1671,7 @@ a message to arrive.  The integration between F# async and TDF is nice and succi
 
 <h2>PostAndTryAsyncReply / PostAndAsyncReply</h2>
 
-<p>I&#8217;m grouping both of these together as they are related in functionality.  In the previous post I purposely left
+<p>I&rsquo;m grouping both of these together as they are related in functionality.  In the previous post I purposely left
 out some ancillary code as it added unnecessary complexity to the introduction.  There are a two types we need to be able to replicate the <code>PostAndTryAsyncReply</code> and <code>PostAndAsyncReply</code> members of the <code>MailboxProcessor</code>.</p>
 
 <h3>AsyncReplyChannel</h3>
@@ -1830,7 +1831,7 @@ difference is that an asynchronous workflow is created that wraps a call to <cod
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Until next time&#8230;</p>
+<p>Until next time&hellip;</p>
 </div>
   
   
@@ -1879,7 +1880,7 @@ be part of the <code>System.Threading.Tasks.Dataflow</code> namespace.  Elements
 <h3>Concurrency and Coordination Runtime (CCR)</h3>
 
 <p>CCR is a library that deals with asynchrony, concurrency, and coordination between blocks of asynchronous
-code so that the programmer doesn&#8217;t have to.  All of the low level details of synchronization and error
+code so that the programmer doesn&rsquo;t have to.  All of the low level details of synchronization and error
 propagation are taken care of in a consistent fashion.  CCR is still is included in
 <a href="ttp://www.microsoft.com/robotics/">Microsoft Robotics Studio</a> where it is used extensively to exploit
 parallel hardware and deal with partial failure of systems.</p>
@@ -1906,10 +1907,10 @@ different categories of blocks are as follows:</p>
 <p>Buffering blocks simply buffer data in various ways before passing the data on to another block.</p>
 
 <ul>
-<li> <code>BufferBlock&lt;'T&gt;</code>  - The BufferBlock act as a first-in-first-out (FIFO) queue, buffering each input.</li>
-<li> <code>BroadcastBlock&lt;'T&gt;</code> - The BroadcastBlock linking to multiple targets copying the data to each of the
+<li> <code>BufferBlock&lt;'T&gt;</code>  &ndash; The BufferBlock act as a first-in-first-out (FIFO) queue, buffering each input.</li>
+<li> <code>BroadcastBlock&lt;'T&gt;</code> &ndash; The BroadcastBlock linking to multiple targets copying the data to each of the
 connected blocks.</li>
-<li> <code>WriteOnceBlock&lt;'T&gt;</code> - The WriteOnceBlock acts like an immutable target, after an item first item
+<li> <code>WriteOnceBlock&lt;'T&gt;</code> &ndash; The WriteOnceBlock acts like an immutable target, after an item first item
 is passed to it, it effectively becomes read only.</li>
 </ul>
 
@@ -1919,11 +1920,11 @@ is passed to it, it effectively becomes read only.</li>
 <p>The executor blocks run user supplied code in the form of a lambda expressions or a <code>Task&lt;'T&gt;</code>.</p>
 
 <ul>
-<li> <code>ActionBlock&lt;'TInput&gt;</code> - The ActionBlock acts like the <code>Action&lt;'T&gt;</code> delegate performing an action
+<li> <code>ActionBlock&lt;'TInput&gt;</code> &ndash; The ActionBlock acts like the <code>Action&lt;'T&gt;</code> delegate performing an action
 on each datum posted to it.</li>
-<li> <code>TransformBlock&lt;'TInput,'TOutput&gt;</code> - The TransformBlock acts just like the ActionBlock except
+<li> <code>TransformBlock&lt;'TInput,'TOutput&gt;</code> &ndash; The TransformBlock acts just like the ActionBlock except
 that the action performed can have an output, this output is buffered and behaves just like a BufferBlock.</li>
-<li> <code>TransformManyBlock&lt;'TInput,'TOutput&gt;</code> - The TransformManyBlock is just like a TransformBlock except
+<li> <code>TransformManyBlock&lt;'TInput,'TOutput&gt;</code> &ndash; The TransformManyBlock is just like a TransformBlock except
 that is can produce more than one output for a given datum.</li>
 </ul>
 
@@ -1933,10 +1934,10 @@ that is can produce more than one output for a given datum.</li>
 <p>The Joining Blocks Combining or join data together in different ways.</p>
 
 <ul>
-<li> <code>BatchBlock&lt;'T&gt;</code> - The BatchBlock Combines multiple single items together, the items are
+<li> <code>BatchBlock&lt;'T&gt;</code> &ndash; The BatchBlock Combines multiple single items together, the items are
 represented by arrays of elements.  The items are grouped together is batches and then passed on to
 another block.</li>
-<li> <code>JoinBlock&lt;'T1,'T2,…&gt;</code> - The JoinBlock acts as a form of <code>Enumerable.Zip&lt;'T1,'T2,'TResult&gt;</code>
+<li> <code>JoinBlock&lt;'T1,'T2,…&gt;</code> &ndash; The JoinBlock acts as a form of <code>Enumerable.Zip&lt;'T1,'T2,'TResult&gt;</code>
 except the zip operation is performed on the items in the source array.</li>
 <li> <code>BatchedJoinBlock&lt;'T1,'T2,…&gt;</code> This block as the name suggests simply aggregates the JoinBlock and
 the BatchBlock together.</li>
@@ -1946,7 +1947,7 @@ the BatchBlock together.</li>
 <p>Thats an ultra high level tour thats only just scratches the surface.  I recommend you check out the
 <a href="http://www.microsoft.com/download/en/details.aspx?id=14782">Introduction to TPL Dataflow</a> document to read
 up on the details.  Theres a few more resources in the <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582">DevLabs area</a>
-that you might find useful.  Hopefully this series should also shed a bit more light on TDF as we go along&#8230;</p>
+that you might find useful.  Hopefully this series should also shed a bit more light on TDF as we go along&hellip;</p>
 
 <h3>F# Asynchronous Workflows and Agents</h3>
 
@@ -1972,14 +1973,14 @@ properties which we will look at in future posts:</p>
 
 <h3>Implementation</h3>
 
-<p>In this post we are going replicate the MailboxProcessor, we will be using Tomas Petricek&#8217;s caching agent
-example from <a href="http://fssnip.net/8V">FSSnip</a>).  I have made a couple of modification to Tomas&#8217;s code.<br/>
+<p>In this post we are going replicate the MailboxProcessor, we will be using Tomas Petricek&rsquo;s caching agent
+example from <a href="http://fssnip.net/8V">FSSnip</a>).  I have made a couple of modification to Tomas&rsquo;s code.<br/>
 I replaced the Dictionary type with a ConcurrentDictionary so that the caching agent could be called multiple
 times successively without the dictionary throwing an exception due to it already containing a key from a
 previous cached result.  I also changed the example code so that it requests cached HTML from the caching
 agent ten times with a 400ms interval in between each.</p>
 
-<figure class='code'><figcaption><span>Caching Agent Implementation  </span></figcaption>
+<figure class='code'><figcaption><span>Caching Agent Implementation </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -2045,7 +2046,7 @@ agent ten times with a 400ms interval in between each.</p>
 
 
 
-<figure class='code'><figcaption><span>Caching Agent Example  </span></figcaption>
+<figure class='code'><figcaption><span>Caching Agent Example </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -2119,7 +2120,7 @@ agent ten times with a 400ms interval in between each.</p>
 </ul>
 
 
-<p>These are the only members we need to complete the caching agent example, I didn&#8217;t want bamboozle everyone
+<p>These are the only members we need to complete the caching agent example, I didn&rsquo;t want bamboozle everyone
 with an explosion of code from the onset so the remaining members will be implemented as and when we need
 them.  When we have implemented all the members from MailboxProcessor Ill post the full source on my
  <a href="https://github.com/7sharp9">GitHub</a> account.</p>
@@ -2140,7 +2141,7 @@ them.  When we have implemented all the members from MailboxProcessor Ill post t
 
 <p>So here we go, this is the Dataflow implementation of the MailboxProcessor:</p>
 
-<figure class='code'><figcaption><span>Dataflow Agent  </span></figcaption>
+<figure class='code'><figcaption><span>Dataflow Agent </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -2290,18 +2291,18 @@ them.  When we have implemented all the members from MailboxProcessor Ill post t
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>The crux of the implementation from TDF&#8217;s point of view is the use of the BufferBlock.<br/>
+<p>The crux of the implementation from TDF&rsquo;s point of view is the use of the BufferBlock.<br/>
 This is one of the most fundamental blocks within TDF.  Its the equivalent of the <code>Port&lt;'T&gt;</code>
 type from CCR and the <code>Mailbox</code> type from F# which is used internally within the
 MailboxProcessor.  As mentioned abouve the BufferBlock type is a first-in-first-out (FIFO) buffer
 and is responsible for buffering any data that is Posted to it.</p>
 
-<p>OK, I&#8217;m going to leave it at that for now while you digest the code presented here.</p>
+<p>OK, I&rsquo;m going to leave it at that for now while you digest the code presented here.</p>
 
 <p>In part II I will be drilling into the detail on whats going on internally and also describing more
 of the TDF model, so tune in soon for Part II.</p>
 
-<p>Until next time&#8230;</p>
+<p>Until next time&hellip;</p>
 </div>
   
   
@@ -2339,7 +2340,7 @@ of the TDF model, so tune in soon for Part II.</p>
 
   <div class="entry-content"><p><img class="left" src="http://octopress.org/images/logo.png" width="150">Well I finally did it, I moved my blog from <a href="http://wordpress.com/">Wordpress</a> to <a href="http://octopress.org/">Octopress</a>, what drove me to make this move?</p>
 
-<p>Well, there were a few factors involved&#8230;</div>
+<p>Well, there were a few factors involved&hellip;</div>
   
   
     <footer>
@@ -2378,7 +2379,7 @@ of the TDF model, so tune in soon for Part II.</p>
   </header>
 
 
-  <div class="entry-content"><p>Due to popular demand&#8230; well, I had a couple of requests anyway :-) Heres
+  <div class="entry-content"><p>Due to popular demand&hellip; well, I had a couple of requests anyway :&ndash;) Heres
 a post inspired by my recent encounters profiling some of the code in
 <a href="https://github.com/fractureio/fracture">Fracture-IO</a>.  </div>
   
@@ -2419,7 +2420,7 @@ a post inspired by my recent encounters profiling some of the code in
   </header>
 
 
-  <div class="entry-content"><p>Well, I didn&#8217;t think I would be doing this but heres some of the sessions Im looking forward to watching from this years Build conference.</div>
+  <div class="entry-content"><p>Well, I didn&rsquo;t think I would be doing this but heres some of the sessions Im looking forward to watching from this years Build conference.</div>
   
   
     <footer>
@@ -2461,7 +2462,7 @@ a post inspired by my recent encounters profiling some of the code in
       </li>
     
       <li class="post">
-        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow Agents III</a>
       </li>
     
       <li class="post">
@@ -2473,15 +2474,15 @@ a post inspired by my recent encounters profiling some of the code in
       </li>
     
       <li class="post">
-        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress&#8230;</a>
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved to Octopress&#8230;</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole&#8230;</a>
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a Hole&#8230;</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - a Quick Look</a>
       </li>
     
   </ul>
@@ -2496,7 +2497,7 @@ a post inspired by my recent encounters profiling some of the code in
   <a href="https://github.com/7sharp9">@7sharp9</a> on Github
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -2507,18 +2508,10 @@ a post inspired by my recent encounters profiling some of the code in
 
         var blacklist = [];
         
-          
-            blacklist.push('nemerle');
-          
-            blacklist.push('FSharp.Javascript');
-          
-            blacklist.push('ServiceStack');
-          
-        
 
         github.showRepos({
             user: '7sharp9',
-            count: 0,
+            count: 10,
             skip_forks: false,
             blacklist: blacklist,
             target: '#gh_repos'
@@ -2527,7 +2520,6 @@ a post inspired by my recent encounters profiling some of the code in
   </script>
   <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
-
 
 
 
@@ -2578,7 +2570,7 @@ a post inspired by my recent encounters profiling some of the code in
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

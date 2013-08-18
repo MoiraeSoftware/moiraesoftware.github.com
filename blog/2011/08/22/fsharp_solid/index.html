@@ -19,13 +19,14 @@ programming lately.  If you come from an object- &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2011/08/22/fsharp_solid/">
+  <link rel="canonical" href="http://MoiraeSoftware.github.io/blog/2011/08/22/fsharp_solid">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
@@ -61,7 +62,7 @@ programming lately.  If you come from an object- &hellip;">
   
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input type="hidden" name="q" value="site:MoiraeSoftware.github.io" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -145,7 +146,7 @@ and Type augmentation are the core methods for extension in F#.</p>
 <p>Liskov substitution states “objects in a program should be replaceable with
 instances of their subtypes without altering the correctness of that program”.</p>
 
-<p>This principle is all about inheritance - derived types preserving the
+<p>This principle is all about inheritance &ndash; derived types preserving the
 specification of base types.  Functional languages like F# do not always use
 inheritance, it is used quite rarely and only in certain situations.   The
 idioms in the language like referential transparency lean strongly towards
@@ -168,8 +169,8 @@ to F#, keep your interfaces modular and keep indifferent concepts separated.</p>
 concretions.”</p>
 
 <ol>
-<li>High-level modules should not depend on low-level modules. Both should depend on abstractions.</li>
-<li>Abstractions should not depend upon details. Details should depend upon abstractions.
+<li> High-level modules should not depend on low-level modules. Both should depend on abstractions.</li>
+<li> Abstractions should not depend upon details. Details should depend upon abstractions.
 Dependency inversion is often solved with concepts such as dependency
 injection; common techniques for this involves things like constructor
 injection and interface injection.  Inversion of control is often solved with
@@ -186,18 +187,18 @@ the language.</li>
 
 <ul>
 <li>Types should have only a single responsibility.</li>
-<li>The open closed principle doesn&#8217;t apply in the majority of cases unless we are using an object-oriented approach.  With functional programming we favour functional composition and type augmentation.</li>
+<li>The open closed principle doesn&rsquo;t apply in the majority of cases unless we are using an object-oriented approach.  With functional programming we favour functional composition and type augmentation.</li>
 <li>The same can be said of the Liskov substitute principle, pure functions uphold this tenant via immutability and referential transparency.</li>
 <li>Interface segregation also applies and idiomatic F#  produces small concise functions with modular interfaces with a separation of concerns.</li>
 <li>Dependency inversion is not a relevant issue for F# as the language itself supports higher-order-functions to encapsulate this concept.
-So only the &#8217;<strong>S</strong>&#8217; and the &#8217;<strong>I</strong>&#8217; parts are relevant in functional
+So only the &lsquo;<strong>S</strong>&rsquo; and the &lsquo;<strong>I</strong>&rsquo; parts are relevant in functional
 programming.  The other tenants are not fully representative as they stand.
 We could probably explore the tenants of good functional design and form a
 quirky acronym in the process, but Ill leave that for another time.</li>
 </ul>
 
 
-<p>Until next time&#8230;</p>
+<p>Until next time&hellip;</p>
 </div>
 
 
@@ -234,7 +235,7 @@ quirky acronym in the process, but Ill leave that for another time.</li>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2011/08/22/fsharp_solid/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2011/08/22/fsharp_solid/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.github.io/blog/2011/08/22/fsharp_solid/" data-via="" data-counturl="http://MoiraeSoftware.github.io/blog/2011/08/22/fsharp_solid/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -285,7 +286,7 @@ quirky acronym in the process, but Ill leave that for another time.</li>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow Agents III</a>
       </li>
     
       <li class="post">
@@ -297,15 +298,15 @@ quirky acronym in the process, but Ill leave that for another time.</li>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved to Octopress...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a Hole...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - a Quick Look</a>
       </li>
     
   </ul>
@@ -320,7 +321,7 @@ quirky acronym in the process, but Ill leave that for another time.</li>
   <a href="https://github.com/7sharp9">@7sharp9</a> on Github
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -331,18 +332,10 @@ quirky acronym in the process, but Ill leave that for another time.</li>
 
         var blacklist = [];
         
-          
-            blacklist.push('nemerle');
-          
-            blacklist.push('FSharp.Javascript');
-          
-            blacklist.push('ServiceStack');
-          
-        
 
         github.showRepos({
             user: '7sharp9',
-            count: 0,
+            count: 10,
             skip_forks: false,
             blacklist: blacklist,
             target: '#gh_repos'
@@ -351,7 +344,6 @@ quirky acronym in the process, but Ill leave that for another time.</li>
   </script>
   <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
-
 
 
 
@@ -376,8 +368,8 @@ quirky acronym in the process, but Ill leave that for another time.</li>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2011/08/22/fsharp_solid/';
-        var disqus_url = 'http://MoiraeSoftware.com/blog/2011/08/22/fsharp_solid/';
+        var disqus_identifier = 'http://MoiraeSoftware.github.io/blog/2011/08/22/fsharp_solid/';
+        var disqus_url = 'http://MoiraeSoftware.github.io/blog/2011/08/22/fsharp_solid/';
         var disqus_script = 'embed.js';
       
     (function () {
@@ -406,7 +398,7 @@ quirky acronym in the process, but Ill leave that for another time.</li>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

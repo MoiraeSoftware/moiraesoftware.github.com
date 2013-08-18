@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Sockets | Moirae]]></title>
-  <link href="http://MoiraeSoftware.com/blog/categories/sockets/atom.xml" rel="self"/>
-  <link href="http://MoiraeSoftware.com/"/>
-  <updated>2013-08-18T11:00:07+01:00</updated>
-  <id>http://MoiraeSoftware.com/</id>
+  <link href="http://MoiraeSoftware.github.io/blog/categories/sockets/atom.xml" rel="self"/>
+  <link href="http://MoiraeSoftware.github.io/"/>
+  <updated>2013-08-18T22:46:30+01:00</updated>
+  <id>http://MoiraeSoftware.github.io/</id>
   <author>
     <name><![CDATA[Dave Thomas]]></name>
     
@@ -15,15 +15,15 @@
   
   <entry>
     <title type="html"><![CDATA[Sockets and Bockets 4]]></title>
-    <link href="http://MoiraeSoftware.com/blog/2011/01/28/sockets-and-bockets-part-4/"/>
+    <link href="http://MoiraeSoftware.github.io/blog/2011/01/28/sockets-and-bockets-part-4/"/>
     <updated>2011-01-28T14:31:55+00:00</updated>
-    <id>http://MoiraeSoftware.com/blog/2011/01/28/sockets-and-bockets-part-4</id>
+    <id>http://MoiraeSoftware.github.io/blog/2011/01/28/sockets-and-bockets-part-4</id>
     <content type="html"><![CDATA[<h2>Welcome to part 4</h2>
 
 <p>If you were looking forward to some exciting new F# code this time your going
 to be disappointed, however if you are like me and like looking at graphs and
 stats and digging in deeper into the code then your going to enjoy this, lets
-get started...<!-- more --></p>
+get started&hellip;<!-- more --></p>
 
 <p>I set up a 5 minute test with 50 clients connecting to the server with a 15ms
 interval between each one.  Once connected each client receives a 128 byte
@@ -37,8 +37,8 @@ other articles on using profiling and analysis tools later on so stay tuned
 for those too.  All of the graphs and information gathered in this post come
 from YourKits output during CPU and memory profiling.</p>
 
-<p>Before we start here's a reminder of what the client code looks like, this is
-a simple test client using Brian's code as mentioned in
+<p>Before we start here&rsquo;s a reminder of what the client code looks like, this is
+a simple test client using Brian&rsquo;s code as mentioned in
 <a href="http://moiraesoftware.com/?p=39">Part1</a> I have highlighted the lines that
 have changed below.</p>
 
@@ -124,11 +124,11 @@ have changed below.</p>
 
 <p>First of all lets look at the CPU results from the <em>IAsync</em> pattern:</p>
 
-<p><img src="https://lh5.googleusercontent.com/-3H8-TiiB-VI/TwYhL2mvYsI/AAAAAAAABQI/z8dmiHBvTJE/mcnamara-cpu1.png"></p>
+<p><img class="<a" src="href="https://lh5.googleusercontent.com/-3H8-TiiB-VI/TwYhL2mvYsI/AAAAAAAABQI/z8dmiHBvTJE/mcnamara-cpu1.png">https://lh5.googleusercontent.com/-3H8-TiiB-VI/TwYhL2mvYsI/AAAAAAAABQI/z8dmiHBvTJE/mcnamara-cpu1.png</a>"></p>
 
 <p>Heres the same run from the SAEA pattern:</p>
 
-<p><img src="https://lh3.googleusercontent.com/-yGB2zdE3kGM/TwYhLPrUmLI/AAAAAAAABP8/Y6CIMWOi4Gk/Bocket-cpu2.png"></p>
+<p><img class="<a" src="href="https://lh3.googleusercontent.com/-yGB2zdE3kGM/TwYhLPrUmLI/AAAAAAAABP8/Y6CIMWOi4Gk/Bocket-cpu2.png">https://lh3.googleusercontent.com/-yGB2zdE3kGM/TwYhLPrUmLI/AAAAAAAABP8/Y6CIMWOi4Gk/Bocket-cpu2.png</a>"></p>
 
 <p>You can see that both the number of threads and the amount of CPU is a quite a
 lot less in the SAEA pattern.  The spike at the beginning is the allocation of
@@ -138,31 +138,31 @@ buffers for the BocketPool.</p>
 
 <h2>Memory Allocation</h2>
 
-<p>Here's a graph of the heap and process memory allocation in the <strong>IAsync</strong>
+<p>Here&rsquo;s a graph of the heap and process memory allocation in the <strong>IAsync</strong>
 pattern, green is generation 0, blue is generation 1 and orange is the large
-object heap.  There's also red for generation 2 but the results are behind the
+object heap.  There&rsquo;s also red for generation 2 but the results are behind the
 others and they are only small 0,2 MB peaks at 5 to 15 second intervals.</p>
 
-<p><img src="https://lh3.googleusercontent.com/-PalohQxAkOg/TwYhL6hR5JI/AAAAAAAABQQ/NtCLYc43OZc/mcnamara-mem1.png"></p>
+<p><img class="<a" src="href="https://lh3.googleusercontent.com/-PalohQxAkOg/TwYhL6hR5JI/AAAAAAAABQQ/NtCLYc43OZc/mcnamara-mem1.png">https://lh3.googleusercontent.com/-PalohQxAkOg/TwYhL6hR5JI/AAAAAAAABQQ/NtCLYc43OZc/mcnamara-mem1.png</a>"></p>
 
 <p>Heres the same but for the SAEA pattern, there are red peaks every 10- 20
 second intervals of 0.2MB hidden under the others.</p>
 
-<p><img src="https://lh3.googleusercontent.com/-Nadz1nXQ7lg/TwYhLBXMvcI/AAAAAAAABQM/xCfuXkzkekM/Bocket-mem1.png"></p>
+<p><img class="<a" src="href="https://lh3.googleusercontent.com/-Nadz1nXQ7lg/TwYhLBXMvcI/AAAAAAAABQM/xCfuXkzkekM/Bocket-mem1.png">https://lh3.googleusercontent.com/-Nadz1nXQ7lg/TwYhLBXMvcI/AAAAAAAABQM/xCfuXkzkekM/Bocket-mem1.png</a>"></p>
 
 <p>As you can see the heap memory is around half the size and the process memory is 15MB less.</p>
 
 <h2>Memory Hotspots</h2>
 
-<p>Finally here's a couple of screen shot of the hot spots for memory allocations
+<p>Finally here&rsquo;s a couple of screen shot of the hot spots for memory allocations
 in both implementations</p>
 
-<p><img src="https://lh4.googleusercontent.com/-n3QWLgvNjq8/TwYhLX8cIZI/AAAAAAAABQA/LkeRno775Ew/s800/IAsync-hot.png" title="IAsync" ></p>
+<p><img class="<a" src="href="https://lh4.googleusercontent.com/-n3QWLgvNjq8/TwYhLX8cIZI/AAAAAAAABQA/LkeRno775Ew/s800/IAsync-hot.png">https://lh4.googleusercontent.com/-n3QWLgvNjq8/TwYhLX8cIZI/AAAAAAAABQA/LkeRno775Ew/s800/IAsync-hot.png</a>" title="IAsync" ></p>
 
-<p><img src="https://lh5.googleusercontent.com/-PSX_YUfxkgU/TwYhMr40DTI/AAAAAAAABQY/D8bgLS6kNwc/s800/SAEA-hot.png" title="SAEA" ></p>
+<p><img class="<a" src="href="https://lh5.googleusercontent.com/-PSX_YUfxkgU/TwYhMr40DTI/AAAAAAAABQY/D8bgLS6kNwc/s800/SAEA-hot.png">https://lh5.googleusercontent.com/-PSX_YUfxkgU/TwYhMr40DTI/AAAAAAAABQY/D8bgLS6kNwc/s800/SAEA-hot.png</a>" title="SAEA" ></p>
 
 <p>You can clearly the <strong>IAsync</strong> allocations are not present in the SAEA
-implementation and there are 310,188 of them, that's 27% of the total garbage!</p>
+implementation and there are 310,188 of them, that&rsquo;s 27% of the total garbage!</p>
 
 <h2>Final thoughts</h2>
 
@@ -171,29 +171,29 @@ lot of complexity but if your application is dealing with a very high volume
 of traffic or clients and you need optimal performance then I think its the
 way to go.</p>
 
-<p>The optimisations don't stop there either, if you think about it the receive
+<p>The optimisations don&rsquo;t stop there either, if you think about it the receive
 Bocketpool is not even used here, if we collapsed all of the BocketPools into
 a single contiguous store then we would use even less resources, this means we
 could support even more clients or throughput.  In a typical high volume
 scenario you are looking at doubling your throughput or number of client
 connections.</p>
 
-<p>There's definitely a lot more or interesting things to explore in this area.</p>
+<p>There&rsquo;s definitely a lot more or interesting things to explore in this area.</p>
 
 <p>As usual any comments are welcome.</p>
 
-<p>See you next time...</p>
+<p>See you next time&hellip;</p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[Sockets and Bockets 3]]></title>
-    <link href="http://MoiraeSoftware.com/blog/2011/01/20/sockets-and-bockets-part-3/"/>
+    <link href="http://MoiraeSoftware.github.io/blog/2011/01/20/sockets-and-bockets-part-3/"/>
     <updated>2011-01-20T01:17:55+00:00</updated>
-    <id>http://MoiraeSoftware.com/blog/2011/01/20/sockets-and-bockets-part-3</id>
+    <id>http://MoiraeSoftware.github.io/blog/2011/01/20/sockets-and-bockets-part-3</id>
     <content type="html"><![CDATA[<h2>Welcome to part three!</h2>
 
-<p>As promised heres a description of the inner workings.  I'm sick to death of
+<p>As promised heres a description of the inner workings.  I&rsquo;m sick to death of
 typing SocketAsyncEventArgs so from now on I will refer to it as SAEA.<!-- more --></p>
 
 <p><strong>BocketPool</strong><br/>
@@ -411,13 +411,13 @@ users of the component could consume the data.</p>
 
 <p>In my own component the data is inserted into a series of processing stages
 using the <a href="http://www.cise.ufl.edu/research/ParallelPatterns%0A/PatternLanguage/AlgorithmStructure/Pipeline.htm">Pipeline Pattern</a>, which I will be may
-describe in a future post if anyone's interested.</p>
+describe in a future post if anyone&rsquo;s interested.</p>
 
 <p><strong>TcpListener</strong><br/>
 The TcpListener is very similar to the Connection object in that it has a pool
 of SAEA objects that are used to accept connection from clients, again a round
 of refactoring could be done here to avoid duplication with the Connection
-type.  The main difference is that we don't need to use the Buffer on the SAEA
+type.  The main difference is that we don&rsquo;t need to use the Buffer on the SAEA
 to send anything to the client when it initially connects.</p>
 
 <p><strong>acceptCompleted</strong></p>
@@ -484,7 +484,7 @@ function.</p>
 back to the BlockingCollection so that it can be reused.</p>
 
 <p>The purpose of the BlockingCollection here is to have a fixed pool of SAEA
-that block when there isn't an SAEA to service the new connection, this could
+that block when there isn&rsquo;t an SAEA to service the new connection, this could
 be a potential issue for the client as it could timeout while waiting for a
 connection but this is a far preferable situation than causing your server to
 be effectively denied service due to overload.</p>
@@ -578,10 +578,10 @@ loop.</p>
 a message to the client, the number of results is updated using the
 Interlocked class.</p>
 
-<p>I would like to refer you to <a href="http://lorgonblog.wordpress.com/2010/03/28/f-async-on-the-server-side/">Brian McNamara's
+<p>I would like to refer you to <a href="http://lorgonblog.wordpress.com/2010/03/28/f-async-on-the-server-side/">Brian McNamara&rsquo;s
 post</a>
 that describes this part in more detail.  The only difference in our workflow
-is that we don't use a stream operation as we have the SendAsyncSafe function
+is that we don&rsquo;t use a stream operation as we have the SendAsyncSafe function
 to do all the work for us.  IDispose is also implemented on this type too as
 we have to dispose of the SAEA objects that are used for the asynchronous
 accepts.</p>
@@ -674,12 +674,12 @@ situations it makes a lot of difference.</p>
   
   <entry>
     <title type="html"><![CDATA[Sockets and Bockets 2]]></title>
-    <link href="http://MoiraeSoftware.com/blog/2011/01/14/sockets-and-bockets-part-2/"/>
+    <link href="http://MoiraeSoftware.github.io/blog/2011/01/14/sockets-and-bockets-part-2/"/>
     <updated>2011-01-14T22:29:16+00:00</updated>
-    <id>http://MoiraeSoftware.com/blog/2011/01/14/sockets-and-bockets-part-2</id>
+    <id>http://MoiraeSoftware.github.io/blog/2011/01/14/sockets-and-bockets-part-2</id>
     <content type="html"><![CDATA[<h3>Welcome to part two</h3>
 
-<p>Lets jump in at the deep end and take a look at some code...</p>
+<p>Lets jump in at the deep end and take a look at some code&hellip;</p>
 
 <p>When you look at the method syntax for the xxxAsync methods you will notice
 they return a boolean value that indicates if the method completed
@@ -1003,7 +1003,7 @@ and receive operations to and from the client</li>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>Finally here's the TcpListener type.  It is responsible for creating an
+<p>Finally here&rsquo;s the TcpListener type.  It is responsible for creating an
 initial Connection object for each client and starts asynchronous sending
 messages to that client once a second, also notice that there is another
 BlockingCollection involved, this is somewhat simpler than the usage in the
@@ -1229,7 +1229,7 @@ of service attacks due to too many connection being made.</li>
 
 <p>Its a fair bit of code to take in at once, so Ill leave you with it to ponder
 over.  Ill be explaining all of the interesting bits in more detail in part
-three...</p>
+three&hellip;</p>
 
 <p>Please feel free to leave any comments you have, especially on better use of
 functional constructs.</p>
@@ -1238,9 +1238,9 @@ functional constructs.</p>
   
   <entry>
     <title type="html"><![CDATA[Sockets and Bockets 1]]></title>
-    <link href="http://MoiraeSoftware.com/blog/2011/01/13/sockets-and-bockets-1/"/>
+    <link href="http://MoiraeSoftware.github.io/blog/2011/01/13/sockets-and-bockets-1/"/>
     <updated>2011-01-13T01:38:06+00:00</updated>
-    <id>http://MoiraeSoftware.com/blog/2011/01/13/sockets-and-bockets-1</id>
+    <id>http://MoiraeSoftware.github.io/blog/2011/01/13/sockets-and-bockets-1</id>
     <content type="html"><![CDATA[<h3>Welcome to part 1</h3>
 
 <p>A while back I read an interesting article by <em>Brian McNamara</em> <a href="http://lorgonblog.wordpress.com/2010/03/28/f-async-on-the-server-side/">f-async-on-the-server-side</a>
@@ -1251,7 +1251,7 @@ produces nice clean simple code compared to the C# version which uses lambda
 expressions, the code looks quite ugly in this style!  However thats not the
 end of the story, a lot of memory fragmentation can occur using the APM model
 when there is a high throughput, so I thought I would see if I could take this
-a step further...<!-- more --></p>
+a step further&hellip;<!-- more --></p>
 
 <p>There are some lesser known methods that were added to the <a href="http://msdn.microsoft.com/en-us/library/system.net.sockets.socket.aspx">Socket</a>
 class in .Net 2.0 SP1: ReceiveAsync, SendAsync, ConnectAsync and DisconnectAsync.
@@ -1268,7 +1268,7 @@ asynchronously when the operation completes and is passed the corresponding
 SocketAsyncEventArgs object, this allows you query the buffer in a receive
 operation.</p>
 
-<p>The scope of this series of articles is to initially replicate Brian's demo
+<p>The scope of this series of articles is to initially replicate Brian&rsquo;s demo
 using F# and a pool of SocketAsyncEventArgs and a contiguous block of memory
 to hold the data being sent and received on the Socket, this again further
 reduces memory fragmentation on the send and receive buffers.</p>
@@ -1287,7 +1287,7 @@ which in itself is declarative.</p>
 <p>Although there is no code in this article there is plenty in the next!</p>
 
 <p>Please feel free to leave comments or add any suggestions, hope to see you
-next time...</p>
+next time&hellip;</p>
 ]]></content>
   </entry>
   

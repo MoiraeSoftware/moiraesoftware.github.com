@@ -18,13 +18,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2012/07/15/the-lurking-horror/">
+  <link rel="canonical" href="http://MoiraeSoftware.github.io/blog/2012/07/15/the-lurking-horror">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
@@ -60,7 +61,7 @@
   
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input type="hidden" name="q" value="site:MoiraeSoftware.github.io" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -103,7 +104,7 @@
   </header>
 
 
-<div class="entry-content"><blockquote><p>Deep in the darkest depths lurks an ancient horror, when the time is right it will rise forth and leave you screaming for mercy and begging for forgiveness&#8230;</p></blockquote>
+<div class="entry-content"><blockquote><p>Deep in the darkest depths lurks an ancient horror, when the time is right it will rise forth and leave you screaming for mercy and begging for forgiveness&hellip;</p></blockquote>
 
 <p>OK, I have a penchant for being over dramatic but in this post I am going to reveal some little known caveats in a well known and much revelled area of F#, agents aka the <a href="http://msdn.microsoft.com/en-us/library/ee370357" title="Control.MailboxProcessor&lt;'Msg&gt;"><code>MailboxProcessor</code></a>. Gasp!</p>
 
@@ -201,7 +202,7 @@
 
 <h3>Test Harness</h3>
 
-<p>And here&#8217;s a very simple test harness:</p>
+<p>And here&rsquo;s a very simple test harness:</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -240,11 +241,11 @@
 
 <h2>Opening it up</h2>
 
-<p>Let&#8217;s take a look at some of the internals of the <code>MailboxProcessor</code> to understand what&#8217;s going on.  First of all the core functionality is actually contained within the <code>Mailbox</code> type with the <code>MailboxProcessor</code> acting as an augmenter.  <code>TryPostAndReply</code>, <code>PostAndReply</code>, <code>PostAndTryAsyncReply</code>, and <code>PostAndAsyncReply</code> all add a single functionality to the <code>Mailbox</code> type; the ability to synchronously or asynchronously reply to a message once it arrives.  <code>TryPostAndReply</code> and <code>PostAndReply</code> both wait synchronously for a message to arrive before replying, whereas <code>PostAndTryAsyncReply</code> and <code>PostAndAsyncReply</code> both reply asynchronously.  This functionality is achieved with the use of the <code>ResultCell</code> and <code>AsyncReplyChannel</code> types.  For an in-depth discussion on this you might want to refer to my earlier series which describes implementing the <code>MailboxProcessor</code> with <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582.aspx" title="TPL Dataflow">TPL Dataflow</a> (see <a href="/blog/2012/01/22/FSharp-Dataflow-agents-I/" title="FSharp Dataflow agents - Part 1">Part 1</a>, <a href="/blog/2012/01/30/FSharp-Dataflow-agents-II/" title="FSharp Dataflow agents - Part 2">Part 2</a> and <a href="/blog/2012/02/20/fsharp-dataflow-agents-III/" title="FSharp Dataflow agents - Part 3">Part 3</a>).</p>
+<p>Let&rsquo;s take a look at some of the internals of the <code>MailboxProcessor</code> to understand what&rsquo;s going on.  First of all the core functionality is actually contained within the <code>Mailbox</code> type with the <code>MailboxProcessor</code> acting as an augmenter.  <code>TryPostAndReply</code>, <code>PostAndReply</code>, <code>PostAndTryAsyncReply</code>, and <code>PostAndAsyncReply</code> all add a single functionality to the <code>Mailbox</code> type; the ability to synchronously or asynchronously reply to a message once it arrives.  <code>TryPostAndReply</code> and <code>PostAndReply</code> both wait synchronously for a message to arrive before replying, whereas <code>PostAndTryAsyncReply</code> and <code>PostAndAsyncReply</code> both reply asynchronously.  This functionality is achieved with the use of the <code>ResultCell</code> and <code>AsyncReplyChannel</code> types.  For an in-depth discussion on this you might want to refer to my earlier series which describes implementing the <code>MailboxProcessor</code> with <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582.aspx" title="TPL Dataflow">TPL Dataflow</a> (see <a href="/blog/2012/01/22/FSharp-Dataflow-agents-I/" title="FSharp Dataflow agents - Part 1">Part 1</a>, <a href="/blog/2012/01/30/FSharp-Dataflow-agents-II/" title="FSharp Dataflow agents - Part 2">Part 2</a> and <a href="/blog/2012/02/20/fsharp-dataflow-agents-III/" title="FSharp Dataflow agents - Part 3">Part 3</a>).</p>
 
 <p>Below are some snippets of code from the <code>Mailbox</code> type you might want to take a peek yourself at the <a href="https://github.com/fsharp/fsharp/blob/master/src/fsharp/FSharp.Core/control.fs#L1854" title="Mailbox code">FSharp repository</a> over at <a href="https://github.com/">Github</a> for a closer inspection, be warned thought there is a lot of code in there!</p>
 
-<p>Here&#8217;s the initial type definition for the <code>Mailbox</code>, you can see that  there are two mutable fields:</p>
+<p>Here&rsquo;s the initial type definition for the <code>Mailbox</code>, you can see that  there are two mutable fields:</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -259,7 +260,7 @@
 
 <p>For now the <code>inboxStore</code> is null and is only ever assigned via <code>Scan</code> or <code>TryScan</code> and this is done indirectly via the <code>inbox</code> member shown here:</p>
 
-<figure class='code'><figcaption><span>inbox  </span></figcaption>
+<figure class='code'><figcaption><span>inbox </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -273,7 +274,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Understanding the code in the <code>Mailbox</code> can be difficult given the amount of code, so I&#8217;ll highlight the key functions in the sections below to make it a little easier.</p>
+<p>Understanding the code in the <code>Mailbox</code> can be difficult given the amount of code, so I&rsquo;ll highlight the key functions in the sections below to make it a little easier.</p>
 
 <h3>Scan / TryScan</h3>
 
@@ -281,7 +282,7 @@
 
 <p>So now lets take a look at the source of <code>TryScan</code>.</p>
 
-<figure class='code'><figcaption><span>TryScan  </span></figcaption>
+<figure class='code'><figcaption><span>TryScan </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -314,19 +315,19 @@
 <p>You can see here that an <a href="http://msdn.microsoft.com/en-us/library/dd233250.aspx" title="async workflows">async workflow</a> is declared that first pattern matches on <code>x.scanInbox</code>, passing in the predicate scan function <code>f</code> and the literal <code>0</code>.  If <code>None</code> is returned then there is no match and the recursive function <code>scan</code> is returned.  This time the function <code>x.scanArrivals</code> is be called, again passing in the predicate function <code>f</code>.</p>
 
 <ul>
-<li>An interesting point to note, is that each message that arrives that doesn&#8217;t match the predicate <code>f</code> resets the  timer: <code>let! ok = waitOne(timeout)</code>, this means that any number of trivial messages that arrive keep the <code>TryScan</code> function running.  This was also mentioned by Jon Harrop in a Stackoverflow question entitled <a href="http://stackoverflow.com/a/4891920/607275" title="How to use TryScan in F# properly">How to use TryScan in F# properly</a>.  Jon also mentions locking which I will address in the <code>scanArrivals</code> section below.</li>
+<li>An interesting point to note, is that each message that arrives that doesn&rsquo;t match the predicate <code>f</code> resets the  timer: <code>let! ok = waitOne(timeout)</code>, this means that any number of trivial messages that arrive keep the <code>TryScan</code> function running.  This was also mentioned by Jon Harrop in a Stackoverflow question entitled <a href="http://stackoverflow.com/a/4891920/607275" title="How to use TryScan in F# properly">How to use TryScan in F# properly</a>.  Jon also mentions locking which I will address in the <code>scanArrivals</code> section below.</li>
 </ul>
 
 
-<p>So what&#8217;s the difference between <code>scanArrivals</code> and <code>scanInbox</code>?</p>
+<p>So what&rsquo;s the difference between <code>scanArrivals</code> and <code>scanInbox</code>?</p>
 
-<p><code>scanInbox</code> operates on the <code>inboxStore</code> which you might recall is a <code>List&lt;T&gt;</code> type, whereas <code>scanArrivals</code> operates on <code>arrivals</code> which is a <code>Queue&lt;T&gt;</code> type.  The big difference between these two is that as messages first arrive in the Mailbox they end up in the arrivals queue first, and when messages are not matched by the predicate function <code>f</code> they are added to the <code>inboxStore</code>, hence the need to always check the <code>inboxStore</code> before the <code>arrivals</code> queue otherwise previously unmatched scan messages would not be processed correctly.  You might be asking yourself why not use a <code>Queue&lt;T&gt;</code> for both the <code>inbox</code> and the <code>arrivals</code>?  It comes down to the fact that it&#8217;s not possible to easily use a <code>Queue&lt;T&gt;</code> for <code>arrivals</code> because of the way that Scan works.  At any point in the queue there could do a potential match so each item would have to be dequeued and processed separately, an indexed <code>List&lt;T&gt;</code> type is the best fit for this situation.</p>
+<p><code>scanInbox</code> operates on the <code>inboxStore</code> which you might recall is a <code>List&lt;T&gt;</code> type, whereas <code>scanArrivals</code> operates on <code>arrivals</code> which is a <code>Queue&lt;T&gt;</code> type.  The big difference between these two is that as messages first arrive in the Mailbox they end up in the arrivals queue first, and when messages are not matched by the predicate function <code>f</code> they are added to the <code>inboxStore</code>, hence the need to always check the <code>inboxStore</code> before the <code>arrivals</code> queue otherwise previously unmatched scan messages would not be processed correctly.  You might be asking yourself why not use a <code>Queue&lt;T&gt;</code> for both the <code>inbox</code> and the <code>arrivals</code>?  It comes down to the fact that it&rsquo;s not possible to easily use a <code>Queue&lt;T&gt;</code> for <code>arrivals</code> because of the way that Scan works.  At any point in the queue there could do a potential match so each item would have to be dequeued and processed separately, an indexed <code>List&lt;T&gt;</code> type is the best fit for this situation.</p>
 
 <h3>scanArrivals / scanArrivalsUnsafe</h3>
 
-<p>Lets look at the <code>scanArrivals</code> function, it&#8217;s just a lock construct around the <code>scanArrivals</code> function.  This leads to an important point, the scan function is operating under a lock, which effectively means that end user code is also executed under the lock and if you hold onto the lock for any length of time then there will be significant blocking of the normal receive mechanism due to it also using the same lock when receiving.</p>
+<p>Lets look at the <code>scanArrivals</code> function, it&rsquo;s just a lock construct around the <code>scanArrivals</code> function.  This leads to an important point, the scan function is operating under a lock, which effectively means that end user code is also executed under the lock and if you hold onto the lock for any length of time then there will be significant blocking of the normal receive mechanism due to it also using the same lock when receiving.</p>
 
-<figure class='code'><figcaption><span>scanArrivals/scanArrivalsUnsafe  </span></figcaption>
+<figure class='code'><figcaption><span>scanArrivals/scanArrivalsUnsafe </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -362,7 +363,7 @@
 
 <h3>scanInbox</h3>
 
-<p>A quick glance at <code>scanInbox</code> reveals another function which, to my eye, could have heavy-weight performance implications.   The <code>inbox</code> is a <code>List&lt;T&gt;</code> type, and the <code>RemoveAt</code> function does an internal <code>Array.Copy</code> for each removal.  This is an O(n) operation where n is (Count - index), so as soon as the list gets to a reasonable size then this then is going to really start chewing into your processing time.</p>
+<p>A quick glance at <code>scanInbox</code> reveals another function which, to my eye, could have heavy-weight performance implications.   The <code>inbox</code> is a <code>List&lt;T&gt;</code> type, and the <code>RemoveAt</code> function does an internal <code>Array.Copy</code> for each removal.  This is an O(n) operation where n is (Count &ndash; index), so as soon as the list gets to a reasonable size then this then is going to really start chewing into your processing time.</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -397,7 +398,7 @@
 
 <p>Yeah there it is, a whopping 44.41% of the time is spent in <code>RemoveAt</code>.  Also notice that there were 200,000 calls which mirrors the number we placed in the queue before using the Lock/Unlock message types.</p>
 
-<p>One of the things that really stands out for me is that the <code>inbox</code> is a simple list and completely unbounded.  In a high throughput situation where the scan function is being used it&#8217;s perfectly feasible to get into a runaway memory or CPU condition where the unmatched messages are sitting in the <code>inbox</code> taking longer and longer to processes due to the O(n) operation that takes place in the <code>RemoveAt</code> function.  Given a consistent throughput then eventually you are going to either run out memory, or the processing time will make throughput drop to dire levels which in turn will back up the <code>inbox</code> even further, effectively this is a death spiral.</p>
+<p>One of the things that really stands out for me is that the <code>inbox</code> is a simple list and completely unbounded.  In a high throughput situation where the scan function is being used it&rsquo;s perfectly feasible to get into a runaway memory or CPU condition where the unmatched messages are sitting in the <code>inbox</code> taking longer and longer to processes due to the O(n) operation that takes place in the <code>RemoveAt</code> function.  Given a consistent throughput then eventually you are going to either run out memory, or the processing time will make throughput drop to dire levels which in turn will back up the <code>inbox</code> even further, effectively this is a death spiral.</p>
 
 <h2>Conclusion</h2>
 
@@ -405,17 +406,17 @@
 
 <ul>
 <li>Firstly be careful with usage of <code>Scan</code> and <code>TryScan</code>, in certain situations the internal queue could back up to a certain size where you will be constantly struggling against the O(n) operation cost.</li>
-<li>Agents are not a silver bullet solution. They cannot solve every problem.  Although it&#8217;s possible to use agent based techniques to solve various problems like blocking collections and such like, you have to use care and diligence in the solution to avoid introducing another problems into the mix.  I have seen several implementations that I have been able to break relatively easily.</li>
+<li>Agents are not a silver bullet solution. They cannot solve every problem.  Although it&rsquo;s possible to use agent based techniques to solve various problems like blocking collections and such like, you have to use care and diligence in the solution to avoid introducing another problems into the mix.  I have seen several implementations that I have been able to break relatively easily.</li>
 <li>Do I still use agents?  <strong>Absolutely!</strong>  Agents are a fabulous tool to have in our toolbox and some extremely elegant solution exist to solve very complex problems.</li>
 <li>Do I use <code>Scan</code> or <code>TryScan</code>?  Not in its current form in the <code>MailboxProcessor</code>.  I chose to implement a destructive scan in my <a href="/blog/2012/02/20/fsharp-dataflow-agents-III/" title="FSharp Dataflow agents - Part 3">TDF agent</a> for the reasons discussed here.</li>
 </ul>
 
 
-<p>Before we finish, I&#8217;d like to briefly cover <code>TryScan</code> from my <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582.aspx" title="TPL Dataflow">TDF</a> based agent to complete the picture.</p>
+<p>Before we finish, I&rsquo;d like to briefly cover <code>TryScan</code> from my <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582.aspx" title="TPL Dataflow">TDF</a> based agent to complete the picture.</p>
 
 <h3>Destructive TryScan</h3>
 
-<figure class='code'><figcaption><span>TryScan  </span></figcaption>
+<figure class='code'><figcaption><span>TryScan </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -451,7 +452,7 @@
 
 <p>One of the areas where I have a lot of experience is using pipelined operations based on input from network I/O.  One of the things that always causes a problem is unbounded situations such as having a queue with no absolute limit.  There comes a time when you have to protect yourself from what is effective a denial of service, you have to either destructively terminate messages or connections or route the overflowed data for processing later.</p>
 
-<p>Until next time&#8230;</p>
+<p>Until next time&hellip;</p>
 </div>
 
 
@@ -488,7 +489,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2012/07/15/the-lurking-horror/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2012/07/15/the-lurking-horror/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.github.io/blog/2012/07/15/the-lurking-horror/" data-via="" data-counturl="http://MoiraeSoftware.github.io/blog/2012/07/15/the-lurking-horror/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -537,7 +538,7 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow Agents III</a>
       </li>
     
       <li class="post">
@@ -549,15 +550,15 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved to Octopress...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a Hole...</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - a Quick Look</a>
       </li>
     
   </ul>
@@ -572,7 +573,7 @@
   <a href="https://github.com/7sharp9">@7sharp9</a> on Github
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -583,18 +584,10 @@
 
         var blacklist = [];
         
-          
-            blacklist.push('nemerle');
-          
-            blacklist.push('FSharp.Javascript');
-          
-            blacklist.push('ServiceStack');
-          
-        
 
         github.showRepos({
             user: '7sharp9',
-            count: 0,
+            count: 10,
             skip_forks: false,
             blacklist: blacklist,
             target: '#gh_repos'
@@ -603,7 +596,6 @@
   </script>
   <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
-
 
 
 
@@ -628,8 +620,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2012/07/15/the-lurking-horror/';
-        var disqus_url = 'http://MoiraeSoftware.com/blog/2012/07/15/the-lurking-horror/';
+        var disqus_identifier = 'http://MoiraeSoftware.github.io/blog/2012/07/15/the-lurking-horror/';
+        var disqus_url = 'http://MoiraeSoftware.github.io/blog/2012/07/15/the-lurking-horror/';
         var disqus_script = 'embed.js';
       
     (function () {
@@ -658,7 +650,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
