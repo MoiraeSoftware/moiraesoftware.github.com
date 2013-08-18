@@ -1,0 +1,484 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Back to the Primitive II - Moirae</title>
+  <meta name="author" content="Dave Thomas">
+
+  
+  <meta name="description" content="In the last post I discussed an asynchronous version of the ManualResetEvent and as promised this time we will be looking at an asynchronous version &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2012/04/22/back-to-the-primitive-ii/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-10152365-7']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Moirae</a></h1>
+  
+    <h2>Software Engineering Ltd</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/services.html">Services</a></li>
+  <li><a href="/contact-us.html">Contact Us</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Back to the Primitive II</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-22T10:23:00+01:00" pubdate data-updated="true">Apr 22<span>nd</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In the last post I discussed an asynchronous version of the <code>ManualResetEvent</code> and as promised this time we will be looking at an
+ asynchronous version of the <code>AutoResetEvent</code>.  I&#8217;m using <a href="http://blogs.msdn.com/b/pfxteam/archive/2012/02/11/10266923.aspx">Stephen Toubs post</a>
+as reference and we will be building a version that is functional in style that maps straight into asynchronous work flows without and conversion
+or adaptors.</p>
+
+<h3>What is an AutoResetEvent?</h3>
+
+<p>An <code>AutoResetEvent</code> can be described as a turnstile mechanism, it lets a single waiting person through before re-latching
+waiting for the next signal.  This is opposed to a <code>ManualResetEvent</code> which functions like an ordinary gate. Calling Set opens
+the gate, allowing any number of threads that are waiting to be let through. Calling Reset closes the gate.</p>
+
+<h3>AsyncAutoResetEvent</h3>
+
+<p>First of all here is the shape of the type that we will be building:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="nc">AsyncAutoResetEvent</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">new</span> <span class="o">:</span> <span class="o">?</span><span class="n">reusethread</span><span class="o">:</span><span class="kt">bool</span> <span class="o">-&gt;</span> <span class="nc">AsyncAutoResetEvent</span>
+</span><span class='line'>    <span class="k">member</span> <span class="nc">Set</span> <span class="o">:</span> <span class="kt">unit</span> <span class="o">-&gt;</span> <span class="kt">unit</span>
+</span><span class='line'>    <span class="k">member</span> <span class="nc">WaitAsync</span> <span class="o">:</span> <span class="kt">unit</span> <span class="o">-&gt;</span> <span class="nc">Async</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Fairly simple: implied constructor, <code>Set</code> and <code>WaitAsync</code> members.</p>
+
+<h3>Implied Constructor</h3>
+
+<p>Thinking about this logically we may need the following items:</p>
+
+<ul>
+<li>A queue mechanism to store asynchronous waiters - <code>let mutable awaits = Queue&lt;_&gt;()</code>.</li>
+<li>A way of knowing if a signal has been made in the absence of any waiters - <code>let mutable signalled = false</code>.</li>
+<li>We can also declare a short-circuit asynchronous workflow for the situation that <code>Set()</code> is called before <code>WaitAsync()</code></li>
+<li><code>let completed = async.Return true</code>.  This will save us constructing an <code>AsyncResultCell&lt;_&gt;</code> and going though the
+rest of the asynchronous mechanism.</li>
+</ul>
+
+
+<p>Also notice that an optional parameter called <code>reusethread</code> is defined, we use the <code>?</code> prefix when defining it to make it
+optional.  We then make use of the <code>defaultArg</code> function to give it a default value of false if a one is not passed in.  This
+will be used in the <code>Set</code> operation to determine if the code will run on the same thread or a thread in the ThreadPool.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">open</span> <span class="nc">System</span>
+</span><span class='line'><span class="k">open</span> <span class="nn">System</span><span class="p">.</span><span class="nc">Threading</span>
+</span><span class='line'><span class="k">open</span> <span class="nn">System</span><span class="p">.</span><span class="nn">Collections</span><span class="p">.</span><span class="nc">Generic</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">type</span> <span class="nc">AsyncAutoResetEvent</span><span class="o">(?</span><span class="n">reusethread</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>      <span class="k">let</span> <span class="k">mutable</span> <span class="n">awaits</span> <span class="o">=</span> <span class="nc">Queue</span><span class="o">&lt;_&gt;</span><span class="bp">()</span>
+</span><span class='line'>      <span class="k">let</span> <span class="k">mutable</span> <span class="n">signalled</span> <span class="o">=</span> <span class="bp">false</span>
+</span><span class='line'>        <span class="k">let</span> <span class="n">completed</span> <span class="o">=</span> <span class="n">async</span><span class="o">.</span><span class="nc">Return</span> <span class="bp">true</span>
+</span><span class='line'>        <span class="k">let</span> <span class="n">reuseThread</span> <span class="o">=</span> <span class="n">defaultArg</span> <span class="n">reusethread</span> <span class="bp">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>WaitAsync()</h3>
+
+<p>The first step is to use  a locking construct to control access to the mutable queue <code>awaits</code>.  Inside this lock we
+check to see if <code>signalled</code> is true and if so we reset it to false and return our pre-built <code>completed</code> asynchronous workflow.  If
+signalled is false then we create a new <code>AsyncResultCell&lt;_&gt;</code> and add it to the queue then return the <code>AsyncResult</code> to the caller.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'>        <span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">WaitAsync</span><span class="bp">()</span> <span class="o">=</span>
+</span><span class='line'>            <span class="n">lock</span> <span class="n">awaits</span> <span class="o">(</span><span class="k">fun</span> <span class="bp">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">signalled</span> <span class="k">then</span>
+</span><span class='line'>                    <span class="n">signalled</span> <span class="o">&lt;-</span> <span class="bp">false</span>
+</span><span class='line'>                    <span class="n">completed</span>
+</span><span class='line'>                <span class="k">else</span>
+</span><span class='line'>                    <span class="k">let</span> <span class="n">are</span> <span class="o">=</span> <span class="nc">AsyncResultCell</span><span class="o">&lt;_&gt;</span><span class="bp">()</span>
+</span><span class='line'>                    <span class="n">awaits</span><span class="o">.</span><span class="nc">Enqueue</span> <span class="n">are</span>
+</span><span class='line'>                    <span class="n">are</span><span class="o">.</span><span class="nc">AsyncResult</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Set()</h3>
+
+<p>We first declare a function called <code>getWaiter()</code>, we use this function to return an <a href="http://msdn.microsoft.com/en-us/library/dd233245.aspx">option type</a>
+ that is either <code>Some AsyncResultCell&lt;bool&gt;</code> or <code>None</code>.  We use the lock function to control access to the mutable queue <code>lock awaits</code>.  Once
+inside the lock we use pattern matching to capture <code>awaits.Count</code> and <code>signalled</code>:</p>
+
+<ul>
+<li>The first pattern match <code>(x,_)</code> checks if there are any waiters (<code>awaits.Count &gt; 0</code>) and then dequeues an <code>AsyncResultCell&lt;bool&gt;</code> from the
+queue and returns it within an option type: <code>Some &lt;| awaits.Dequeue()</code>.</li>
+<li>The second pattern match <code>(_,y)</code> checks whether <code>signalled</code> is set to false before setting its value to true.  This causes next <code>WaitAsync()</code>
+caller to get the short-circuited value <code>completed</code>.  This means that an <code>AsyncResultCell&lt;bool&gt;</code> does not need to be created and go though the
+whole async mechanism.  We then return <code>None</code> as there is no waiter to be notified.</li>
+<li>The final pattern match <code>(_,_)</code> is used when there are no waiting callers and <code>signalled</code> has already being set, there is simply nothing to do in
+this situation so we return <code>None</code>.</li>
+</ul>
+
+
+<p>We use the <code>getWaiter()</code> function via pattern match.  If we have a result i.e. Some AsyncResultCell<bool> then we call <code>RegisterResult</code>
+passing in <code>AsyncOK(true)</code> to indicate a completion.  Notice that we also pass in the <code>reuseThread</code> boolean that was declared as part of the
+constructor.  If <code>reuseThread</code> is true then the notification to the waiter happens <strong>synchronously</strong> use this with care!  Personally I would stick
+with the default of false to ensure that the operation is completed via the thread pool, unless you have a performance critical reason and the
+waiting code that executes is <strong>very fast</strong>.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'>       <span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">Set</span><span class="bp">()</span> <span class="o">=</span>
+</span><span class='line'>          <span class="k">let</span> <span class="n">getWaiter</span><span class="bp">()</span><span class="o">=</span>
+</span><span class='line'>              <span class="n">lock</span> <span class="n">awaits</span> <span class="o">(</span><span class="k">fun</span> <span class="bp">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>                  <span class="k">match</span> <span class="o">(</span><span class="n">awaits</span><span class="o">.</span><span class="nc">Count</span><span class="o">,</span> <span class="n">signalled</span><span class="o">)</span> <span class="k">with</span>
+</span><span class='line'>                  <span class="o">|</span> <span class="o">(</span><span class="n">x</span><span class="o">,_)</span> <span class="k">when</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">-&gt;</span> <span class="nc">Some</span> <span class="o">&lt;|</span> <span class="n">awaits</span><span class="o">.</span><span class="nc">Dequeue</span><span class="bp">()</span>
+</span><span class='line'>                  <span class="o">|</span> <span class="o">(_,</span><span class="n">y</span><span class="o">)</span> <span class="k">when</span> <span class="ow">not</span> <span class="n">y</span> <span class="o">-&gt;</span> <span class="n">signalled</span> <span class="o">&lt;-</span> <span class="bp">true</span><span class="o">;</span><span class="nc">None</span>
+</span><span class='line'>                  <span class="o">|</span> <span class="o">(_,_)</span> <span class="o">-&gt;</span> <span class="nc">None</span><span class="o">)</span>
+</span><span class='line'>          <span class="k">match</span> <span class="n">getWaiter</span><span class="bp">()</span> <span class="k">with</span>
+</span><span class='line'>          <span class="o">|</span> <span class="nc">Some</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="n">a</span><span class="o">.</span><span class="nc">RegisterResult</span><span class="o">(</span><span class="nc">AsyncOk</span><span class="o">(</span><span class="bp">true</span><span class="o">),</span> <span class="n">reuseThread</span><span class="o">)</span>
+</span><span class='line'>          <span class="o">|</span> <span class="nc">None</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="bp">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The reason for using the <code>getWaiter()</code> function is to separate the locking function away from the notification, if <code>RegisterResult</code>
+was called within the lock and <code>reuseThread</code> was true then the awaiting function would be called synchronously within the lock which
+would not be a very good situation to be in.</p>
+
+<p>So there we have it, I could take this series further and convert the other primitives that Stephen Toub describes but there should be
+enough information in these two posts to set you on your way.  If anyone would like me to complete the series then let me know.  I
+may well finish them off and post them on GitHub in the future, time permitting.</p>
+
+<hr />
+
+<h4>Musical inspiration during the creation of this post:</h4>
+
+<ul>
+<li>Pantera - Cowboys From Hell</li>
+<li>Cacophony - Go Off<br/>
+<img src="http://upload.wikimedia.org/wikipedia/en/a/a8/CowboysFromHell.jpg" width="125" title="Pantera - Cowboys From Hell" >
+<img src="http://upload.wikimedia.org/wikipedia/en/0/09/Cacophony_-_1988_-_Go_Off%21.jpg" width="125" title="Cacophony - Go Off" ></li>
+</ul>
+
+
+<p>Thanks for tuning in, until next time&#8230;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">7sharp9</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-22T10:23:00+01:00" pubdate data-updated="true">Apr 22<span>nd</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/programming-tales/'>Programming Tales</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2012/04/22/back-to-the-primitive-ii/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2012/04/22/back-to-the-primitive-ii/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/04/12/back-to-the-primitive/" title="Previous Post: Back to the Primitive">&laquo; Back to the Primitive</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/07/15/the-lurking-horror/" title="next Post: The Lurking Horror">The Lurking Horror &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/07/15/the-lurking-horror/">The Lurking Horror</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/22/back-to-the-primitive-ii/">Back to the Primitive II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/12/back-to-the-primitive/">Back to the Primitive</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/11/black-scholes-taste-test/">Black-Scholes Taste Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/FSharp-Dataflow-agents-II/">F# Dataflow Agents Part II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/22/FSharp-Dataflow-agents-I/">F# Dataflow Agents Part I</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/7sharp9">@7sharp9</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        var blacklist = [];
+        
+          
+            blacklist.push('nemerle');
+          
+            blacklist.push('FSharp.Javascript');
+          
+            blacklist.push('ServiceStack');
+          
+        
+
+        github.showRepos({
+            user: '7sharp9',
+            count: 0,
+            skip_forks: false,
+            blacklist: blacklist,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Dave Thomas -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'moiraesoftware';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2012/04/22/back-to-the-primitive-ii/';
+        var disqus_url = 'http://MoiraeSoftware.com/blog/2012/04/22/back-to-the-primitive-ii/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

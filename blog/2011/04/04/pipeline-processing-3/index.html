@@ -1,0 +1,659 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Pipeline processing 3 - Moirae</title>
+  <meta name="author" content="Dave Thomas">
+
+  
+  <meta name="description" content="Ok so I have been offline for a while now, what with starting a new financial contract in London and not having any broadband access for a while.  I &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2011/04/04/pipeline-processing-3/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-10152365-7']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Moirae</a></h1>
+  
+    <h2>Software Engineering Ltd</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/services.html">Services</a></li>
+  <li><a href="/contact-us.html">Contact Us</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Pipeline Processing 3</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-04-04T21:56:33+01:00" pubdate data-updated="true">Apr 4<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Ok so I have been offline for a while now, what with starting a new financial contract in London and not having any broadband access for a while.  I have
+been working on something, honest!</p>
+
+<p>Since the last post I have been reflecting on the pipeline design and it had a distinct object orientated feel to it that I wasnt happy with, so I have
+amended the structure of the code and come up with the following which simplifies in some areas and expands in others&#8230;<!-- more --></p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">module</span> <span class="nc">Pipeline</span>
+</span><span class='line'>  <span class="k">open</span> <span class="nn">System</span><span class="p">.</span><span class="nn">Collections</span><span class="p">.</span><span class="nc">Concurrent</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">[&lt;</span><span class="nc">Interface</span><span class="o">&gt;]</span>
+</span><span class='line'>  <span class="k">type</span> <span class="nc">IPipelineInput</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">abstract</span> <span class="nc">Insert</span><span class="o">:</span> <span class="k">&#39;</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">unit</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">[&lt;</span><span class="nc">Interface</span><span class="o">&gt;]</span>
+</span><span class='line'>  <span class="k">type</span> <span class="nc">IPipelineConnection</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">abstract</span> <span class="nc">Attach</span><span class="o">:</span> <span class="nc">IPipelineInput</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">-&gt;</span> <span class="kt">unit</span>
+</span><span class='line'>    <span class="k">abstract</span> <span class="nc">Detach</span><span class="o">:</span> <span class="nc">IPipelineInput</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">-&gt;</span> <span class="kt">unit</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">[&lt;</span><span class="nc">Interface</span><span class="o">&gt;]</span>
+</span><span class='line'>  <span class="k">type</span> <span class="nc">IPipeline</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">,</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">inherit</span> <span class="nc">IPipelineConnection</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;</span>
+</span><span class='line'>    <span class="k">inherit</span> <span class="nc">IPipelineInput</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">type</span> <span class="nc">PipelineStage</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">,</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;(</span><span class="n">processor</span><span class="o">,</span> <span class="n">router</span><span class="o">:</span> <span class="n">seq</span><span class="o">&lt;</span><span class="nc">IPipelineInput</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;&gt;</span> <span class="o">*</span> <span class="k">&#39;</span><span class="n">b</span> <span class="o">-&gt;</span> <span class="n">seq</span><span class="o">&lt;</span><span class="nc">IPipelineInput</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;&gt;,</span> <span class="o">?</span><span class="n">overflow</span><span class="o">,</span> <span class="o">?</span><span class="n">capacity</span><span class="o">,</span> <span class="o">?</span><span class="n">blockingTime</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">processor</span> <span class="o">=</span> <span class="n">processor</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">router</span> <span class="o">=</span> <span class="n">router</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">createBlockingCollection</span> <span class="n">x</span> <span class="o">=</span>
+</span><span class='line'>        <span class="k">match</span> <span class="n">x</span> <span class="k">with</span>
+</span><span class='line'>        <span class="o">|</span> <span class="nc">Some</span> <span class="n">c</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">BlockingCollection</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;(</span><span class="n">c</span><span class="o">:</span><span class="kt">int</span><span class="o">)</span>
+</span><span class='line'>        <span class="o">|</span> <span class="nc">None</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">BlockingCollection</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span><span class="bp">()</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">createBlockingCollection</span> <span class="n">capacity</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">routes</span> <span class="o">=</span> <span class="n">ref</span> <span class="nn">List</span><span class="p">.</span><span class="n">empty</span><span class="o">&lt;</span><span class="nc">IPipelineInput</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">queuedOrRunning</span> <span class="o">=</span> <span class="n">ref</span> <span class="bp">false</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">blocktime</span> <span class="o">=</span>
+</span><span class='line'>      <span class="k">match</span> <span class="n">blockingTime</span> <span class="k">with</span>
+</span><span class='line'>      <span class="o">|</span> <span class="nc">Some</span> <span class="n">b</span> <span class="o">-&gt;</span> <span class="n">b</span>
+</span><span class='line'>      <span class="o">|</span> <span class="nc">None</span> <span class="o">-&gt;</span> <span class="mi">250</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">consumerLoop</span> <span class="o">=</span> <span class="n">async</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">try</span>
+</span><span class='line'>        <span class="k">let</span> <span class="k">rec</span> <span class="n">loop</span><span class="bp">()</span><span class="o">=</span>
+</span><span class='line'>          <span class="k">let</span> <span class="n">item</span> <span class="o">=</span> <span class="n">ref</span> <span class="nn">Unchecked</span><span class="p">.</span><span class="n">defaultof</span><span class="o">&lt;_&gt;</span>
+</span><span class='line'>          <span class="k">let</span> <span class="n">taken</span> <span class="o">=</span> <span class="n">buffer</span><span class="o">.</span><span class="nc">TryTake</span><span class="o">(</span><span class="n">item</span><span class="o">,</span> <span class="n">blocktime</span><span class="o">)</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">taken</span> <span class="k">then</span>
+</span><span class='line'>              <span class="k">do</span> <span class="o">!</span><span class="n">item</span>
+</span><span class='line'>              <span class="o">|&gt;</span> <span class="n">processor</span>
+</span><span class='line'>              <span class="o">|&gt;</span> <span class="nn">Seq</span><span class="p">.</span><span class="n">iter</span> <span class="o">(</span><span class="k">fun</span> <span class="n">z</span> <span class="o">-&gt;</span>
+</span><span class='line'>              <span class="o">(</span><span class="k">match</span> <span class="o">!</span><span class="n">routes</span> <span class="k">with</span>
+</span><span class='line'>               <span class="o">|</span> <span class="bp">[]</span> <span class="o">-&gt;</span> <span class="bp">()</span><span class="c">(*we cant route with no routes*)</span>
+</span><span class='line'>               <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="k">do</span> <span class="n">router</span> <span class="o">(!</span><span class="n">routes</span><span class="o">,</span> <span class="n">z</span><span class="o">)</span> <span class="o">|&gt;</span> <span class="nn">Seq</span><span class="p">.</span><span class="n">iter</span> <span class="o">(</span><span class="k">fun</span> <span class="n">r</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="n">r</span><span class="o">.</span><span class="nc">Insert</span> <span class="n">z</span> <span class="o">)))</span> <span class="o">)</span>
+</span><span class='line'>              <span class="n">loop</span><span class="bp">()</span>
+</span><span class='line'>          <span class="k">else</span> <span class="bp">()</span><span class="c">(*exit nothing to consume in time limit*)</span>
+</span><span class='line'>        <span class="n">loop</span><span class="bp">()</span>
+</span><span class='line'>      <span class="k">with</span> <span class="n">e</span> <span class="o">-&gt;</span> <span class="n">raise</span> <span class="n">e</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="nc">ClearRoutes</span> <span class="o">=</span> <span class="n">routes</span> <span class="o">:=</span> <span class="bp">[]</span>
+</span><span class='line'>    <span class="k">interface</span> <span class="nc">IPipelineInput</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">with</span>
+</span><span class='line'>      <span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="nc">Insert</span> <span class="n">payload</span> <span class="o">=</span>
+</span><span class='line'>        <span class="k">let</span> <span class="n">added</span> <span class="o">=</span> <span class="n">buffer</span><span class="o">.</span><span class="nc">TryAdd</span><span class="o">(</span><span class="n">payload</span><span class="o">,</span> <span class="n">blocktime</span><span class="o">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">added</span> <span class="k">then</span>
+</span><span class='line'>          <span class="c1">//begin consumer loop</span>
+</span><span class='line'>          <span class="k">if</span> <span class="ow">not</span> <span class="o">!</span><span class="n">queuedOrRunning</span> <span class="k">then</span>
+</span><span class='line'>            <span class="n">lock</span> <span class="n">consumerLoop</span> <span class="o">(</span><span class="k">fun</span><span class="bp">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="nn">Async</span><span class="p">.</span><span class="nc">Start</span><span class="o">(</span><span class="n">async</span> <span class="o">{</span><span class="k">do</span><span class="o">!</span> <span class="n">consumerLoop</span> <span class="o">})</span>
+</span><span class='line'>            <span class="n">queuedOrRunning</span> <span class="o">:=</span> <span class="bp">true</span><span class="o">)</span>
+</span><span class='line'>          <span class="k">else</span><span class="bp">()</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>          <span class="c1">//overflow here if function passed</span>
+</span><span class='line'>          <span class="k">match</span> <span class="n">overflow</span> <span class="k">with</span>
+</span><span class='line'>          <span class="o">|</span> <span class="nc">Some</span> <span class="n">t</span> <span class="o">-&gt;</span>  <span class="n">payload</span> <span class="o">|&gt;</span> <span class="n">overflow</span><span class="o">.</span><span class="nc">Value</span>
+</span><span class='line'>          <span class="o">|</span> <span class="nc">None</span> <span class="o">-&gt;</span> <span class="bp">()</span>
+</span><span class='line'>    <span class="k">interface</span> <span class="nc">IPipelineConnection</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;</span> <span class="k">with</span>
+</span><span class='line'>      <span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="nc">Attach</span> <span class="o">(</span><span class="n">stage</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>        <span class="k">let</span> <span class="n">current</span> <span class="o">=</span> <span class="o">!</span><span class="n">routes</span>
+</span><span class='line'>        <span class="n">routes</span> <span class="o">:=</span> <span class="n">stage</span> <span class="o">::</span> <span class="n">current</span>
+</span><span class='line'>      <span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="nc">Detach</span> <span class="o">(</span><span class="n">stage</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>        <span class="k">let</span> <span class="n">current</span> <span class="o">=</span> <span class="o">!</span><span class="n">routes</span>
+</span><span class='line'>        <span class="n">routes</span> <span class="o">:=</span> <span class="nn">List</span><span class="p">.</span><span class="n">filter</span> <span class="o">(</span><span class="k">fun</span> <span class="n">el</span> <span class="o">-&gt;</span> <span class="n">el</span> <span class="o">&lt;&gt;</span> <span class="n">stage</span><span class="o">)</span> <span class="n">current</span>
+</span><span class='line'>    <span class="k">static</span> <span class="k">member</span> <span class="nc">Attach</span> <span class="o">(</span><span class="n">a</span><span class="o">:</span><span class="nc">IPipelineConnection</span><span class="o">&lt;_&gt;)</span> <span class="o">(</span><span class="n">b</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>      <span class="n">a</span><span class="o">.</span><span class="nc">Attach</span> <span class="n">b</span> <span class="o">;</span><span class="n">b</span>
+</span><span class='line'>    <span class="k">static</span> <span class="k">member</span> <span class="nc">Detach</span> <span class="o">(</span><span class="n">a</span><span class="o">:</span> <span class="nc">IPipelineConnection</span><span class="o">&lt;_&gt;)</span> <span class="o">(</span><span class="n">b</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>      <span class="n">a</span><span class="o">.</span><span class="nc">Detach</span> <span class="n">b</span> <span class="o">;</span><span class="n">a</span>
+</span><span class='line'>    <span class="k">static</span> <span class="k">member</span> <span class="o">(++&gt;)</span> <span class="o">(</span><span class="n">a</span><span class="o">:</span><span class="nc">IPipelineConnection</span><span class="o">&lt;_&gt;,</span> <span class="n">b</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>      <span class="n">a</span><span class="o">.</span><span class="nc">Attach</span> <span class="o">(</span><span class="n">b</span><span class="o">)</span> <span class="o">;</span><span class="n">b</span>
+</span><span class='line'>    <span class="k">static</span> <span class="k">member</span> <span class="o">(--&gt;)</span> <span class="o">(</span><span class="n">a</span><span class="o">:</span><span class="nc">IPipelineConnection</span><span class="o">&lt;_&gt;,</span> <span class="n">b</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>      <span class="n">a</span><span class="o">.</span><span class="nc">Detach</span> <span class="n">b</span> <span class="o">;</span><span class="n">a</span>
+</span><span class='line'>    <span class="k">static</span> <span class="k">member</span> <span class="o">(&lt;&lt;--)</span> <span class="o">(</span><span class="n">a</span><span class="o">:</span><span class="nc">IPipelineInput</span><span class="o">&lt;_&gt;,</span> <span class="n">b</span><span class="o">:</span><span class="k">&#39;</span><span class="n">b</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>      <span class="n">a</span><span class="o">.</span><span class="nc">Insert</span> <span class="n">b</span>
+</span><span class='line'>    <span class="k">static</span> <span class="k">member</span> <span class="o">(--&gt;&gt;)</span> <span class="o">(</span><span class="n">b</span><span class="o">,</span><span class="n">a</span><span class="o">:</span><span class="nc">IPipelineInput</span><span class="o">&lt;_&gt;)</span> <span class="o">=</span>
+</span><span class='line'>      <span class="n">a</span><span class="o">.</span><span class="nc">Insert</span> <span class="n">b</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Summary.</h3>
+
+<p>I only want to summarise the code as I think its fairly straight forward to
+see whats going on.</p>
+
+<h3>Interfaces</h3>
+
+<p>We have two main interfaces defined <strong>IPipelineInput&lt;&#8217;a></strong> and
+<strong>IPipelineConnection&lt;&#8217;a>, </strong>as you can tell by the names they are involved
+with connecting the pipeline together and getting information into the
+pipeline.  Those two interfaces are merged together in the IPipeline&lt;&#8217;a, &#8216;b>
+interface, this keeps a nice separation between connecting and inserting into
+the pipeline, it also makes implementation easier and allows the interfaces to
+be implemented in other areas of code that need to talk to or connect to a
+pipeline.</p>
+
+<h3>Internals</h3>
+
+<p>Inside the pipeline we have the bounded blocking queue which is implemented by
+the BlockingCollection from TPL. This is used to store the pipeline payloads
+that are waiting to be processed.</p>
+
+<p>The consumerLoop function is recursive and continually tries to take items
+from the blocking collection processing and routing each one to the next
+pipeline stage.</p>
+
+<p>The processor is a function that transforms from type &#8216;a to type &#8216;b.</p>
+
+<p>The router is a function that takes a sequence of IPipelineInput&lt;&#8217;b> and also
+the payload &#8216;b it returns a sequence of IPipelineInput&lt;&#8217;b>.  What this
+effectively means is that we can route by the connected stages (i.e. round
+robin routing, multi-cast routing.)   Or we could route by payload contents
+(i.e. if the payload contains a certain bytes sequence we could choose a
+certain IPipelineInput&lt;&#8217;b>.)</p>
+
+<p>Each item taken is passed to the processor and router via pipeline (<strong>|></strong>) and
+Seq operations, recursively calling itself until an item can no longer be
+retrieved from the buffer.</p>
+
+<p>The implementation of IPipelineInput&lt;&#8217;a>.Insert is the counterpart to the
+previous function. It first tries to inset the item into the bounded blocking
+queue, if this cannot be done then the overflow function is called if one is
+present. Next the async consumer loop is started if it is not already running.
+The idea behind this is that by keeping the payload processing running on the
+thread pool while there is work to do it will cut down on the number of
+context switches between threads.  Once an item cannot be taken from the
+bounding blocking queue the loop will exit.</p>
+
+<p>The rest of the code is pretty standard stuff and should be pretty easy to
+follow.</p>
+
+<p>I also define some symbolic operations to simply constructing and using the
+pipeline:</p>
+
+<p><strong>++></strong> Attaches the pipeline stage on the right hand side to the one on the left. <strong>&#8211;></strong> Detaches the pipelinestage on the right from the one on the left. <strong>&lt;&lt;&#8211;</strong> Inserts a payload on the right into the pipeline stage on the left. <strong>&#8211;>></strong> Inserts a payload on the left hand side into the pipeline stage on the right.<br/>
+These help to keep a nice terse description of the pipeline, once things get a little more complex other operators may be required, the now discontinued
+<a href="http://msdn.microsoft.com/en-us/devlabs/dd795202.aspx">Axiom</a> had a whole host of these, its a pity Microsoft dropped the language.</p>
+
+<h3>Example</h3>
+
+<p>Heres a quick sample pipeline showing the pipeline in use:</p>
+
+<ul>
+<li>Stage 1 takes a string and splits it based on the &#8216;,&#8217;.</li>
+<li>Stage 2 reverses each string.</li>
+<li>Stage 3 reverses the string back to the original.</li>
+</ul>
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">module</span> <span class="n">program</span>
+</span><span class='line'>  <span class="k">open</span> <span class="nc">System</span>
+</span><span class='line'>  <span class="k">open</span> <span class="nc">Pipeline</span>
+</span><span class='line'>  <span class="k">let</span> <span class="n">consoleLock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">obj</span><span class="bp">()</span>
+</span><span class='line'>  <span class="k">let</span> <span class="n">split</span> <span class="n">del</span> <span class="n">n</span> <span class="o">(</span><span class="n">s</span><span class="o">:</span><span class="kt">string</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>    <span class="n">lock</span> <span class="n">consoleLock</span> <span class="o">(</span><span class="k">fun</span><span class="bp">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="k">do</span> <span class="n">printfn</span> <span class="s2">&quot;%A:before split %A&quot;</span> <span class="n">n</span> <span class="n">s</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">split</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="nc">Split</span><span class="o">([|</span><span class="n">del</span><span class="o">|])</span>
+</span><span class='line'>    <span class="k">do</span> <span class="n">printfn</span> <span class="s2">&quot;%A:after: split into: %A&quot;</span> <span class="n">n</span> <span class="n">split</span>
+</span><span class='line'>    <span class="n">split</span> <span class="o">|&gt;</span> <span class="nn">Array</span><span class="p">.</span><span class="n">toSeq</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">let</span> <span class="n">reverse</span> <span class="o">(</span><span class="n">s</span><span class="o">:</span><span class="kt">string</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">new</span> <span class="kt">string</span><span class="o">(</span><span class="n">s</span> <span class="o">|&gt;</span> <span class="nn">Seq</span><span class="p">.</span><span class="n">toArray</span> <span class="o">|&gt;</span> <span class="nn">Array</span><span class="p">.</span><span class="n">rev</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">let</span> <span class="n">oneToSingleton</span> <span class="n">a</span> <span class="n">b</span> <span class="n">f</span><span class="o">=</span>
+</span><span class='line'>    <span class="n">lock</span> <span class="n">consoleLock</span> <span class="o">(</span><span class="k">fun</span><span class="bp">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="n">printfn</span> <span class="s2">&quot;%A:before reverse %A&quot;</span> <span class="n">a</span> <span class="n">b</span>
+</span><span class='line'>      <span class="k">let</span> <span class="n">result</span> <span class="o">=</span> <span class="n">b</span> <span class="o">|&gt;</span> <span class="n">f</span>
+</span><span class='line'>      <span class="n">printfn</span> <span class="s2">&quot;%A:after reverse %A&quot;</span> <span class="n">a</span> <span class="n">result</span>
+</span><span class='line'>      <span class="n">result</span><span class="o">|&gt;</span> <span class="nn">Seq</span><span class="p">.</span><span class="n">singleton</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">let</span> <span class="nc">OneToSeqRev</span> <span class="n">a</span> <span class="n">b</span> <span class="o">=</span> <span class="n">oneToSingleton</span> <span class="n">a</span> <span class="n">b</span> <span class="n">reverse</span>
+</span><span class='line'>  <span class="c1">///Simply picks the first route</span>
+</span><span class='line'>  <span class="k">let</span> <span class="n">basicRouter</span><span class="o">(</span> <span class="n">r</span><span class="o">,</span> <span class="n">i</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">head</span> <span class="o">=</span> <span class="nn">Seq</span><span class="p">.</span><span class="n">head</span> <span class="n">r</span>
+</span><span class='line'>    <span class="nn">Seq</span><span class="p">.</span><span class="n">singleton</span> <span class="n">head</span>
+</span><span class='line'>  <span class="k">let</span> <span class="n">p1</span> <span class="o">=</span> <span class="nc">PipelineStage</span><span class="o">(</span> <span class="n">split</span> <span class="sc">&#39;,&#39;</span> <span class="s2">&quot;1&quot;</span><span class="o">,</span> <span class="n">basicRouter</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">let</span> <span class="n">p2</span> <span class="o">=</span> <span class="nc">PipelineStage</span><span class="o">(</span> <span class="nc">OneToSeqRev</span> <span class="s2">&quot;2&quot;</span><span class="o">,</span> <span class="n">basicRouter</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">let</span> <span class="n">p3</span> <span class="o">=</span> <span class="nc">PipelineStage</span><span class="o">(</span> <span class="nc">OneToSeqRev</span> <span class="s2">&quot;3&quot;</span><span class="o">,</span> <span class="n">basicRouter</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">p1</span> <span class="o">++&gt;</span> <span class="n">p2</span> <span class="o">++&gt;</span> <span class="n">p3</span> <span class="o">|&gt;</span> <span class="n">ignore</span>
+</span><span class='line'>  <span class="k">let</span> <span class="n">generateCircularSeq</span> <span class="o">(</span><span class="n">lst</span><span class="o">:</span><span class="k">&#39;</span><span class="n">a</span> <span class="kt">list</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">let</span> <span class="k">rec</span> <span class="n">next</span> <span class="bp">()</span> <span class="o">=</span>
+</span><span class='line'>      <span class="n">seq</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">element</span> <span class="k">in</span> <span class="n">lst</span> <span class="k">do</span>
+</span><span class='line'>          <span class="k">yield</span> <span class="n">element</span>
+</span><span class='line'>        <span class="k">yield</span><span class="o">!</span> <span class="n">next</span><span class="bp">()</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="n">next</span><span class="bp">()</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">str</span> <span class="k">in</span> <span class="o">[</span><span class="s2">&quot;John,Paul,George,Ringo&quot;</span><span class="o">]</span>
+</span><span class='line'>  <span class="o">|&gt;</span> <span class="n">generateCircularSeq</span>
+</span><span class='line'>  <span class="o">|&gt;</span> <span class="nn">Seq</span><span class="p">.</span><span class="n">take</span> <span class="mi">10</span>
+</span><span class='line'>    <span class="k">do</span>  <span class="n">str</span> <span class="o">--&gt;&gt;</span> <span class="n">p1</span>
+</span><span class='line'>  <span class="k">let</span> <span class="n">x</span> <span class="o">=</span> <span class="nn">Console</span><span class="p">.</span><span class="nc">ReadKey</span><span class="bp">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see the assignment of the pipeline stages is pretty simple as is the composition of multiple stages.  This was often one of the most difficult
+areas while developing a similar pipelines in C# you could often find yourself with a few hundred lines of setup code which was a often a nightmare to debug
+a few weeks later.</p>
+
+<p>Hopefully I have whet your appetite with pipelines, in a future article I will be combining socket operations with pipeline stages to produce a flexible
+framework to deal with high throughput network applications.</p>
+
+<p>As always I appreciate any comments, until next time&#8230;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">7sharp9</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-04-04T21:56:33+01:00" pubdate data-updated="true">Apr 4<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/pipelines/'>Pipelines</a>, <a class='category' href='/blog/categories/programming-tales/'>Programming Tales</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2011/04/04/pipeline-processing-3/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2011/04/04/pipeline-processing-3/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/02/13/pipeline-processing-2/" title="Previous Post: Pipeline processing 2">&laquo; Pipeline processing 2</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/05/04/new-projects/" title="next Post: New projects">New projects &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/07/15/the-lurking-horror/">The Lurking Horror</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/22/back-to-the-primitive-ii/">Back to the Primitive II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/12/back-to-the-primitive/">Back to the Primitive</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/11/black-scholes-taste-test/">Black-Scholes Taste Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/FSharp-Dataflow-agents-II/">F# Dataflow Agents Part II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/22/FSharp-Dataflow-agents-I/">F# Dataflow Agents Part I</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/7sharp9">@7sharp9</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        var blacklist = [];
+        
+          
+            blacklist.push('nemerle');
+          
+            blacklist.push('FSharp.Javascript');
+          
+            blacklist.push('ServiceStack');
+          
+        
+
+        github.showRepos({
+            user: '7sharp9',
+            count: 0,
+            skip_forks: false,
+            blacklist: blacklist,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Dave Thomas -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'moiraesoftware';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2011/04/04/pipeline-processing-3/';
+        var disqus_url = 'http://MoiraeSoftware.com/blog/2011/04/04/pipeline-processing-3/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,497 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Back to the Primitive - Moirae</title>
+  <meta name="author" content="Dave Thomas">
+
+  
+  <meta name="description" content="In this post we are going back to the primitive. No it&#8217;s not about the same named song by Soulfly, (which incidentally does contains F# notes) &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2012/04/12/back-to-the-primitive/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-10152365-7']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Moirae</a></h1>
+  
+    <h2>Software Engineering Ltd</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/services.html">Services</a></li>
+  <li><a href="/contact-us.html">Contact Us</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Back to the Primitive</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-12T07:55:00+01:00" pubdate data-updated="true">Apr 12<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this post we are going <strong>back to the primitive</strong>.  No it&#8217;s not about the same named song by Soulfly, <em>(which incidentally does contains F# notes)</em> but a return
+to thread synchronisation primitives and their asynchronous counterparts.</p>
+
+<p>We are going to be looking at an asynchronous version of the <a href="http://msdn.microsoft.com/en-us/library/system.threading.manualresetevent.aspx">ManualResetEvent</a>.  This was
+recently covered by Stephen Toub on the <a href="http://blogs.msdn.com/b/pfxteam/archive/2012/02/11/10266920.aspx">pfx team blog</a>.  We will be taking a slightly different view on
+this as we will be using asynchronous workflows which will give us nice idiomatic usage within F#.</p>
+
+<p>First lets look of the shape of the type that Stephen defined:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">AsyncManualResetEvent</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">Task</span> <span class="nf">WaitAsync</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">Set</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">Reset</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now this can be used from within F# by using the <code>Async.AwaitTask</code> function from the Async module but this is like wrapping one asynchronous paradigm with another, and
+although this does work, what if you want to avoid the overhead of wrappers and stay strictly within async workflows.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="n">asyncManualResetEvent</span><span class="bp">()</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">WaitAsync</span><span class="bp">()</span> <span class="o">:</span> <span class="kt">unit</span> <span class="o">-&gt;</span> <span class="nc">Async</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span>
+</span><span class='line'>    <span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">Set</span><span class="bp">()</span> <span class="o">:</span> <span class="kt">unit</span> <span class="o">-&gt;</span> <span class="kt">unit</span>
+</span><span class='line'>    <span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">Reset</span><span class="bp">()</span> <span class="o">:</span> <span class="kt">unit</span> <span class="o">-&gt;</span> <span class="kt">unit</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&#8217;s what we want to see!  I don&#8217;t want to get into the details of the description of how the C# version works as Stephen does a very good job of that already.  What I will explain though is how we essentially do the same thing while staying with the realm of functional programming.  As we are getting into the lower lever details no doubt we will have to start relying on some low level locking primitives like Monitors, Semaphores, and Interlocked operations, even the F# core libraries have a
+cornucopia of those.</p>
+
+<p>Lets look at the first member <code>WaitAsync()</code>.  The first step is to create a something to store the result of the operation, all we will just be storing and returning
+asynchronously is a boolean to indicate that the wait handle has been set.  To do this we use one of the types from the
+<a href="http://fsharppowerpack.codeplex.com/">F# power pack</a> <code>AsyncResultCell&lt;'T&gt;</code>.  I think that such a type should of been exposed from the F# core libraries but it was
+omitted for some reason.  There is a type called <code>ResultCell&lt;'T&gt;</code> with much the same functionality in the FSharp.Core.Control namespace but it is marked internal so
+it&#8217;s not available for our use.</p>
+
+<p>We declare a <a href="http://msdn.microsoft.com/en-us/library/dd233186.aspx">reference cell</a> of type <code>AsyncResultCell&lt;'T&gt;</code> and then create the <code>WaitAsync()</code> member, all we have
+to do is dereference the value of the reference cell with <code>!</code> and call its <code>AsyncResult</code> member, this gives us an <code>Async&lt;bool&gt;</code> which we can easily use in an asynchronous workflow.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="n">asyncManualResetEvent</span><span class="bp">()</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">aResCell</span> <span class="o">=</span> <span class="n">ref</span> <span class="o">&lt;|</span> <span class="nc">AsyncResultCell</span><span class="o">&lt;_&gt;</span><span class="bp">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">WaitAsync</span><span class="bp">()</span> <span class="o">=</span> <span class="o">(!</span><span class="n">aResCell</span><span class="o">).</span><span class="nc">AsyncResult</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The next bit is fairly simple too.  All we need to do is dereference the value of the reference cell, and invoke the <code>RegisterResult</code> member by passing in a value of
+ <code>AsyncOk(true)</code>.  The boolean value of true will be used by the type inference system to constrain the value of the <code>Async&lt;_&gt;</code> returned from <code>WaitAsync</code>.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'>    <span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">Set</span><span class="bp">()</span> <span class="o">=</span> <span class="o">(!</span><span class="n">aResCell</span><span class="o">).</span><span class="nc">RegisterResult</span><span class="o">(</span><span class="nc">AsyncOk</span><span class="o">(</span><span class="bp">true</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The last part is the most complex <em>(as usual)</em>.  Here we create a recursive function called <code>swap</code> that will try to exchange the <code>AsyncResultCell&lt;'T&gt;</code> for a new
+one.  We dereference the reference cell to <code>currentValue</code>, then we use a CAS (Compare And Swap) operation to compare the <code>aResCell</code> with <code>currentValue</code> and if they
+are equal <code>newVal</code> will replace <code>aResCell</code>.  On the next line if the result of the CAS operation means that <code>result</code> and <code>currentValue</code> are equal then we are finished,
+otherwise we spin the current thread for 20 cycles using <code>Thread.SpinWait 20</code> before retrying the operation via recursion <code>swap newVal</code>.  This will be a lot less
+expensive than switching to user or kernel mode locking, and the period of contention between threads should be very small.  Finally the swap operation is started
+by passing in a new <code>AsyncResultCell&lt;'T&gt;</code>.</p>
+
+<p>There are various other methods we could of used, for instance we could of wrapped a <code>ManualResetEvent</code> with a call to <code>Async.AwaitWaitHandle</code>, although this
+would of meant using the kernel mode locking of the <code>ManualResetEvent</code> which is a bit more expensive.</p>
+
+<p>In Stephen Toub&#8217;s post he mentions Task&#8217;s being orphaned due to the <code>Reset()</code> method being called before the <code>Task&lt;'T&gt;</code> has been completed, that shouldn&#8217;t happen in our
+implementation due the the closures being stored internally for completion by the async infrastructure.  Heres a quick test harness to make sure everything works as expected anyway.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'>    <span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">Reset</span><span class="bp">()</span> <span class="o">=</span>
+</span><span class='line'>        <span class="k">let</span> <span class="k">rec</span> <span class="n">swap</span> <span class="n">newVal</span> <span class="o">=</span>
+</span><span class='line'>            <span class="k">let</span> <span class="n">currentValue</span> <span class="o">=</span> <span class="o">!</span><span class="n">aResCell</span>
+</span><span class='line'>            <span class="k">let</span> <span class="n">result</span> <span class="o">=</span> <span class="nn">Interlocked</span><span class="p">.</span><span class="nc">CompareExchange</span><span class="o">&lt;_&gt;(</span><span class="n">aResCell</span><span class="o">,</span> <span class="n">newVal</span><span class="o">,</span> <span class="n">currentValue</span><span class="o">)</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="nc">ReferenceEquals</span><span class="o">(</span><span class="n">result</span><span class="o">,</span> <span class="n">currentValue</span><span class="o">)</span> <span class="k">then</span> <span class="bp">()</span>
+</span><span class='line'>            <span class="k">else</span> <span class="nn">Thread</span><span class="p">.</span><span class="nc">SpinWait</span> <span class="mi">20</span>
+</span><span class='line'>                 <span class="n">swap</span> <span class="n">newVal</span>
+</span><span class='line'>        <span class="n">swap</span> <span class="o">&lt;|</span> <span class="nc">AsyncResultCell</span><span class="o">&lt;_&gt;</span><span class="bp">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">let</span> <span class="n">amre</span> <span class="o">=</span> <span class="n">asyncManualResetEvent</span><span class="bp">()</span>
+</span><span class='line'><span class="k">let</span> <span class="n">x</span> <span class="o">=</span> <span class="n">async</span><span class="o">{</span><span class="k">let</span><span class="o">!</span> <span class="n">x</span> <span class="o">=</span> <span class="n">amre</span><span class="o">.</span><span class="nc">WaitAsync</span><span class="bp">()</span>
+</span><span class='line'>              <span class="nn">Console</span><span class="p">.</span><span class="nc">WriteLine</span><span class="o">(</span><span class="s2">&quot;First signalled&quot;</span><span class="o">)}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="n">y</span> <span class="o">=</span> <span class="n">async</span><span class="o">{</span><span class="k">let</span><span class="o">!</span> <span class="n">x</span> <span class="o">=</span> <span class="n">amre</span><span class="o">.</span><span class="nc">WaitAsync</span><span class="bp">()</span>
+</span><span class='line'>             <span class="nn">Console</span><span class="p">.</span><span class="nc">WriteLine</span><span class="o">(</span><span class="s2">&quot;Second signalled&quot;</span><span class="o">)}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="n">z</span> <span class="o">=</span> <span class="n">async</span><span class="o">{</span><span class="k">let</span><span class="o">!</span> <span class="n">x</span> <span class="o">=</span> <span class="n">amre</span><span class="o">.</span><span class="nc">WaitAsync</span><span class="bp">()</span>
+</span><span class='line'>              <span class="nn">Console</span><span class="p">.</span><span class="nc">WriteLine</span><span class="o">(</span><span class="s2">&quot;Third signalled&quot;</span><span class="o">)}</span>
+</span><span class='line'><span class="c1">//start async workflows x and y</span>
+</span><span class='line'><span class="nn">Async</span><span class="p">.</span><span class="nc">Start</span> <span class="n">x</span>
+</span><span class='line'><span class="nn">Async</span><span class="p">.</span><span class="nc">Start</span> <span class="n">y</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//reset the asyncManualResetEvent, this will test whether the async workflows x and y </span>
+</span><span class='line'><span class="c1">// are orphaned due to the AsyncResultCell being recycled.</span>
+</span><span class='line'><span class="n">amre</span><span class="o">.</span><span class="nc">Reset</span><span class="bp">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//now start the async z</span>
+</span><span class='line'><span class="nn">Async</span><span class="p">.</span><span class="nc">Start</span> <span class="n">z</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//we set a single time, this should result in the three async workflows completing</span>
+</span><span class='line'><span class="n">amre</span><span class="o">.</span><span class="nc">Set</span><span class="bp">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="nn">Console</span><span class="p">.</span><span class="nc">ReadLine</span><span class="bp">()</span> <span class="o">|&gt;</span> <span class="n">ignore</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here we can see everything works out as we expected:</p>
+
+<p><img src="https://lh6.googleusercontent.com/-NYIKC5Gaahs/T4YAQGtP9RI/AAAAAAAABR8/_cTOriC1_Fw/amre.png" title="" ></p>
+
+<p>Thats all there is too it, next time I will be exploring an asyncAutoResetEvent in much the same vein.</p>
+
+<hr />
+
+<h4>Musical inspiration during the creation of this post:</h4>
+
+<ul>
+<li>Smashing Pumpkins - Zeitgeist</li>
+<li>Soulfly - Primitive</li>
+<li>FooFighters - FooFighters<br/>
+<img src="http://upload.wikimedia.org/wikipedia/en/f/fb/Zeitgeist_cover.png" width="125" title="Smashing Pumpkins Zeitgeist" ><img src="http://upload.wikimedia.org/wikipedia/en/3/34/Primitive.png" width="125" title="Soulfly Primitive" ><img src="http://upload.wikimedia.org/wikipedia/en/0/0d/FooFighters-FooFighters.jpg" width="125" title="FooFighters" ></li>
+</ul>
+
+
+<p>Until next time&#8230;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">7sharp9</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-12T07:55:00+01:00" pubdate data-updated="true">Apr 12<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/programming-tales/'>Programming Tales</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2012/04/12/back-to-the-primitive/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2012/04/12/back-to-the-primitive/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/03/11/black-scholes-taste-test/" title="Previous Post: Black-Scholes Taste Test">&laquo; Black-Scholes Taste Test</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/04/22/back-to-the-primitive-ii/" title="next Post: Back to the Primitive II">Back to the Primitive II &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/07/15/the-lurking-horror/">The Lurking Horror</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/22/back-to-the-primitive-ii/">Back to the Primitive II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/12/back-to-the-primitive/">Back to the Primitive</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/11/black-scholes-taste-test/">Black-Scholes Taste Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/FSharp-Dataflow-agents-II/">F# Dataflow Agents Part II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/22/FSharp-Dataflow-agents-I/">F# Dataflow Agents Part I</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/7sharp9">@7sharp9</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        var blacklist = [];
+        
+          
+            blacklist.push('nemerle');
+          
+            blacklist.push('FSharp.Javascript');
+          
+            blacklist.push('ServiceStack');
+          
+        
+
+        github.showRepos({
+            user: '7sharp9',
+            count: 0,
+            skip_forks: false,
+            blacklist: blacklist,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Dave Thomas -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'moiraesoftware';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2012/04/12/back-to-the-primitive/';
+        var disqus_url = 'http://MoiraeSoftware.com/blog/2012/04/12/back-to-the-primitive/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

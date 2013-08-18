@@ -1,0 +1,728 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Sockets and Bockets 3 - Moirae</title>
+  <meta name="author" content="Dave Thomas">
+
+  
+  <meta name="description" content="Welcome to part three! As promised heres a description of the inner workings.  I&#8217;m sick to death of
+typing SocketAsyncEventArgs so from now on &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2011/01/20/sockets-and-bockets-part-3/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-10152365-7']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Moirae</a></h1>
+  
+    <h2>Software Engineering Ltd</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/services.html">Services</a></li>
+  <li><a href="/contact-us.html">Contact Us</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Sockets and Bockets 3</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-01-20T01:17:55+00:00" pubdate data-updated="true">Jan 20<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>Welcome to part three!</h2>
+
+<p>As promised heres a description of the inner workings.  I&#8217;m sick to death of
+typing SocketAsyncEventArgs so from now on I will refer to it as SAEA.<!-- more --></p>
+
+<p><strong>BocketPool</strong><br/>
+The BocketPool has an interesting name and with it an interesting constructor!
+It takes the following parameters:</p>
+
+<p><strong>number</strong>: The number of items to create in the BocketPool. <strong>size</strong>: The size of each buffer in bytes. <strong>callback</strong>: A callback function which is invoked whenever the SAEA object completes its operation.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="nc">BocketPool</span><span class="o">(</span> <span class="n">number</span><span class="o">,</span> <span class="n">size</span><span class="o">,</span> <span class="n">callback</span><span class="o">)</span> <span class="k">as</span> <span class="n">this</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">number</span> <span class="o">=</span> <span class="n">number</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">totalsize</span> <span class="o">=</span> <span class="o">(</span><span class="n">number</span> <span class="o">*</span> <span class="n">size</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">buffer</span> <span class="o">=</span> <span class="nn">Array</span><span class="p">.</span><span class="n">create</span> <span class="n">totalsize</span> <span class="mi">0</span><span class="n">uy</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">pool</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BlockingCollection</span><span class="o">&lt;</span><span class="nc">SocketAsyncEventArgs</span><span class="o">&gt;(</span><span class="n">number</span><span class="o">:</span><span class="kt">int</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A <strong>buffer</strong> is created with a size equal to the (<strong>number</strong> * <strong>size</strong>)
+in bytes.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">do</span>
+</span><span class='line'>      <span class="k">let</span> <span class="k">rec</span> <span class="n">loop</span> <span class="n">n</span> <span class="o">=</span>
+</span><span class='line'>        <span class="k">match</span> <span class="n">n</span> <span class="k">with</span>
+</span><span class='line'>        <span class="o">|</span> <span class="n">x</span> <span class="k">when</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">totalsize</span> <span class="o">-&gt;</span>
+</span><span class='line'>          <span class="k">let</span> <span class="n">saea</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SocketAsyncEventArgs</span><span class="bp">()</span>
+</span><span class='line'>          <span class="n">saea</span><span class="o">.</span><span class="nc">Completed</span> <span class="o">|&gt;</span> <span class="nn">Observable</span><span class="p">.</span><span class="n">add</span> <span class="n">callback</span>
+</span><span class='line'>          <span class="n">saea</span><span class="o">.</span><span class="nc">SetBuffer</span><span class="o">(</span><span class="n">buffer</span><span class="o">,</span> <span class="n">n</span><span class="o">,</span> <span class="n">size</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">this</span><span class="o">.</span><span class="nc">CheckIn</span><span class="o">(</span><span class="n">saea</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">loop</span> <span class="o">(</span><span class="n">n</span> <span class="o">+</span> <span class="n">size</span><span class="o">)</span>
+</span><span class='line'>        <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="bp">()</span>
+</span><span class='line'>      <span class="n">loop</span> <span class="mi">0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The tail recursive loop function creates a SAEA object and adds it to the
+BlockingCollection(pool).</p>
+
+<p>The buffer is assigned to each SAEA but each is given a unique offset to use,
+this is done by the SetBuffer method.  Using this method of allocation, memory
+fragmentation is reduced to a minimum by allowing the same buffer to be
+reused.</p>
+
+<p>We use the pipeline operator to attach the <strong>Completed</strong> event to the callback
+method that is passed in the constructor.</p>
+
+<p>The CheckIn, CheckOut, and Count methods are simply wrappers around the
+BlockingCollection.</p>
+
+<p>We also implement <strong>IDisposable</strong> to take care of the disposal of the SAEA in the
+BlockingCollection.</p>
+
+<p><strong>Connection</strong><br/>
+The main purpose for this type is to encapsulate the sending and receiving of
+messages for a particular client. A BocketPool is created for both the send
+and receive operations, the receiveCompleted and SentCompleted are invoked
+when the respective operations complete.</p>
+
+<p><strong>Send</strong></p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="nc">Send</span> <span class="o">(</span><span class="n">msg</span><span class="o">:</span><span class="kt">byte</span><span class="bp">[]</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>  <span class="k">let</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sendPool</span><span class="o">.</span><span class="nc">CheckOut</span><span class="bp">()</span>
+</span><span class='line'>  <span class="nn">Buffer</span><span class="p">.</span><span class="nc">BlockCopy</span><span class="o">(</span><span class="n">msg</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">s</span><span class="o">.</span><span class="nc">Buffer</span><span class="o">,</span> <span class="n">s</span><span class="o">.</span><span class="nc">Offset</span><span class="o">,</span> <span class="n">msg</span><span class="o">.</span><span class="nc">Length</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">socket</span><span class="o">.</span><span class="nc">SendAsyncSafe</span><span class="o">(</span><span class="n">this</span><span class="o">.</span><span class="n">sendCompleted</span><span class="o">,</span> <span class="n">s</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Initially a Bocket is checked out of the sendPool using sendPool.Checkout(),
+the <strong>msg</strong> byte array is copied to the corresponding <strong>Offset</strong> property of
+the SAEA.</p>
+
+<p>Finally the SendAsyncSafe extension method is called passing in the SAEA and
+the callback.</p>
+
+<p><strong>sendCompleted</strong></p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="n">sendCompleted</span> <span class="o">(</span><span class="n">args</span><span class="o">:</span> <span class="nc">SocketAsyncEventArgs</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>      <span class="k">try</span>
+</span><span class='line'>        <span class="k">match</span> <span class="n">args</span><span class="o">.</span><span class="nc">LastOperation</span> <span class="k">with</span>
+</span><span class='line'>        <span class="o">|</span> <span class="nn">SocketAsyncOperation</span><span class="p">.</span><span class="nc">Send</span> <span class="o">-&gt;</span>
+</span><span class='line'>          <span class="k">match</span> <span class="n">args</span><span class="o">.</span><span class="nc">SocketError</span> <span class="k">with</span>
+</span><span class='line'>          <span class="o">|</span> <span class="nn">SocketError</span><span class="p">.</span><span class="nc">Success</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="bp">()</span>
+</span><span class='line'>          <span class="o">|</span> <span class="nn">SocketError</span><span class="p">.</span><span class="nc">NoBufferSpaceAvailable</span>
+</span><span class='line'>          <span class="o">|</span> <span class="nn">SocketError</span><span class="p">.</span><span class="nc">IOPending</span>
+</span><span class='line'>          <span class="o">|</span> <span class="nn">SocketError</span><span class="p">.</span><span class="nc">WouldBlock</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="k">if</span> <span class="ow">not</span><span class="o">(</span><span class="n">anyErrors</span><span class="o">)</span> <span class="k">then</span>
+</span><span class='line'>              <span class="n">anyErrors</span> <span class="o">&lt;-</span> <span class="bp">true</span>
+</span><span class='line'>              <span class="n">failwith</span> <span class="s2">&quot;Buffer overflow or send buffer timeout&quot;</span>
+</span><span class='line'>          <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="n">args</span><span class="o">.</span><span class="nn">SocketError</span><span class="p">.</span><span class="nc">ToString</span><span class="bp">()</span> <span class="o">|&gt;</span> <span class="n">printfn</span> <span class="s2">&quot;socket error on send: %s&quot;</span>
+</span><span class='line'>        <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="n">failwith</span> <span class="s2">&quot;invalid operation, should be receive&quot;</span>
+</span><span class='line'>      <span class="k">finally</span>
+</span><span class='line'>        <span class="n">sendPool</span><span class="o">.</span><span class="nc">CheckIn</span><span class="o">(</span><span class="n">args</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This function matches the LastOperation property of the SAEA using pattern
+matching, this ensures that the LastOperation is always SocketError.Success.</p>
+
+<p>We raise exceptions on NoBufferSpaceAvailable, IOPending, and WouldBlock as
+buffer overflows and match any other conditions the wildcard.</p>
+
+<p>Finally we Check the Bocket back in so that it can be reused.</p>
+
+<p><strong>receiveCompleted</strong></p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="n">receiveCompleted</span> <span class="o">(</span><span class="n">args</span><span class="o">:</span> <span class="nc">SocketAsyncEventArgs</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>      <span class="k">try</span>
+</span><span class='line'>        <span class="k">match</span> <span class="n">args</span><span class="o">.</span><span class="nc">LastOperation</span> <span class="k">with</span>
+</span><span class='line'>        <span class="o">|</span> <span class="nn">SocketAsyncOperation</span><span class="p">.</span><span class="nc">Receive</span> <span class="o">-&gt;</span>
+</span><span class='line'>          <span class="k">match</span> <span class="n">args</span><span class="o">.</span><span class="nc">SocketError</span> <span class="k">with</span>
+</span><span class='line'>          <span class="o">|</span> <span class="nn">SocketError</span><span class="p">.</span><span class="nc">Success</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="n">socket</span><span class="o">.</span><span class="nc">ReceiveAsyncSafe</span><span class="o">(</span> <span class="n">this</span><span class="o">.</span><span class="n">receiveCompleted</span><span class="o">,</span> <span class="n">receivePool</span><span class="o">.</span><span class="nc">CheckOut</span><span class="bp">()</span><span class="o">)</span>
+</span><span class='line'>            <span class="k">let</span> <span class="n">data</span> <span class="o">=</span> <span class="nn">Array</span><span class="p">.</span><span class="n">create</span> <span class="n">args</span><span class="o">.</span><span class="nc">BytesTransferred</span> <span class="mi">0</span><span class="n">uy</span>
+</span><span class='line'>            <span class="nn">Buffer</span><span class="p">.</span><span class="nc">BlockCopy</span><span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="nc">Buffer</span><span class="o">,</span> <span class="n">args</span><span class="o">.</span><span class="nc">Offset</span><span class="o">,</span> <span class="n">data</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">data</span><span class="o">.</span><span class="nc">Length</span><span class="o">)</span>
+</span><span class='line'>            <span class="k">let</span> <span class="n">client</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="nc">RemoteEndPoint</span>
+</span><span class='line'>            <span class="n">args</span><span class="o">.</span><span class="nc">RemoteEndPoint</span> <span class="o">&lt;-</span> <span class="k">null</span>
+</span><span class='line'>            <span class="n">data</span> <span class="o">|&gt;</span> <span class="n">printfn</span> <span class="s2">&quot;received data: %A&quot;</span>
+</span><span class='line'>          <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="n">args</span><span class="o">.</span><span class="nn">SocketError</span><span class="p">.</span><span class="nc">ToString</span><span class="bp">()</span> <span class="o">|&gt;</span> <span class="n">printfn</span> <span class="s2">&quot;socket error on receive: %s&quot;</span>
+</span><span class='line'>        <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="n">failwith</span> <span class="s2">&quot;unknown operation, should be receive&quot;</span>
+</span><span class='line'>      <span class="k">finally</span>
+</span><span class='line'>        <span class="n">receivePool</span><span class="o">.</span><span class="nc">CheckIn</span><span class="o">(</span><span class="n">args</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This function is very similar to the sendCompleted and could probably be
+refactored a bit using the <a href="http://enfranchisedmind.com/blog/posts/the-hole-in-the-middle-%0Apattern/">Hole in the middle
+pattern</a>.  Again we check to ensure the last operation was a success, we
+checkout another Bocket and start another ReceiveAsyncSafe. This ensures that
+the socket can begin another receive operation as soon as possible while we
+take the data from the SAEA Buffer, we do this with Buffer.Block copy.</p>
+
+<p>If this were a fully-fledged API then we would raise an event here so that
+users of the component could consume the data.</p>
+
+<p>In my own component the data is inserted into a series of processing stages
+using the <a href="http://www.cise.ufl.edu/research/ParallelPatterns%0A/PatternLanguage/AlgorithmStructure/Pipeline.htm">Pipeline Pattern</a>, which I will be may
+describe in a future post if anyone&#8217;s interested.</p>
+
+<p><strong>TcpListener</strong><br/>
+The TcpListener is very similar to the Connection object in that it has a pool
+of SAEA objects that are used to accept connection from clients, again a round
+of refactoring could be done here to avoid duplication with the Connection
+type.  The main difference is that we don&#8217;t need to use the Buffer on the SAEA
+to send anything to the client when it initially connects.</p>
+
+<p><strong>acceptCompleted</strong></p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="n">acceptcompleted</span> <span class="o">(</span><span class="n">args</span> <span class="o">:</span> <span class="nc">SocketAsyncEventArgs</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>      <span class="k">try</span>
+</span><span class='line'>        <span class="k">match</span> <span class="n">args</span><span class="o">.</span><span class="nc">LastOperation</span> <span class="k">with</span>
+</span><span class='line'>        <span class="o">|</span> <span class="nn">SocketAsyncOperation</span><span class="p">.</span><span class="nc">Accept</span> <span class="o">-&gt;</span>
+</span><span class='line'>          <span class="k">match</span> <span class="n">args</span><span class="o">.</span><span class="nc">SocketError</span> <span class="k">with</span>
+</span><span class='line'>          <span class="o">|</span> <span class="nn">SocketError</span><span class="p">.</span><span class="nc">Success</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="n">listeningSocket</span><span class="o">.</span><span class="nc">AcceptAsyncSafe</span><span class="o">(</span> <span class="n">this</span><span class="o">.</span><span class="n">acceptcompleted</span><span class="o">,</span> <span class="n">acceptPool</span><span class="o">.</span><span class="nc">Take</span><span class="bp">()</span><span class="o">)</span>
+</span><span class='line'>            <span class="c1">//create new connection</span>
+</span><span class='line'>            <span class="k">let</span> <span class="n">connection</span> <span class="o">=</span> <span class="n">newConnection</span> <span class="n">args</span><span class="o">.</span><span class="nc">AcceptSocket</span>
+</span><span class='line'>            <span class="n">connection</span><span class="o">.</span><span class="nc">Start</span><span class="bp">()</span>
+</span><span class='line'>            <span class="c1">//update stats</span>
+</span><span class='line'>            <span class="n">reportConnections</span>
+</span><span class='line'>            <span class="c1">//async start of messages to client</span>
+</span><span class='line'>            <span class="n">startSending</span> <span class="n">connection</span>
+</span><span class='line'>            <span class="c1">//remove the AcceptSocket because we will be reusing args</span>
+</span><span class='line'>            <span class="n">args</span><span class="o">.</span><span class="nc">AcceptSocket</span> <span class="o">&lt;-</span> <span class="k">null</span>
+</span><span class='line'>          <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="n">args</span><span class="o">.</span><span class="nn">SocketError</span><span class="p">.</span><span class="nc">ToString</span><span class="bp">()</span> <span class="o">|&gt;</span> <span class="n">printfn</span> <span class="s2">&quot;socket error on accept: %s&quot;</span>
+</span><span class='line'>        <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="n">args</span><span class="o">.</span><span class="nc">LastOperation</span> <span class="o">|&gt;</span> <span class="n">failwith</span> <span class="s2">&quot;Unknown operation, should be accept but was %a&quot;</span>
+</span><span class='line'>      <span class="k">finally</span>
+</span><span class='line'>        <span class="n">acceptPool</span><span class="o">.</span><span class="nc">Add</span><span class="o">(</span><span class="n">args</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This function is similar to the send and receive completed methods in the
+Connection type, although this time we create a Connection object and call the
+Start function, this puts the Connection into receive mode.</p>
+
+<p>The reportConnections is called next which simply prints how many clients are
+connected, we now start an Asyncronous workflow using the startSending
+function.</p>
+
+<p>Finally we set the AcceptSocket property to null on the SAEA object and add it
+back to the BlockingCollection so that it can be reused.</p>
+
+<p>The purpose of the BlockingCollection here is to have a fixed pool of SAEA
+that block when there isn&#8217;t an SAEA to service the new connection, this could
+be a potential issue for the client as it could timeout while waiting for a
+connection but this is a far preferable situation than causing your server to
+be effectively denied service due to overload.</p>
+
+<p><strong>startSending</strong></p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">let</span> <span class="n">startSending</span> <span class="n">connection</span> <span class="o">=</span>
+</span><span class='line'>      <span class="nn">Async</span><span class="p">.</span><span class="nc">Start</span> <span class="o">(</span><span class="n">async</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">try</span>
+</span><span class='line'>          <span class="k">use</span> <span class="o">_</span><span class="n">holder</span> <span class="o">=</span> <span class="n">connection</span>
+</span><span class='line'>          <span class="k">do</span><span class="o">!</span> <span class="n">asyncServiceClient</span> <span class="n">connection</span>
+</span><span class='line'>        <span class="k">with</span> <span class="n">e</span> <span class="o">-&gt;</span>
+</span><span class='line'>          <span class="k">if</span> <span class="ow">not</span><span class="o">(</span><span class="n">anyErrors</span><span class="o">)</span> <span class="k">then</span>
+</span><span class='line'>            <span class="n">anyErrors</span> <span class="o">&lt;-</span> <span class="bp">true</span>
+</span><span class='line'>            <span class="nn">Console</span><span class="p">.</span><span class="nc">WriteLine</span><span class="o">(</span><span class="s2">&quot;server ERROR&quot;</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">raise</span> <span class="n">e</span>
+</span><span class='line'>        <span class="o">}</span> <span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This function uses the syntactic sugar of the asynchronous workflows to start
+an operation on the Thread pool, once queued on the thread pool it is wrapped
+in a using block with the <strong><em>use </em>holder = connection_</strong> statement and
+asynchronously calls the asyncServiceClient function, this has the effect of
+disposing of the Connection type when it exits scope or encounters an
+exception.</p>
+
+<p><strong>asyncServiceClient</strong></p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">let</span> <span class="n">asyncServiceClient</span> <span class="o">(</span><span class="n">client</span><span class="o">:</span> <span class="nc">Connection</span><span class="o">)</span> <span class="o">=</span> <span class="n">async</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">client</span><span class="o">.</span><span class="nc">Send</span><span class="o">(</span><span class="n">header</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">while</span> <span class="bp">true</span> <span class="k">do</span>
+</span><span class='line'>        <span class="k">do</span><span class="o">!</span> <span class="n">asyncWriteStockQuote</span><span class="o">(</span><span class="n">client</span><span class="o">)</span> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This function sends a one byte header message to the client using the
+Connection.Send, followed by calling asyncWriteStockQuote in a continuous
+loop.</p>
+
+<p><strong>asyncWriteStockQuote</strong></p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">let</span> <span class="n">asyncWriteStockQuote</span><span class="o">(</span><span class="n">connection</span><span class="o">:</span><span class="nc">Connection</span><span class="o">)</span> <span class="o">=</span> <span class="n">async</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">do</span><span class="o">!</span> <span class="nn">Async</span><span class="p">.</span><span class="nc">Sleep</span> <span class="mi">1000</span>
+</span><span class='line'>      <span class="n">connection</span><span class="o">.</span><span class="nc">Send</span><span class="o">(</span><span class="n">testMessage</span><span class="o">)</span>
+</span><span class='line'>      <span class="nn">Interlocked</span><span class="p">.</span><span class="nc">Increment</span><span class="o">(&amp;</span><span class="n">numWritten</span><span class="o">)</span> <span class="o">|&gt;</span> <span class="n">ignore</span> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This function sleeps for 1000ms and uses the Connection.Send function to sent
+a message to the client, the number of results is updated using the
+Interlocked class.</p>
+
+<p>I would like to refer you to <a href="http://lorgonblog.wordpress.com/2010/03/28/f-async-on-the-server-side/">Brian McNamara&#8217;s
+post</a>
+that describes this part in more detail.  The only difference in our workflow
+is that we don&#8217;t use a stream operation as we have the SendAsyncSafe function
+to do all the work for us.  IDispose is also implemented on this type too as
+we have to dispose of the SAEA objects that are used for the asynchronous
+accepts.</p>
+
+<p><strong>createTcpSocket</strong></p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">let</span> <span class="n">createTcpSocket</span><span class="bp">()</span> <span class="o">=</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nc">Socket</span><span class="o">(</span><span class="nn">AddressFamily</span><span class="p">.</span><span class="nc">InterNetwork</span><span class="o">,</span> <span class="nn">SocketType</span><span class="p">.</span><span class="nc">Stream</span><span class="o">,</span> <span class="nn">ProtocolType</span><span class="p">.</span><span class="nc">Tcp</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This function simply wraps the Sockets class constructor mapping it to: Tcp
+protocol, Streaming, and InterNetwork Address type.</p>
+
+<p><strong>createListener</strong></p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">let</span> <span class="n">createListener</span> <span class="o">(</span><span class="n">ip</span><span class="o">:</span><span class="nc">IPAddress</span><span class="o">,</span> <span class="n">port</span><span class="o">,</span> <span class="n">backlog</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>      <span class="k">let</span> <span class="n">s</span> <span class="o">=</span> <span class="n">createTcpSocket</span><span class="bp">()</span>
+</span><span class='line'>      <span class="n">s</span><span class="o">.</span><span class="nc">Bind</span><span class="o">(</span><span class="k">new</span> <span class="nc">IPEndPoint</span><span class="o">(</span><span class="n">ip</span><span class="o">,</span> <span class="n">port</span><span class="o">))</span>
+</span><span class='line'>      <span class="n">s</span><span class="o">.</span><span class="nc">Listen</span><span class="o">(</span><span class="n">backlog</span><span class="o">);</span> <span class="n">s</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This function calls the createTcpSocket function, binds to the IPAddress and
+port that are passed in and starts listening for connections.</p>
+
+<p><strong>Start</strong></p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="n">start</span> <span class="bp">()</span> <span class="o">=</span>
+</span><span class='line'>      <span class="n">listeningSocket</span><span class="o">.</span><span class="nc">AcceptAsyncSafe</span><span class="o">(</span> <span class="n">this</span><span class="o">.</span><span class="n">acceptcompleted</span><span class="o">,</span> <span class="n">acceptPool</span><span class="o">.</span><span class="nc">Take</span><span class="bp">()</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">while</span> <span class="bp">true</span> <span class="k">do</span>
+</span><span class='line'>      <span class="nn">Thread</span><span class="p">.</span><span class="nc">Sleep</span> <span class="mi">1000</span>
+</span><span class='line'>      <span class="k">let</span> <span class="n">count</span> <span class="o">=</span> <span class="nn">Interlocked</span><span class="p">.</span><span class="nc">Exchange</span><span class="o">(&amp;</span><span class="n">numWritten</span><span class="o">,</span> <span class="mi">0</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">count</span> <span class="o">|&gt;</span> <span class="n">printfn</span> <span class="s2">&quot;Quotes per sec: %A&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This function starts the whole process of listening for a connection from
+clients.  A SAEA is taken from the BlockingCollection and AcceptAsyncSafe is
+called.</p>
+
+<p>I have tried to describe all of the functions that I think merit a description
+but I have been involved in this sort of code for years now so if you have any
+queries feel free to just drop a comment and I will try to help.</p>
+
+<p>When looking through the code remember that this is just a demo, I am
+currently still working on a few things but may offer the full API available
+for download at a later date or put it on GitHub.</p>
+
+<p>In part four we are going to compare some of the differences in operation
+between the xxxAsync and the IAsync pattern, obviously there is a lot more
+code and inherent complexity in this implementation but in high volume
+situations it makes a lot of difference.</p>
+
+<p>See you next time.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">7sharp9</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-01-20T01:17:55+00:00" pubdate data-updated="true">Jan 20<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/programming-tales/'>Programming Tales</a>, <a class='category' href='/blog/categories/sockets/'>Sockets</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2011/01/20/sockets-and-bockets-part-3/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2011/01/20/sockets-and-bockets-part-3/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/01/14/sockets-and-bockets-part-2/" title="Previous Post: Sockets and Bockets 2">&laquo; Sockets and Bockets 2</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/01/28/sockets-and-bockets-part-4/" title="next Post: Sockets and Bockets 4">Sockets and Bockets 4 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/07/15/the-lurking-horror/">The Lurking Horror</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/22/back-to-the-primitive-ii/">Back to the Primitive II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/12/back-to-the-primitive/">Back to the Primitive</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/11/black-scholes-taste-test/">Black-Scholes Taste Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/FSharp-Dataflow-agents-II/">F# Dataflow Agents Part II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/22/FSharp-Dataflow-agents-I/">F# Dataflow Agents Part I</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/7sharp9">@7sharp9</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        var blacklist = [];
+        
+          
+            blacklist.push('nemerle');
+          
+            blacklist.push('FSharp.Javascript');
+          
+            blacklist.push('ServiceStack');
+          
+        
+
+        github.showRepos({
+            user: '7sharp9',
+            count: 0,
+            skip_forks: false,
+            blacklist: blacklist,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Dave Thomas -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'moiraesoftware';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2011/01/20/sockets-and-bockets-part-3/';
+        var disqus_url = 'http://MoiraeSoftware.com/blog/2011/01/20/sockets-and-bockets-part-3/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
