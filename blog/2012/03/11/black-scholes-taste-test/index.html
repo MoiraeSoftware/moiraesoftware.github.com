@@ -1,0 +1,768 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Black-Scholes Taste Test - Moirae</title>
+  <meta name="author" content="Dave Thomas">
+
+  
+  <meta name="description" content="In this edition we are going to be doing a taste test, C# vs F#. Oh yeah, if you quickly glanced at the title you may
+have thought this was a recipe &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2012/03/11/black-scholes-taste-test/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-10152365-7']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Moirae</a></h1>
+  
+    <h2>Software Engineering Ltd</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/services.html">Services</a></li>
+  <li><a href="/contact-us.html">Contact Us</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Black-Scholes Taste Test</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-11T23:58:00+00:00" pubdate data-updated="true">Mar 11<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this edition we are going to be doing a taste test, C# vs F#.  Oh yeah, if you quickly glanced at the title you may
+have thought this was a recipe for black scones, as interesting and tasty as that may be, unfortunately its going
+to be finance related.</p>
+
+<p>I recently presented a paper on the benefits of F#, part of this was a comparison of the famous
+<a href="http://en.wikipedia.org/wiki/Black-Scholes">Black-Scholes</a> equation in both C# and F#.  I was mainly going to be
+looking at code succinctness and the inherent suitability of the language for calculation based work, but there ended
+up being more to it than that.</p>
+
+<p>First of all I quickly set up a test rig to run 50 million iterations of the algorithm to see if there were any difference
+in the processing speed.  I want expecting any major differences at this point but here&#8217;s what I got:</p>
+
+<p>C# results for 50 million iterations <img src="https://lh6.googleusercontent.com/-cEzGoE_P2cE/T1vf_SxtGfI/AAAAAAAABRE/RE4ReRLAhu8/s531/csbs.png"></p>
+
+<p>F# results for 50 million iterations <img src="https://lh3.googleusercontent.com/-PLdltL0YiIs/T1vf_Wo2ZrI/AAAAAAAABRI/WijGdNaOnK4/s531/fsbs.png"></p>
+
+<p>I think you will agree that&#8217;s quite a difference, lets have a look at the code to see what&#8217;s going on.</p>
+
+<h2>C# Implementation</h2>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Options</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">enum</span> <span class="n">Style</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">Call</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">Put</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">static</span> <span class="kt">double</span> <span class="nf">BlackScholes</span><span class="p">(</span><span class="n">Style</span> <span class="n">callPut</span><span class="p">,</span> <span class="kt">double</span> <span class="n">s</span><span class="p">,</span> <span class="kt">double</span> <span class="n">x</span><span class="p">,</span> <span class="kt">double</span> <span class="n">t</span><span class="p">,</span> <span class="kt">double</span> <span class="n">r</span><span class="p">,</span> <span class="kt">double</span> <span class="n">v</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">result</span> <span class="p">=</span> <span class="m">0.0</span><span class="p">;</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">d1</span> <span class="p">=</span> <span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">s</span> <span class="p">/</span> <span class="n">x</span><span class="p">)</span> <span class="p">+</span> <span class="p">(</span><span class="n">r</span> <span class="p">+</span> <span class="n">v</span> <span class="p">*</span> <span class="n">v</span> <span class="p">/</span> <span class="m">2.0</span><span class="p">)</span> <span class="p">*</span> <span class="n">t</span><span class="p">)</span> <span class="p">/</span> <span class="p">(</span><span class="n">v</span> <span class="p">*</span> <span class="n">Math</span><span class="p">.</span><span class="n">Sqrt</span><span class="p">(</span><span class="n">t</span><span class="p">));</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">d2</span> <span class="p">=</span> <span class="n">d1</span> <span class="p">-</span> <span class="n">v</span> <span class="p">*</span> <span class="n">Math</span><span class="p">.</span><span class="n">Sqrt</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">switch</span> <span class="p">(</span><span class="n">callPut</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">Style</span><span class="p">.</span><span class="n">Call</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">result</span> <span class="p">=</span> <span class="n">s</span> <span class="p">*</span> <span class="n">Cnd</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span> <span class="p">-</span><span class="n">x</span> <span class="p">*</span> <span class="n">Math</span><span class="p">.</span><span class="n">Exp</span><span class="p">(-</span><span class="n">r</span> <span class="p">*</span> <span class="n">t</span><span class="p">)</span> <span class="p">*</span> <span class="n">Cnd</span><span class="p">(</span><span class="n">d2</span><span class="p">);</span>
+</span><span class='line'>                <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">Style</span><span class="p">.</span><span class="n">Put</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">result</span> <span class="p">=</span> <span class="n">x</span> <span class="p">*</span> <span class="n">Math</span><span class="p">.</span><span class="n">Exp</span><span class="p">(-</span><span class="n">r</span> <span class="p">*</span> <span class="n">t</span><span class="p">)</span> <span class="p">*</span> <span class="n">Cnd</span><span class="p">(-</span><span class="n">d2</span><span class="p">)</span> <span class="p">-</span><span class="n">s</span> <span class="p">*</span> <span class="n">Cnd</span><span class="p">(-</span><span class="n">d1</span><span class="p">);</span>
+</span><span class='line'>                <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">private</span> <span class="k">static</span> <span class="kt">double</span> <span class="nf">Cnd</span><span class="p">(</span><span class="kt">double</span> <span class="n">x</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">const</span> <span class="kt">double</span> <span class="n">a1</span> <span class="p">=</span> <span class="m">0.31938153</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">const</span> <span class="kt">double</span> <span class="n">a2</span> <span class="p">=</span> <span class="p">-</span><span class="m">0.356563782</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">const</span> <span class="kt">double</span> <span class="n">a3</span> <span class="p">=</span> <span class="m">1.781477937</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">const</span> <span class="kt">double</span> <span class="n">a4</span> <span class="p">=</span> <span class="p">-</span><span class="m">1.821255978</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">const</span> <span class="kt">double</span> <span class="n">a5</span> <span class="p">=</span> <span class="m">1.330274429</span><span class="p">;</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">l</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="n">Abs</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">k</span> <span class="p">=</span> <span class="m">1.0</span> <span class="p">/</span> <span class="p">(</span><span class="m">1.0</span> <span class="p">+</span> <span class="m">0.2316419</span> <span class="p">*</span> <span class="n">l</span><span class="p">);</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">w</span> <span class="p">=</span> <span class="m">1.0</span> <span class="p">-</span> <span class="m">1.0</span> <span class="p">/</span> <span class="n">Math</span><span class="p">.</span><span class="n">Sqrt</span><span class="p">(</span><span class="m">2</span> <span class="p">*</span> <span class="n">Math</span><span class="p">.</span><span class="n">PI</span><span class="p">)</span> <span class="p">*</span>
+</span><span class='line'>            <span class="n">Math</span><span class="p">.</span><span class="n">Exp</span><span class="p">(-</span><span class="n">l</span> <span class="p">*</span> <span class="n">l</span> <span class="p">/</span> <span class="m">2.0</span><span class="p">)</span> <span class="p">*</span> <span class="p">(</span><span class="n">a1</span> <span class="p">*</span> <span class="n">k</span> <span class="p">+</span> <span class="n">a2</span> <span class="p">*</span> <span class="n">k</span> <span class="p">*</span> <span class="n">k</span> <span class="p">+</span> <span class="n">a3</span> <span class="p">*</span>
+</span><span class='line'>                <span class="n">Math</span><span class="p">.</span><span class="n">Pow</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="m">3</span><span class="p">)</span> <span class="p">+</span> <span class="n">a4</span> <span class="p">*</span> <span class="n">Math</span><span class="p">.</span><span class="n">Pow</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="m">4</span><span class="p">)</span> <span class="p">+</span> <span class="n">a5</span> <span class="p">*</span> <span class="n">Math</span><span class="p">.</span><span class="n">Pow</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="m">5</span><span class="p">));</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="p">&lt;</span> <span class="m">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="m">1.0</span> <span class="p">-</span> <span class="n">w</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">w</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>F# Implementation</h2>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">module</span> <span class="n">options</span>
+</span><span class='line'><span class="k">open</span> <span class="nc">System</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">type</span> <span class="nc">Style</span> <span class="o">=</span> <span class="nc">Call</span> <span class="o">|</span> <span class="nc">Put</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="n">cnd</span> <span class="n">x</span> <span class="o">=</span>
+</span><span class='line'>   <span class="k">let</span> <span class="n">a1</span> <span class="o">=</span> <span class="mi">0</span><span class="o">.</span><span class="mi">31938153</span>
+</span><span class='line'>   <span class="k">let</span> <span class="n">a2</span> <span class="o">=</span> <span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">356563782</span>
+</span><span class='line'>   <span class="k">let</span> <span class="n">a3</span> <span class="o">=</span> <span class="mi">1</span><span class="o">.</span><span class="mi">781477937</span>
+</span><span class='line'>   <span class="k">let</span> <span class="n">a4</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">.</span><span class="mi">821255978</span>
+</span><span class='line'>   <span class="k">let</span> <span class="n">a5</span> <span class="o">=</span> <span class="mi">1</span><span class="o">.</span><span class="mi">330274429</span>
+</span><span class='line'>   <span class="k">let</span> <span class="n">l</span>  <span class="o">=</span> <span class="n">abs</span> <span class="n">x</span>
+</span><span class='line'>   <span class="k">let</span> <span class="n">k</span>  <span class="o">=</span> <span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">/</span> <span class="o">(</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">+</span> <span class="mi">0</span><span class="o">.</span><span class="mi">2316419</span> <span class="o">*</span> <span class="n">l</span><span class="o">)</span>
+</span><span class='line'>   <span class="k">let</span> <span class="n">w</span>  <span class="o">=</span> <span class="o">(</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">-</span> <span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">/</span> <span class="n">sqrt</span><span class="o">(</span><span class="mi">2</span><span class="o">.</span><span class="mi">0</span> <span class="o">*</span> <span class="nn">Math</span><span class="p">.</span><span class="nc">PI</span><span class="o">)</span> <span class="o">*</span>
+</span><span class='line'>                <span class="n">exp</span><span class="o">(-</span><span class="n">l</span> <span class="o">*</span> <span class="n">l</span> <span class="o">/</span> <span class="mi">2</span><span class="o">.</span><span class="mi">0</span><span class="o">)</span> <span class="o">*</span> <span class="o">(</span><span class="n">a1</span> <span class="o">*</span> <span class="n">k</span> <span class="o">+</span> <span class="n">a2</span> <span class="o">*</span> <span class="n">k</span> <span class="o">*</span> <span class="n">k</span> <span class="o">+</span> <span class="n">a3</span> <span class="o">*</span>
+</span><span class='line'>                    <span class="o">(</span><span class="n">pown</span> <span class="n">k</span> <span class="mi">3</span><span class="o">)</span> <span class="o">+</span> <span class="n">a4</span> <span class="o">*</span> <span class="o">(</span><span class="n">pown</span> <span class="n">k</span> <span class="mi">4</span><span class="o">)</span> <span class="o">+</span> <span class="n">a5</span> <span class="o">*</span> <span class="o">(</span><span class="n">pown</span> <span class="n">k</span> <span class="mi">5</span><span class="o">)))</span>
+</span><span class='line'>   <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span> <span class="k">then</span> <span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">-</span> <span class="n">w</span>
+</span><span class='line'>   <span class="k">else</span> <span class="n">w</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="n">blackscholes</span> <span class="n">style</span> <span class="n">s</span> <span class="n">x</span> <span class="n">t</span> <span class="n">r</span> <span class="n">v</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">d1</span> <span class="o">=</span> <span class="o">(</span><span class="n">log</span><span class="o">(</span><span class="n">s</span> <span class="o">/</span> <span class="n">x</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">v</span> <span class="o">*</span> <span class="n">v</span> <span class="o">/</span> <span class="mi">2</span><span class="o">.</span><span class="mi">0</span><span class="o">)</span> <span class="o">*</span> <span class="n">t</span><span class="o">)</span> <span class="o">/</span> <span class="o">(</span><span class="n">v</span> <span class="o">*</span> <span class="n">sqrt</span><span class="o">(</span><span class="n">t</span><span class="o">))</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">d2</span> <span class="o">=</span> <span class="n">d1</span> <span class="o">-</span> <span class="n">v</span> <span class="o">*</span> <span class="n">sqrt</span><span class="o">(</span><span class="n">t</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">match</span> <span class="n">style</span> <span class="k">with</span>
+</span><span class='line'>    <span class="o">|</span> <span class="nc">Call</span> <span class="o">-&gt;</span> <span class="n">s</span> <span class="o">*</span> <span class="n">cnd</span><span class="o">(</span><span class="n">d1</span><span class="o">)</span> <span class="o">-</span><span class="n">x</span> <span class="o">*</span> <span class="n">exp</span><span class="o">(-</span><span class="n">r</span> <span class="o">*</span> <span class="n">t</span><span class="o">)</span> <span class="o">*</span> <span class="n">cnd</span><span class="o">(</span><span class="n">d2</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">|</span> <span class="nc">Put</span> <span class="o">-&gt;</span> <span class="n">x</span> <span class="o">*</span> <span class="n">exp</span><span class="o">(-</span><span class="n">r</span> <span class="o">*</span> <span class="n">t</span><span class="o">)</span> <span class="o">*</span> <span class="n">cnd</span><span class="o">(-</span><span class="n">d2</span><span class="o">)</span> <span class="o">-</span><span class="n">s</span> <span class="o">*</span> <span class="n">cnd</span><span class="o">(-</span><span class="n">d1</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Differences</h2>
+
+<p>The most significant differences when the code is compiled comes down to a few areas.</p>
+
+<h3>The BlackScholes function</h3>
+
+<p>The first thing to note is the code size and number of local variables:</p>
+
+<figure class='code'><figcaption><span>F# </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>// Code size       122 (0x7a)
+</span><span class='line'>.maxstack  6
+</span><span class='line'>.locals init ([0] float64 d1,
+</span><span class='line'>         [1] float64 d2)</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>C# </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>// Code size       164 (0xa4)
+</span><span class='line'>.maxstack  4
+</span><span class='line'>.locals init ([0] float64 d1,
+</span><span class='line'>         [1] float64 d2,
+</span><span class='line'>         [2] float64 result,
+</span><span class='line'>         [3] valuetype CsBs.Options/Style CS$0$0000)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The initial arguments that are loaded in the F# implementation is done in fewer IL op codes then C#.</p>
+
+<figure class='code'><figcaption><span>F# </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>IL_0001:  ldarg.1
+</span><span class='line'>IL_0002:  ldarg.2
+</span><span class='line'>IL_0003:  div
+</span><span class='line'>IL_0004:  call       float64 [mscorlib]System.Math::Log(float64)</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>C#  </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>IL_0000:  ldc.r8     0.0
+</span><span class='line'>IL_0009:  stloc.0
+</span><span class='line'>IL_000a:  ldc.r8     0.0
+</span><span class='line'>IL_0013:  stloc.1
+</span><span class='line'>IL_0014:  ldc.r8     0.0
+</span><span class='line'>IL_001d:  stloc.2
+</span><span class='line'>IL_001e:  ldarg.1
+</span><span class='line'>IL_001f:  ldarg.2
+</span><span class='line'>IL_0020:  div
+</span><span class='line'>IL_0021:  call       float64 [mscorlib]System.Math::Log(float64)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can see in the C# code is intialising the local variable to 0.0 by pushing them to the stack
+<code>ldc.r8</code> then storing them <code>stloc.0</code>.</p>
+
+<p>The pattern matching in the F# code results in a call to get the style <code>options/Style::get_Tag()</code>
+and then a branch if not equal opcode <code>bne.un.s</code> which causes a jump to <code>IL_005d</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>IL_0036:  call       instance int32 options/Style::get_Tag()```
+</span><span class='line'>IL_003b:  ldc.i4.1
+</span><span class='line'>IL_003c:  bne.un.s   IL_005d</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The C# version loads the local variable for the <code>Style</code> <code>IL_0053:  stloc.3</code> and then uses the switch
+opcode to jump table to jump to either position <code>IL_0064</code> or <code>IL_0083</code>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>IL_0053:  stloc.3
+</span><span class='line'>IL_0054:  ldloc.3
+</span><span class='line'>IL_0055:  switch     ( 
+</span><span class='line'>                      IL_0064,
+</span><span class='line'>                      IL_0083)
+</span><span class='line'>IL_0062:  br.s       IL_00a2</span></code></pre></td></tr></table></div></figure>
+
+
+<p>These are negligible, I&#8217;m mealy pointing out the differences in compilation between the two languages.<br/>
+The F# compiler is more stringent when compiling the code.</p>
+
+<h3>The Cnd function</h3>
+
+<p>The Cnd function or <a href="http://en.wikipedia.org/wiki/Normal_distribution">cumulative normal distribution</a>
+is where the performance differences occur.</p>
+
+<p>Again at initialization you can see the C# version is larger by 41.</p>
+
+<figure class='code'><figcaption><span>F# </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>// Code size       213 (0xd5)
+</span><span class='line'>.maxstack  8
+</span><span class='line'>.locals init ([0] float64 l,
+</span><span class='line'>         [1] float64 k,
+</span><span class='line'>         [2] float64 w)</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>C#  </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>// Code size       254 (0xfe)
+</span><span class='line'>.maxstack  6
+</span><span class='line'>.locals init ([0] float64 l,
+</span><span class='line'>         [1] float64 k,
+</span><span class='line'>         [2] float64 w)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The C# version initialises all the local variables to 0.0.</p>
+
+<figure class='code'><figcaption><span>C#  </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>IL_0000:  ldc.r8     0.0
+</span><span class='line'>IL_0009:  stloc.0
+</span><span class='line'>IL_000a:  ldc.r8     0.0
+</span><span class='line'>IL_0013:  stloc.1
+</span><span class='line'>IL_0014:  ldc.r8     0.0
+</span><span class='line'>IL_001d:  stloc.2</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Interestingly the C# compiler optimises out the call to <code>Math.PI * 2</code> but the F# compiler doesn&#8217;t.</p>
+
+<figure class='code'><figcaption><span>F#  </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>IL_003a:  ldc.r8     2.
+</span><span class='line'>IL_0043:  ldc.r8     3.1415926535897931
+</span><span class='line'>IL_004c:  mul</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>C#  </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>IL_0057:  ldc.r8     6.2831853071795862</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From here everything is identical until we get to the power operator section (<code>Math.Pow</code> in the C# version and <code>pown</code> in F#).</p>
+
+<figure class='code'><figcaption><span>F#  </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>IL_0089:  ldloc.1
+</span><span class='line'>IL_008a:  ldc.i4.3
+</span><span class='line'>IL_008b:  call       float64 [FSharp.Core]Microsoft.FSharp.Core.Operators/OperatorIntrinsics::PowDouble(float64, 
+</span><span class='line'>                                                                                                        int32)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the F# code we are using the <code>pown</code> function which calculates the power to an integer.  This is shown in the
+call to <code>OperatorIntrinsics::PowDouble</code> which uses the value in <code>IL_0089:  ldloc.1</code> and also loads the
+integer 3 with <code>IL_008a:  ldc.i4.3</code>.</p>
+
+<figure class='code'><figcaption><span>C#  </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>IL_009c:  ldloc.1
+</span><span class='line'>IL_009d:  ldc.r8     3.
+</span><span class='line'>IL_00a6:  call       float64 [mscorlib]System.Math::Pow(float64,
+</span><span class='line'>                                                        float64)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The C# code is using the standard Math.Pow operator which operates on two float64 numbers.  The value of 3 is
+implicitly converted into a <code>float64</code> during compilation <code>IL_009d:  ldc.r8     3.</code>.</p>
+
+<p>The final difference is at the end of the function.</p>
+
+<figure class='code'><figcaption><span>F#  </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>IL_00b8:  stloc.2
+</span><span class='line'>IL_00b9:  ldarg.0
+</span><span class='line'>IL_00ba:  ldc.r8     0.0
+</span><span class='line'>IL_00c3:  clt
+</span><span class='line'>IL_00c5:  brfalse.s  IL_00d3
+</span><span class='line'>IL_00c7:  ldc.r8     1.
+</span><span class='line'>IL_00d0:  ldloc.2
+</span><span class='line'>IL_00d1:  sub
+</span><span class='line'>IL_00d2:  ret
+</span><span class='line'>IL_00d3:  ldloc.2
+</span><span class='line'>IL_00d4:  ret</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The F# version uses the <code>clt</code> opcode.  This pushes 1 if value one on the stack is less than value two otherwise
+it pushes 0.  There is then a <code>brfalse.s</code> which jumps to location <code>IL_00d3</code> if the first value on the stack is
+less than or equal to the second value.</p>
+
+<figure class='code'><figcaption><span>C#  </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>IL_00b8:  stloc.2
+</span><span class='line'>IL_00b9:  ldarg.0
+</span><span class='line'>IL_00e5:  ldc.r8     0.0
+</span><span class='line'>IL_00ee:  bge.un.s   IL_00fc
+</span><span class='line'>IL_00f0:  ldc.r8     1.
+</span><span class='line'>IL_00f9:  ldloc.2
+</span><span class='line'>IL_00fa:  sub
+</span><span class='line'>IL_00fb:  ret
+</span><span class='line'>IL_00fc:  ldloc.2
+</span><span class='line'>IL_00fd:  ret</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The C# version uses the <code>bge.un.s</code> to jump to location <code>IL_00fc</code> if the first value on the stack is greater than
+the second.  This is negligible in normal runtime but it is interesting to note the difference between the two.</p>
+
+<h2>Conclusion</h2>
+
+<p>Wow, there was a lot of IL to get through, I hope you stayed with me!</p>
+
+<p>Although the difference in some areas are negligible, every little counts.  The implicit conversion of an integer
+field to a <code>float64</code> hides the fact that we were using an optimized integer power function in F#, that&#8217;s performance
+increase of 168%!  Some other side effects of implicit conversion can also lead to subtle bugs due to truncation
+and overflow.  The other benefits are the compiled code uses less instructions and the source code only uses 25
+lines compared to 44 in C#.</p>
+
+<p>Until next time!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Dave Thomas</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-11T23:58:00+00:00" pubdate data-updated="true">Mar 11<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/programming-tales/'>Programming Tales</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2012/03/11/black-scholes-taste-test/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2012/03/11/black-scholes-taste-test/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/02/20/fsharp-dataflow-agents-iii/" title="Previous Post: FSharp Dataflow agents III">&laquo; FSharp Dataflow agents III</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/04/12/back-to-the-primitive/" title="next Post: Back to the Primitive">Back to the Primitive &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/07/15/the-lurking-horror/">The Lurking Horror</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/22/back-to-the-primitive-ii/">Back to the Primitive II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/12/back-to-the-primitive/">Back to the Primitive</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/11/black-scholes-taste-test/">Black-Scholes Taste Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/FSharp-Dataflow-agents-II/">F# Dataflow Agents Part II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/22/FSharp-Dataflow-agents-I/">F# Dataflow Agents Part I</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/7sharp9">@7sharp9</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        var blacklist = [];
+        
+          
+            blacklist.push('nemerle');
+          
+            blacklist.push('FSharp.Javascript');
+          
+            blacklist.push('ServiceStack');
+          
+        
+
+        github.showRepos({
+            user: '7sharp9',
+            count: 0,
+            skip_forks: false,
+            blacklist: blacklist,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Dave Thomas -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'moiraesoftware';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2012/03/11/black-scholes-taste-test/';
+        var disqus_url = 'http://MoiraeSoftware.com/blog/2012/03/11/black-scholes-taste-test/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,671 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>The Lurking Horror - Moirae</title>
+  <meta name="author" content="Dave Thomas">
+
+  
+  <meta name="description" content="Deep in the darkest depths lurks an ancient horror, when the time is right it will rise forth and leave you screaming for mercy and begging for &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2012/07/15/the-lurking-horror/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-10152365-7']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Moirae</a></h1>
+  
+    <h2>Software Engineering Ltd</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/services.html">Services</a></li>
+  <li><a href="/contact-us.html">Contact Us</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">The Lurking Horror</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-15T20:13:00+01:00" pubdate data-updated="true">Jul 15<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><blockquote><p>Deep in the darkest depths lurks an ancient horror, when the time is right it will rise forth and leave you screaming for mercy and begging for forgiveness&#8230;</p></blockquote>
+
+<p>OK, I have a penchant for being over dramatic but in this post I am going to reveal some little known caveats in a well known and much revelled area of F#, agents aka the <a href="http://msdn.microsoft.com/en-us/library/ee370357" title="Control.MailboxProcessor&lt;'Msg&gt;"><code>MailboxProcessor</code></a>. Gasp!</p>
+
+<p>First let me give you a demonstration:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">open</span> <span class="nc">System</span>
+</span><span class='line'><span class="k">open</span> <span class="nn">System</span><span class="p">.</span><span class="nc">Diagnostics</span>
+</span><span class='line'><span class="k">type</span> <span class="k">internal</span> <span class="nc">BadAgentMessage</span> <span class="o">=</span>
+</span><span class='line'>  <span class="o">|</span> <span class="nc">Message</span> <span class="k">of</span> <span class="kt">string</span> <span class="o">*</span> <span class="kt">int</span>
+</span><span class='line'>  <span class="o">|</span> <span class="nc">Lock</span>
+</span><span class='line'>  <span class="o">|</span> <span class="nc">Unlock</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">type</span> <span class="nc">BadAgent</span><span class="bp">()</span> <span class="o">=</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">let</span> <span class="n">agent</span> <span class="o">=</span> <span class="nn">MailboxProcessor</span><span class="p">.</span><span class="nc">Start</span><span class="o">(</span><span class="k">fun</span> <span class="n">agent</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">sw</span> <span class="o">=</span> <span class="nc">Stopwatch</span><span class="bp">()</span>
+</span><span class='line'>    <span class="k">let</span> <span class="k">rec</span> <span class="n">waiting</span> <span class="bp">()</span> <span class="o">=</span>
+</span><span class='line'>      <span class="n">agent</span><span class="o">.</span><span class="nc">Scan</span><span class="o">(</span><span class="k">function</span>
+</span><span class='line'>        <span class="o">|</span> <span class="nc">Unlock</span> <span class="o">-&gt;</span> <span class="nc">Some</span><span class="o">(</span><span class="n">working</span> <span class="bp">()</span><span class="o">)</span>
+</span><span class='line'>        <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="nc">None</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">and</span> <span class="n">working</span><span class="bp">()</span> <span class="o">=</span> <span class="n">async</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">let</span><span class="o">!</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="nc">Receive</span><span class="bp">()</span>
+</span><span class='line'>      <span class="k">match</span> <span class="n">msg</span> <span class="k">with</span>
+</span><span class='line'>      <span class="o">|</span> <span class="nc">Lock</span> <span class="o">-&gt;</span>   <span class="k">return</span><span class="o">!</span> <span class="n">waiting</span><span class="bp">()</span>
+</span><span class='line'>      <span class="o">|</span> <span class="nc">Unlock</span> <span class="o">-&gt;</span> <span class="k">return</span><span class="o">!</span> <span class="n">working</span><span class="bp">()</span>
+</span><span class='line'>      <span class="o">|</span> <span class="nc">Message</span> <span class="o">(</span><span class="n">msg</span><span class="o">,</span> <span class="n">iter</span><span class="o">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">iter</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">then</span> <span class="n">sw</span><span class="o">.</span><span class="nc">Start</span><span class="bp">()</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">iter</span> <span class="o">%</span> <span class="mi">10000</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>            <span class="k">then</span> <span class="n">sw</span><span class="o">.</span><span class="nc">Stop</span><span class="bp">()</span>
+</span><span class='line'>                 <span class="n">printfn</span> <span class="s2">&quot;%s : %i in: %fms&quot;</span> <span class="n">msg</span> <span class="n">iter</span> <span class="n">sw</span><span class="o">.</span><span class="nn">Elapsed</span><span class="p">.</span><span class="nc">TotalMilliseconds</span>
+</span><span class='line'>                 <span class="n">sw</span><span class="o">.</span><span class="nc">Restart</span><span class="bp">()</span>
+</span><span class='line'>          <span class="k">return</span><span class="o">!</span> <span class="n">working</span><span class="bp">()</span> <span class="o">}</span>
+</span><span class='line'>    <span class="n">working</span><span class="bp">()</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">Msg</span><span class="o">(</span><span class="n">msg</span><span class="o">)</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="nc">Post</span><span class="o">(</span><span class="nc">Message</span> <span class="n">msg</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">Lock</span><span class="bp">()</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="nc">Post</span><span class="o">(</span><span class="nc">Lock</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">Unlock</span><span class="bp">()</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="nc">Post</span><span class="o">(</span><span class="nc">Unlock</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>BadAgentMessage</code> type defines a discriminated union that we are going to use for the agents message interface.  This is comprised of three elements:</p>
+
+<ul>
+<li><strong>Message:</strong>  This will just be a simple <code>string</code>-based message and an <code>int</code> used as a counter.</li>
+<li><strong>Lock:</strong>  This is used to stop message processing within the agent by causing it to wait for an <code>Unlock</code> message to arrive.</li>
+<li><strong>Unlock:</strong>  This message is used to resume the processing within the agent, effectively exiting the locked state.</li>
+</ul>
+
+
+<p>We have two main sections to the agents body which I will describe below.</p>
+
+<h3>working</h3>
+
+<p>The purpose of the <code>working</code> function is to dequeue the messages from the agent and process them with pattern matching; <code>let! msg = agent.Receive()</code> is used to get the next message which is then pattern matched to be one of the three messages types of the <code>BadAgentMessage</code>.  When the <code>Lock</code> message is encountered <code>return! waiting()</code> is used to place the agent in a state where it is waiting for an <code>Unlock</code> message to arrive.  An <code>Unlock</code> message simply resumes processing by calling <code>return! working()</code>.  The only real purpose of the <code>Unlock</code> message is to exit from the locked state that is introduced by the <code>Lock</code> message.  The <code>Message</code> message simply starts a <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.stopwatch.aspx" title="StopWatch"><code>StopWatch</code></a> on the first operation by using the Messages counter, and then stops it again on the 10,000th operation.  At this point the time taken is also printed to the console and the <code>StopWatch</code> is restarted before resuming the main processing loop by calling <code>return! working()</code></p>
+
+<h3>waiting</h3>
+
+<p>This function is using the agents <a href="http://msdn.microsoft.com/en-us/library/ee370554.aspx" title="MailboxProcessor.Scan"><code>Scan</code></a> function to wait for an <code>Unlock</code> message to arrive, once it does it puts the agent back into normal operation by calling returning <code>Some(working())</code> from the <code>Scan</code>function.  If the message does not match an <code>Unlock</code> message then <code>None</code> is returned and the agent simply waits for the next message before trying again.</p>
+
+<p>The rest of the agent is just ancillary member functions to allow easy sending of the three message types.</p>
+
+<h3>Test Harness</h3>
+
+<p>And here&#8217;s a very simple test harness:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">let</span> <span class="n">ba</span> <span class="o">=</span> <span class="nc">BadAgent</span><span class="bp">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">printfn</span> <span class="s2">&quot;Press and key to start&quot;</span>
+</span><span class='line'><span class="nn">Console</span><span class="p">.</span><span class="nc">ReadLine</span><span class="bp">()</span> <span class="o">|&gt;</span> <span class="n">ignore</span>
+</span><span class='line'><span class="k">let</span> <span class="n">dump</span> <span class="n">number</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span> <span class="o">..</span> <span class="n">number</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">ba</span><span class="o">.</span><span class="nc">Msg</span><span class="o">(</span><span class="s2">&quot;A message&quot;</span><span class="o">,</span> <span class="n">i</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ta</span><span class="o">.</span><span class="nc">Lock</span><span class="bp">()</span>
+</span><span class='line'><span class="n">dump</span> <span class="mi">200000</span>
+</span><span class='line'><span class="n">ta</span><span class="o">.</span><span class="nc">Unlock</span><span class="bp">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="nn">Console</span><span class="p">.</span><span class="nc">ReadLine</span><span class="bp">()</span> <span class="o">|&gt;</span> <span class="n">ignore</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>OK, so this is a very synthetic test but I just wanted to highlight some of the internal behaviour.  If I run this code I get the following console output:</p>
+
+<p><img src="https://lh5.googleusercontent.com/-chMoEOya7CE/T_tRraiW_eI/AAAAAAAABbY/wsQkWbm4DJM/s677/ConsoleTimes.png"></p>
+
+<p>You can see that the time to process the first 10,000 messages is 3083ms then it steadily decreases until the last 10,000 messages are processed in 94ms.  The processing time for 10,000 messages is about 33 times slower at the beginning than as it is at the end.  Why?</p>
+
+<h2>Opening it up</h2>
+
+<p>Let&#8217;s take a look at some of the internals of the <code>MailboxProcessor</code> to understand what&#8217;s going on.  First of all the core functionality is actually contained within the <code>Mailbox</code> type with the <code>MailboxProcessor</code> acting as an augmenter.  <code>TryPostAndReply</code>, <code>PostAndReply</code>, <code>PostAndTryAsyncReply</code>, and <code>PostAndAsyncReply</code> all add a single functionality to the <code>Mailbox</code> type; the ability to synchronously or asynchronously reply to a message once it arrives.  <code>TryPostAndReply</code> and <code>PostAndReply</code> both wait synchronously for a message to arrive before replying, whereas <code>PostAndTryAsyncReply</code> and <code>PostAndAsyncReply</code> both reply asynchronously.  This functionality is achieved with the use of the <code>ResultCell</code> and <code>AsyncReplyChannel</code> types.  For an in-depth discussion on this you might want to refer to my earlier series which describes implementing the <code>MailboxProcessor</code> with <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582.aspx" title="TPL Dataflow">TPL Dataflow</a> (see <a href="/blog/2012/01/22/FSharp-Dataflow-agents-I/" title="FSharp Dataflow agents - Part 1">Part 1</a>, <a href="/blog/2012/01/30/FSharp-Dataflow-agents-II/" title="FSharp Dataflow agents - Part 2">Part 2</a> and <a href="/blog/2012/02/20/fsharp-dataflow-agents-III/" title="FSharp Dataflow agents - Part 3">Part 3</a>).</p>
+
+<p>Below are some snippets of code from the <code>Mailbox</code> type you might want to take a peek yourself at the <a href="https://github.com/fsharp/fsharp/blob/master/src/fsharp/FSharp.Core/control.fs#L1854" title="Mailbox code">FSharp repository</a> over at <a href="https://github.com/">Github</a> for a closer inspection, be warned thought there is a lot of code in there!</p>
+
+<p>Here&#8217;s the initial type definition for the <code>Mailbox</code>, you can see that  there are two mutable fields:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="nc">Mailbox</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="nc">Msg</span><span class="o">&gt;</span><span class="bp">()</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">let</span> <span class="k">mutable</span> <span class="n">inboxStore</span>  <span class="o">=</span> <span class="k">null</span>
+</span><span class='line'>    <span class="k">let</span> <span class="k">mutable</span> <span class="n">arrivals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Queue</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="nc">Msg</span><span class="o">&gt;</span><span class="bp">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>inboxStore</code> is a generic List type <code>System.Collection.Generic.List&lt;T&gt;</code> and <code>arrivals</code> is a <code>System.Collections.Generic.Queue&lt;T&gt;</code> type.</p>
+
+<p>For now the <code>inboxStore</code> is null and is only ever assigned via <code>Scan</code> or <code>TryScan</code> and this is done indirectly via the <code>inbox</code> member shown here:</p>
+
+<figure class='code'><figcaption><span>inbox  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="n">inbox</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">match</span> <span class="n">inboxStore</span> <span class="k">with</span>
+</span><span class='line'>    <span class="o">|</span> <span class="k">null</span> <span class="o">-&gt;</span> <span class="n">inboxStore</span> <span class="o">&lt;-</span> <span class="k">new</span> <span class="nn">System</span><span class="p">.</span><span class="nn">Collections</span><span class="p">.</span><span class="nn">Generic</span><span class="p">.</span><span class="nc">List</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="nc">Msg</span><span class="o">&gt;(</span><span class="mi">1</span><span class="o">)</span> <span class="c1">// ResizeArray</span>
+</span><span class='line'>    <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="bp">()</span>
+</span><span class='line'>    <span class="n">inboxStore</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Understanding the code in the <code>Mailbox</code> can be difficult given the amount of code, so I&#8217;ll highlight the key functions in the sections below to make it a little easier.</p>
+
+<h3>Scan / TryScan</h3>
+
+<p><code>Scan</code> is just an async wrapper around <code>TryScan</code>. If <code>TryScan</code> returns None an exception is raised, if not then the result from <code>TryScan</code> is returned.</p>
+
+<p>So now lets take a look at the source of <code>TryScan</code>.</p>
+
+<figure class='code'><figcaption><span>TryScan  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">TryScan</span> <span class="o">((</span><span class="n">f</span><span class="o">:</span> <span class="k">&#39;</span><span class="nc">Msg</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="nc">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="nc">T</span><span class="o">&gt;)</span> <span class="n">option</span><span class="o">),</span> <span class="n">timeout</span><span class="o">)</span> <span class="o">:</span> <span class="nc">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="nc">T</span> <span class="n">option</span><span class="o">&gt;</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">let</span> <span class="k">rec</span> <span class="n">scan</span><span class="bp">()</span> <span class="o">=</span>
+</span><span class='line'>        <span class="n">async</span> <span class="o">{</span> <span class="k">match</span> <span class="n">x</span><span class="o">.</span><span class="n">scanArrivals</span><span class="o">(</span><span class="n">f</span><span class="o">)</span> <span class="k">with</span>
+</span><span class='line'>                <span class="o">|</span> <span class="nc">None</span> <span class="o">-&gt;</span> <span class="c1">// Deschedule and wait for a message. When it comes, rescan the arrivals</span>
+</span><span class='line'>                          <span class="k">let</span><span class="o">!</span> <span class="n">ok</span> <span class="o">=</span> <span class="n">waitOne</span><span class="o">(</span><span class="n">timeout</span><span class="o">)</span>
+</span><span class='line'>                          <span class="k">if</span> <span class="n">ok</span> <span class="k">then</span> <span class="k">return</span><span class="o">!</span> <span class="n">scan</span><span class="bp">()</span> <span class="k">else</span> <span class="k">return</span> <span class="nc">None</span>
+</span><span class='line'>                <span class="o">|</span> <span class="nc">Some</span> <span class="n">resP</span> <span class="o">-&gt;</span> <span class="k">let</span><span class="o">!</span> <span class="n">res</span> <span class="o">=</span> <span class="n">resP</span>
+</span><span class='line'>                               <span class="k">return</span> <span class="nc">Some</span><span class="o">(</span><span class="n">res</span><span class="o">)</span> <span class="o">}</span>
+</span><span class='line'>    <span class="c1">// Look in the inbox first</span>
+</span><span class='line'>    <span class="n">async</span> <span class="o">{</span> <span class="k">match</span> <span class="n">x</span><span class="o">.</span><span class="n">scanInbox</span><span class="o">(</span><span class="n">f</span><span class="o">,</span><span class="mi">0</span><span class="o">)</span> <span class="k">with</span>
+</span><span class='line'>            <span class="o">|</span> <span class="nc">None</span>  <span class="o">-&gt;</span> <span class="k">return</span><span class="o">!</span> <span class="n">scan</span><span class="bp">()</span>
+</span><span class='line'>            <span class="o">|</span> <span class="nc">Some</span> <span class="n">resP</span> <span class="o">-&gt;</span> <span class="k">let</span><span class="o">!</span> <span class="n">res</span> <span class="o">=</span> <span class="n">resP</span>
+</span><span class='line'>                           <span class="k">return</span> <span class="nc">Some</span><span class="o">(</span><span class="n">res</span><span class="o">)</span> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can see here that an <a href="http://msdn.microsoft.com/en-us/library/dd233250.aspx" title="async workflows">async workflow</a> is declared that first pattern matches on <code>x.scanInbox</code>, passing in the predicate scan function <code>f</code> and the literal <code>0</code>.  If <code>None</code> is returned then there is no match and the recursive function <code>scan</code> is returned.  This time the function <code>x.scanArrivals</code> is be called, again passing in the predicate function <code>f</code>.</p>
+
+<ul>
+<li>An interesting point to note, is that each message that arrives that doesn&#8217;t match the predicate <code>f</code> resets the  timer: <code>let! ok = waitOne(timeout)</code>, this means that any number of trivial messages that arrive keep the <code>TryScan</code> function running.  This was also mentioned by Jon Harrop in a Stackoverflow question entitled <a href="http://stackoverflow.com/a/4891920/607275" title="How to use TryScan in F# properly">How to use TryScan in F# properly</a>.  Jon also mentions locking which I will address in the <code>scanArrivals</code> section below.</li>
+</ul>
+
+
+<p>So what&#8217;s the difference between <code>scanArrivals</code> and <code>scanInbox</code>?</p>
+
+<p><code>scanInbox</code> operates on the <code>inboxStore</code> which you might recall is a <code>List&lt;T&gt;</code> type, whereas <code>scanArrivals</code> operates on <code>arrivals</code> which is a <code>Queue&lt;T&gt;</code> type.  The big difference between these two is that as messages first arrive in the Mailbox they end up in the arrivals queue first, and when messages are not matched by the predicate function <code>f</code> they are added to the <code>inboxStore</code>, hence the need to always check the <code>inboxStore</code> before the <code>arrivals</code> queue otherwise previously unmatched scan messages would not be processed correctly.  You might be asking yourself why not use a <code>Queue&lt;T&gt;</code> for both the <code>inbox</code> and the <code>arrivals</code>?  It comes down to the fact that it&#8217;s not possible to easily use a <code>Queue&lt;T&gt;</code> for <code>arrivals</code> because of the way that Scan works.  At any point in the queue there could do a potential match so each item would have to be dequeued and processed separately, an indexed <code>List&lt;T&gt;</code> type is the best fit for this situation.</p>
+
+<h3>scanArrivals / scanArrivalsUnsafe</h3>
+
+<p>Lets look at the <code>scanArrivals</code> function, it&#8217;s just a lock construct around the <code>scanArrivals</code> function.  This leads to an important point, the scan function is operating under a lock, which effectively means that end user code is also executed under the lock and if you hold onto the lock for any length of time then there will be significant blocking of the normal receive mechanism due to it also using the same lock when receiving.</p>
+
+<figure class='code'><figcaption><span>scanArrivals/scanArrivalsUnsafe  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="n">scanArrivalsUnsafe</span><span class="o">(</span><span class="n">f</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">arrivals</span><span class="o">.</span><span class="nc">Count</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">then</span> <span class="nc">None</span>
+</span><span class='line'>    <span class="k">else</span> <span class="k">let</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">arrivals</span><span class="o">.</span><span class="nc">Dequeue</span><span class="bp">()</span>
+</span><span class='line'>         <span class="k">match</span> <span class="n">f</span> <span class="n">msg</span> <span class="k">with</span>
+</span><span class='line'>         <span class="o">|</span> <span class="nc">None</span> <span class="o">-&gt;</span>
+</span><span class='line'>             <span class="n">x</span><span class="o">.</span><span class="n">inbox</span><span class="o">.</span><span class="nc">Add</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>             <span class="n">x</span><span class="o">.</span><span class="n">scanArrivalsUnsafe</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+</span><span class='line'>         <span class="o">|</span> <span class="n">res</span> <span class="o">-&gt;</span> <span class="n">res</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Lock the arrivals queue while we scan that</span>
+</span><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="n">scanArrivals</span><span class="o">(</span><span class="n">f</span><span class="o">)</span> <span class="o">=</span> <span class="n">lock</span> <span class="n">syncRoot</span> <span class="o">(</span><span class="k">fun</span> <span class="bp">()</span> <span class="o">-&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">scanArrivalsUnsafe</span><span class="o">(</span><span class="n">f</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If we pause for a second and review the <code>MailBoxProcessor</code> documentation on <a href="http://msdn.microsoft.com/en-us/library/ee353583.aspx" title="MSDN: F# MailbocProcessor">MSDN</a>:</p>
+
+<blockquote><p>For each agent, at most one concurrent reader may be active, so no more than one concurrent call to Receive, TryReceive, Scan or TryScan may be active.</p></blockquote>
+
+<p>Obeying this rule should ensure that no deadlock situations will arise but lock contentions can still arise as messages will still be being posted to the mailbox, which will in turn attempt to acquire the same <code>syncRoot</code> lock.</p>
+
+<p>Lets move onto the next function, I have saved this one for last as its the most interesting.</p>
+
+<h3>scanInbox</h3>
+
+<p>A quick glance at <code>scanInbox</code> reveals another function which, to my eye, could have heavy-weight performance implications.   The <code>inbox</code> is a <code>List&lt;T&gt;</code> type, and the <code>RemoveAt</code> function does an internal <code>Array.Copy</code> for each removal.  This is an O(n) operation where n is (Count - index), so as soon as the list gets to a reasonable size then this then is going to really start chewing into your processing time.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="n">scanInbox</span><span class="o">(</span><span class="n">f</span><span class="o">,</span><span class="n">n</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">match</span> <span class="n">inboxStore</span> <span class="k">with</span>
+</span><span class='line'>    <span class="o">|</span> <span class="k">null</span> <span class="o">-&gt;</span> <span class="nc">None</span>
+</span><span class='line'>    <span class="o">|</span> <span class="n">inbox</span> <span class="o">-&gt;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="n">inbox</span><span class="o">.</span><span class="nc">Count</span>
+</span><span class='line'>        <span class="k">then</span> <span class="nc">None</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>            <span class="k">let</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">inbox</span><span class="o">.[</span><span class="n">n</span><span class="o">]</span>
+</span><span class='line'>            <span class="k">match</span> <span class="n">f</span> <span class="n">msg</span> <span class="k">with</span>
+</span><span class='line'>            <span class="o">|</span> <span class="nc">None</span> <span class="o">-&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">scanInbox</span> <span class="o">(</span><span class="n">f</span><span class="o">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">|</span> <span class="n">res</span> <span class="o">-&gt;</span> <span class="n">inbox</span><span class="o">.</span><span class="nc">RemoveAt</span><span class="o">(</span><span class="n">n</span><span class="o">);</span> <span class="n">res</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In order to check this theory lets do some quick profiling of the console test that we showed earlier:</p>
+
+<p><img src="https://lh5.googleusercontent.com/-HRwdmElTHzk/UACUh2a0mmI/AAAAAAAABb0/X-PXjabROOU/s658/profile_run.png"></p>
+
+<p>This screen shot was taken using <a href="http://www.jetbrains.com/profiler/" title="Jet Brains Performance Profiling">Jet Brains DotTrace 5.1</a>.  This is one of my favourite performance profilers because it captures results to line level and maps back to the F# source code relatively easily.</p>
+
+<p>Yeah there it is, a whopping 44.41% of the time is spent in <code>RemoveAt</code>.  Also notice that there were 200,000 calls which mirrors the number we placed in the queue before using the Lock/Unlock message types.</p>
+
+<p>One of the things that really stands out for me is that the <code>inbox</code> is a simple list and completely unbounded.  In a high throughput situation where the scan function is being used it&#8217;s perfectly feasible to get into a runaway memory or CPU condition where the unmatched messages are sitting in the <code>inbox</code> taking longer and longer to processes due to the O(n) operation that takes place in the <code>RemoveAt</code> function.  Given a consistent throughput then eventually you are going to either run out memory, or the processing time will make throughput drop to dire levels which in turn will back up the <code>inbox</code> even further, effectively this is a death spiral.</p>
+
+<h2>Conclusion</h2>
+
+<p>So what conclusion can we draw from all of this?</p>
+
+<ul>
+<li>Firstly be careful with usage of <code>Scan</code> and <code>TryScan</code>, in certain situations the internal queue could back up to a certain size where you will be constantly struggling against the O(n) operation cost.</li>
+<li>Agents are not a silver bullet solution. They cannot solve every problem.  Although it&#8217;s possible to use agent based techniques to solve various problems like blocking collections and such like, you have to use care and diligence in the solution to avoid introducing another problems into the mix.  I have seen several implementations that I have been able to break relatively easily.</li>
+<li>Do I still use agents?  <strong>Absolutely!</strong>  Agents are a fabulous tool to have in our toolbox and some extremely elegant solution exist to solve very complex problems.</li>
+<li>Do I use <code>Scan</code> or <code>TryScan</code>?  Not in its current form in the <code>MailboxProcessor</code>.  I chose to implement a destructive scan in my <a href="/blog/2012/02/20/fsharp-dataflow-agents-III/" title="FSharp Dataflow agents - Part 3">TDF agent</a> for the reasons discussed here.</li>
+</ul>
+
+
+<p>Before we finish, I&#8217;d like to briefly cover <code>TryScan</code> from my <a href="http://msdn.microsoft.com/en-us/devlabs/gg585582.aspx" title="TPL Dataflow">TDF</a> based agent to complete the picture.</p>
+
+<h3>Destructive TryScan</h3>
+
+<figure class='code'><figcaption><span>TryScan  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">TryScan</span><span class="o">((</span><span class="n">scanner</span><span class="o">:</span> <span class="k">&#39;</span><span class="nc">Msg</span> <span class="o">-&gt;</span> <span class="nc">Async</span><span class="o">&lt;_&gt;</span> <span class="n">option</span><span class="o">),</span> <span class="n">timeout</span><span class="o">):</span> <span class="nc">Async</span><span class="o">&lt;_</span> <span class="n">option</span><span class="o">&gt;</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">ts</span> <span class="o">=</span> <span class="nn">TimeSpan</span><span class="p">.</span><span class="nc">FromMilliseconds</span><span class="o">(</span><span class="kt">float</span> <span class="n">timeout</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">let</span> <span class="k">rec</span> <span class="n">loopForMsg</span> <span class="o">=</span> <span class="n">async</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">let</span><span class="o">!</span> <span class="n">msg</span> <span class="o">=</span> <span class="nn">Async</span><span class="p">.</span><span class="nc">AwaitTask</span> <span class="o">&lt;|</span> <span class="n">incomingMessages</span><span class="o">.</span><span class="nc">ReceiveAsync</span><span class="o">(</span><span class="n">ts</span><span class="o">)</span>
+</span><span class='line'>                                      <span class="o">.</span><span class="nc">ContinueWith</span><span class="o">(</span><span class="k">fun</span> <span class="o">(</span><span class="n">tt</span><span class="o">:</span><span class="nc">Task</span><span class="o">&lt;_&gt;)</span> <span class="o">-&gt;</span>
+</span><span class='line'>                                          <span class="k">if</span> <span class="n">tt</span><span class="o">.</span><span class="nc">IsCanceled</span> <span class="o">||</span> <span class="n">tt</span><span class="o">.</span><span class="nc">IsFaulted</span> <span class="k">then</span> <span class="nc">None</span>
+</span><span class='line'>                                          <span class="k">else</span> <span class="nc">Some</span> <span class="n">tt</span><span class="o">.</span><span class="nc">Result</span><span class="o">)</span>
+</span><span class='line'>        <span class="k">match</span> <span class="n">msg</span> <span class="k">with</span>
+</span><span class='line'>        <span class="o">|</span> <span class="nc">Some</span> <span class="n">m</span> <span class="o">-&gt;</span>  <span class="k">let</span> <span class="n">res</span> <span class="o">=</span> <span class="n">scanner</span> <span class="n">m</span>
+</span><span class='line'>                     <span class="k">match</span> <span class="n">res</span> <span class="k">with</span>
+</span><span class='line'>                     <span class="o">|</span> <span class="nc">None</span> <span class="o">-&gt;</span> <span class="k">return</span><span class="o">!</span> <span class="n">loopForMsg</span>
+</span><span class='line'>                     <span class="o">|</span> <span class="nc">Some</span> <span class="n">res</span> <span class="o">-&gt;</span> <span class="k">return</span><span class="o">!</span> <span class="n">res</span>
+</span><span class='line'>        <span class="o">|</span> <span class="nc">None</span> <span class="o">-&gt;</span> <span class="k">return</span> <span class="nc">None</span><span class="o">}</span>
+</span><span class='line'>    <span class="n">loopForMsg</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A message is dequeued on the line 4 with <code>let! msg = Async.AwaitTask ...</code>.  This is then processed by the pattern matching expression on line 9 <code>| Some m -&gt;  let res = scanner m</code>.  If the result of the scanner function results in <code>None</code> being returned then the message is discarded and the next operation continues with another call to <code>loopForMsg</code>, otherwise the message is returned with <code>| Some res -&gt; return! res</code>.</p>
+
+<p>One of the areas where I have a lot of experience is using pipelined operations based on input from network I/O.  One of the things that always causes a problem is unbounded situations such as having a queue with no absolute limit.  There comes a time when you have to protect yourself from what is effective a denial of service, you have to either destructively terminate messages or connections or route the overflowed data for processing later.</p>
+
+<p>Until next time&#8230;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">7sharp9</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-15T20:13:00+01:00" pubdate data-updated="true">Jul 15<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/agents/'>Agents</a>, <a class='category' href='/blog/categories/programming-tales/'>Programming Tales</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2012/07/15/the-lurking-horror/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2012/07/15/the-lurking-horror/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/04/22/back-to-the-primitive-ii/" title="Previous Post: Back to the Primitive II">&laquo; Back to the Primitive II</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/07/15/the-lurking-horror/">The Lurking Horror</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/22/back-to-the-primitive-ii/">Back to the Primitive II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/12/back-to-the-primitive/">Back to the Primitive</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/11/black-scholes-taste-test/">Black-Scholes Taste Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/FSharp-Dataflow-agents-II/">F# Dataflow Agents Part II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/22/FSharp-Dataflow-agents-I/">F# Dataflow Agents Part I</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/7sharp9">@7sharp9</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        var blacklist = [];
+        
+          
+            blacklist.push('nemerle');
+          
+            blacklist.push('FSharp.Javascript');
+          
+            blacklist.push('ServiceStack');
+          
+        
+
+        github.showRepos({
+            user: '7sharp9',
+            count: 0,
+            skip_forks: false,
+            blacklist: blacklist,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Dave Thomas -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'moiraesoftware';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2012/07/15/the-lurking-horror/';
+        var disqus_url = 'http://MoiraeSoftware.com/blog/2012/07/15/the-lurking-horror/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

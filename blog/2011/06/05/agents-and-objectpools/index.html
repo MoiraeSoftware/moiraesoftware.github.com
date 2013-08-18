@@ -1,0 +1,705 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title> Agents and ObjectPools - Moirae</title>
+  <meta name="author" content="Dave Thomas">
+
+  
+  <meta name="description" content="Everyone knows F# agents are cool right?  Well here&#8217;s yet another example of how versatile they can be&#8230; There was a series of posts last &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2011/06/05/agents-and-objectpools/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-10152365-7']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Moirae</a></h1>
+  
+    <h2>Software Engineering Ltd</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/services.html">Services</a></li>
+  <li><a href="/contact-us.html">Contact Us</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Agents and ObjectPools</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-06-05T16:13:57+01:00" pubdate data-updated="true">Jun 5<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Everyone knows F# agents are cool right?  Well here&#8217;s yet another example of how versatile they can be&#8230;</p>
+
+<p>There was a series of posts last April by Stephen Toub from the <a href="http://blogs.msdn.com/b/pfxteam/">pfxteam</a> at Microsoft.  I was reading
+through some of the posts again the other day and thought some of the ideas presented there would make interesting projects in F# to demonstrate the
+flexibility and succinctness of the language.  I thought the <a href="http://blogs.msdn.com/b/pfxteam/archive/2010/04/13/9990427.aspx">ObjectPool</a>
+example would make an interesting project in F# using agents aka MailboxProcessors.  An ObjectPool is basically a pool of objects that have been
+pre-created so that you can grab one and use it, and then place it back in the pool when you&#8217;re finished.  They are useful in situations where the cost of
+creating object from scratch is very high or you want to cut down on allocations in the garbage collector.<!-- more --></p>
+
+<p>First of all heres the C# code as it was presented in the Parallel Extensions download:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">System.Diagnostics</span><span class="p">;</span>
+</span><span class='line'><span class="k">namespace</span> <span class="nn">System.Collections.Concurrent</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="c1">/// &lt;summary&gt;Provides a thread-safe object pool.&lt;/summary&gt;</span>
+</span><span class='line'>  <span class="c1">/// &lt;typeparam name=&quot;T&quot;&gt;Specifies the type of the elements stored in the pool.&lt;/typeparam&gt;</span>
+</span><span class='line'><span class="na">  [DebuggerDisplay(&quot;Count={Count}&quot;)]</span>
+</span><span class='line'><span class="na">  [DebuggerTypeProxy(typeof(IProducerConsumerCollection_DebugView&lt;&gt;))]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">sealed</span> <span class="k">class</span> <span class="nc">ObjectPool</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">ProducerConsumerCollectionBase</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">private</span> <span class="k">readonly</span> <span class="n">Func</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">_generator</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">/// &lt;summary&gt;Initializes an instance of the ObjectPool class.&lt;/summary&gt;</span>
+</span><span class='line'>    <span class="c1">/// &lt;param name=&quot;generator&quot;&gt;The function used to create items when no items exist in the pool.&lt;/param&gt;</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">ObjectPool</span><span class="p">(</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">generator</span><span class="p">)</span> <span class="p">:</span> <span class="k">this</span><span class="p">(</span><span class="n">generator</span><span class="p">,</span> <span class="k">new</span> <span class="n">ConcurrentQueue</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;())</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'>    <span class="c1">/// &lt;summary&gt;Initializes an instance of the ObjectPool class.&lt;/summary&gt;</span>
+</span><span class='line'>    <span class="c1">/// &lt;param name=&quot;generator&quot;&gt;The function used to create items when no items exist in the pool.&lt;/param&gt;</span>
+</span><span class='line'>    <span class="c1">/// &lt;param name=&quot;collection&quot;&gt;The collection used to store the elements of the pool.&lt;/param&gt;</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">ObjectPool</span><span class="p">(</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">generator</span><span class="p">,</span> <span class="n">IProducerConsumerCollection</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">collection</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="n">generator</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">ArgumentNullException</span><span class="p">(</span><span class="s">&quot;generator&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">_generator</span> <span class="p">=</span> <span class="n">generator</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">/// &lt;summary&gt;Adds the provided item into the pool.&lt;/summary&gt;</span>
+</span><span class='line'>    <span class="c1">/// &lt;param name=&quot;item&quot;&gt;The item to be added.&lt;/param&gt;</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">PutObject</span><span class="p">(</span><span class="n">T</span> <span class="n">item</span><span class="p">)</span> <span class="p">{</span> <span class="k">base</span><span class="p">.</span><span class="n">TryAdd</span><span class="p">(</span><span class="n">item</span><span class="p">);</span> <span class="p">}</span>
+</span><span class='line'>    <span class="c1">/// &lt;summary&gt;Gets an item from the pool.&lt;/summary&gt;</span>
+</span><span class='line'>    <span class="c1">/// &lt;returns&gt;The removed or created item.&lt;/returns&gt;</span>
+</span><span class='line'>    <span class="c1">/// &lt;remarks&gt;If the pool is empty, a new item will be created and returned.&lt;/remarks&gt;</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">T</span> <span class="nf">GetObject</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>      <span class="n">T</span> <span class="k">value</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">return</span> <span class="k">base</span><span class="p">.</span><span class="n">TryTake</span><span class="p">(</span><span class="k">out</span> <span class="k">value</span><span class="p">)</span> <span class="p">?</span> <span class="k">value</span> <span class="p">:</span> <span class="n">_generator</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">/// &lt;summary&gt;Clears the object pool, returning all of the data that was in the pool.&lt;/summary&gt;</span>
+</span><span class='line'>    <span class="c1">/// &lt;returns&gt;An array containing all of the elements in the pool.&lt;/returns&gt;</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">T</span><span class="p">[]</span> <span class="nf">ToArrayAndClear</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>      <span class="kt">var</span> <span class="n">items</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;();</span>
+</span><span class='line'>      <span class="n">T</span> <span class="k">value</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">while</span> <span class="p">(</span><span class="k">base</span><span class="p">.</span><span class="n">TryTake</span><span class="p">(</span><span class="k">out</span> <span class="k">value</span><span class="p">))</span> <span class="n">items</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">value</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">items</span><span class="p">.</span><span class="n">ToArray</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="k">override</span> <span class="kt">bool</span> <span class="nf">TryAdd</span><span class="p">(</span><span class="n">T</span> <span class="n">item</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>      <span class="n">PutObject</span><span class="p">(</span><span class="n">item</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="k">override</span> <span class="kt">bool</span> <span class="nf">TryTake</span><span class="p">(</span><span class="k">out</span> <span class="n">T</span> <span class="n">item</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>      <span class="n">item</span> <span class="p">=</span> <span class="n">GetObject</span><span class="p">();</span>
+</span><span class='line'>      <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There&#8217;s also a base class which looks like this:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="c1">/// &lt;summary&gt;</span>
+</span><span class='line'><span class="c1">/// Provides a base implementation for producer-consumer collections that wrap other</span>
+</span><span class='line'><span class="c1">/// producer-consumer collections.</span>
+</span><span class='line'><span class="c1">/// &lt;/summary&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;typeparam name=&quot;T&quot;&gt;Specifies the type of elements in the collection.&lt;/typeparam&gt;</span>
+</span><span class='line'><span class="na">[Serializable]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">abstract</span> <span class="k">class</span> <span class="nc">ProducerConsumerCollectionBase</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IProducerConsumerCollection</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">private</span> <span class="k">readonly</span> <span class="n">IProducerConsumerCollection</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">_contained</span><span class="p">;</span>
+</span><span class='line'><span class="c1">/// &lt;summary&gt;Initializes the ProducerConsumerCollectionBase instance.&lt;/summary&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;param name=&quot;contained&quot;&gt;The collection to be wrapped by this instance.&lt;/param&gt;</span>
+</span><span class='line'><span class="k">protected</span> <span class="nf">ProducerConsumerCollectionBase</span><span class="p">(</span><span class="n">IProducerConsumerCollection</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">contained</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">contained</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">ArgumentNullException</span><span class="p">(</span><span class="s">&quot;contained&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">_contained</span> <span class="p">=</span> <span class="n">contained</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">/// &lt;summary&gt;Gets the contained collection.&lt;/summary&gt;</span>
+</span><span class='line'><span class="k">protected</span> <span class="n">IProducerConsumerCollection</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">ContainedCollection</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_contained</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span>
+</span><span class='line'><span class="c1">/// &lt;summary&gt;Attempts to add the specified value to the end of the deque.&lt;/summary&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;param name=&quot;item&quot;&gt;The item to add.&lt;/param&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;returns&gt;true if the item could be added; otherwise, false.&lt;/returns&gt;</span>
+</span><span class='line'><span class="k">protected</span> <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">TryAdd</span><span class="p">(</span><span class="n">T</span> <span class="n">item</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_contained</span><span class="p">.</span><span class="n">TryAdd</span><span class="p">(</span><span class="n">item</span><span class="p">);</span> <span class="p">}</span>
+</span><span class='line'><span class="c1">/// &lt;summary&gt;Attempts to remove and return an item from the collection.&lt;/summary&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;param name=&quot;item&quot;&gt;</span>
+</span><span class='line'><span class="c1">/// When this method returns, if the operation was successful, item contains the item removed. If</span>
+</span><span class='line'><span class="c1">/// no item was available to be removed, the value is unspecified.</span>
+</span><span class='line'><span class="c1">/// &lt;/param&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;returns&gt;</span>
+</span><span class='line'><span class="c1">/// true if an element was removed and returned from the collection; otherwise, false.</span>
+</span><span class='line'><span class="c1">/// &lt;/returns&gt;</span>
+</span><span class='line'><span class="k">protected</span> <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">TryTake</span><span class="p">(</span><span class="k">out</span> <span class="n">T</span> <span class="n">item</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_contained</span><span class="p">.</span><span class="n">TryTake</span><span class="p">(</span><span class="k">out</span> <span class="n">item</span><span class="p">);</span> <span class="p">}</span>
+</span><span class='line'><span class="c1">/// &lt;summary&gt;Attempts to add the specified value to the end of the deque.&lt;/summary&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;param name=&quot;item&quot;&gt;The item to add.&lt;/param&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;returns&gt;true if the item could be added; otherwise, false.&lt;/returns&gt;</span>
+</span><span class='line'><span class="kt">bool</span> <span class="n">IProducerConsumerCollection</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;.</span><span class="n">TryAdd</span><span class="p">(</span><span class="n">T</span> <span class="n">item</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">TryAdd</span><span class="p">(</span><span class="n">item</span><span class="p">);</span> <span class="p">}</span>
+</span><span class='line'><span class="c1">/// &lt;summary&gt;Attempts to remove and return an item from the collection.&lt;/summary&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;param name=&quot;item&quot;&gt;</span>
+</span><span class='line'><span class="c1">/// When this method returns, if the operation was successful, item contains the item removed. If</span>
+</span><span class='line'><span class="c1">/// no item was available to be removed, the value is unspecified.</span>
+</span><span class='line'><span class="c1">/// &lt;/param&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;returns&gt;</span>
+</span><span class='line'><span class="c1">/// true if an element was removed and returned from the collection; otherwise, false.</span>
+</span><span class='line'><span class="c1">/// &lt;/returns&gt;</span>
+</span><span class='line'><span class="kt">bool</span> <span class="n">IProducerConsumerCollection</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;.</span><span class="n">TryTake</span><span class="p">(</span><span class="k">out</span> <span class="n">T</span> <span class="n">item</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">TryTake</span><span class="p">(</span><span class="k">out</span> <span class="n">item</span><span class="p">);</span> <span class="p">}</span>
+</span><span class='line'><span class="c1">/// &lt;summary&gt;Gets the number of elements contained in the collection.&lt;/summary&gt;</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Count</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_contained</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span>
+</span><span class='line'><span class="c1">/// &lt;summary&gt;Creates an array containing the contents of the collection.&lt;/summary&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;returns&gt;The array.&lt;/returns&gt;</span>
+</span><span class='line'><span class="k">public</span> <span class="n">T</span><span class="p">[]</span> <span class="nf">ToArray</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_contained</span><span class="p">.</span><span class="n">ToArray</span><span class="p">();</span> <span class="p">}</span>
+</span><span class='line'><span class="c1">/// &lt;summary&gt;Copies the contents of the collection to an array.&lt;/summary&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;param name=&quot;array&quot;&gt;The array to which the data should be copied.&lt;/param&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;param name=&quot;index&quot;&gt;The starting index at which data should be copied.&lt;/param&gt;</span>
+</span><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">CopyTo</span><span class="p">(</span><span class="n">T</span><span class="p">[]</span> <span class="n">array</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">)</span> <span class="p">{</span> <span class="n">_contained</span><span class="p">.</span><span class="n">CopyTo</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">index</span><span class="p">);</span> <span class="p">}</span>
+</span><span class='line'><span class="c1">/// &lt;summary&gt;Copies the contents of the collection to an array.&lt;/summary&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;param name=&quot;array&quot;&gt;The array to which the data should be copied.&lt;/param&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;param name=&quot;index&quot;&gt;The starting index at which data should be copied.&lt;/param&gt;</span>
+</span><span class='line'><span class="k">void</span> <span class="n">ICollection</span><span class="p">.</span><span class="n">CopyTo</span><span class="p">(</span><span class="n">Array</span> <span class="n">array</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">)</span> <span class="p">{</span> <span class="n">_contained</span><span class="p">.</span><span class="n">CopyTo</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">index</span><span class="p">);</span> <span class="p">}</span>
+</span><span class='line'><span class="c1">/// &lt;summary&gt;Gets an enumerator for the collection.&lt;/summary&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;returns&gt;An enumerator.&lt;/returns&gt;</span>
+</span><span class='line'><span class="k">public</span> <span class="n">IEnumerator</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">GetEnumerator</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_contained</span><span class="p">.</span><span class="n">GetEnumerator</span><span class="p">();</span> <span class="p">}</span>
+</span><span class='line'><span class="c1">/// &lt;summary&gt;Gets an enumerator for the collection.&lt;/summary&gt;</span>
+</span><span class='line'><span class="c1">/// &lt;returns&gt;An enumerator.&lt;/returns&gt;</span>
+</span><span class='line'><span class="n">IEnumerator</span> <span class="n">IEnumerable</span><span class="p">.</span><span class="n">GetEnumerator</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">GetEnumerator</span><span class="p">();</span> <span class="p">}</span>
+</span><span class='line'><span class="c1">/// &lt;summary&gt;Gets whether the collection is synchronized.&lt;/summary&gt;</span>
+</span><span class='line'><span class="kt">bool</span> <span class="n">ICollection</span><span class="p">.</span><span class="n">IsSynchronized</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_contained</span><span class="p">.</span><span class="n">IsSynchronized</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span>
+</span><span class='line'><span class="c1">/// &lt;summary&gt;Gets the synchronization root object for the collection.&lt;/summary&gt;</span>
+</span><span class='line'><span class="kt">object</span> <span class="n">ICollection</span><span class="p">.</span><span class="n">SyncRoot</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_contained</span><span class="p">.</span><span class="n">SyncRoot</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Wow!</strong>  Thats a fair bit of code in C#, fair enough there is a lot of noise in the xml doc comments, but theres also a lot of boiler plate code in there too.</p>
+
+<p>Ok now we have gotten that out of the way heres the good bit.  </p>
+
+<p>Below is an agent based design which implements the same functionality but uses a lot less code.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">module</span> <span class="nc">Poc</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//Agent alias for MailboxProcessor</span>
+</span><span class='line'><span class="k">type</span> <span class="nc">Agent</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="nc">T</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nc">MailboxProcessor</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="nc">T</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">///One of three messages for our Object Pool agent</span>
+</span><span class='line'><span class="k">type</span> <span class="nc">PoolMessage</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">=</span>
+</span><span class='line'>  <span class="o">|</span> <span class="nc">Get</span> <span class="k">of</span> <span class="nc">AsyncReplyChannel</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="o">|</span> <span class="nc">Put</span> <span class="k">of</span> <span class="k">&#39;</span><span class="n">a</span> <span class="o">*</span> <span class="nc">AsyncReplyChannel</span><span class="o">&lt;</span><span class="kt">unit</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="o">|</span> <span class="nc">Clear</span> <span class="k">of</span> <span class="nc">AsyncReplyChannel</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">/// Object pool representing a reusable pool of objects</span>
+</span><span class='line'><span class="k">type</span> <span class="nc">ObjectPool</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;(</span><span class="n">generate</span><span class="o">:</span> <span class="kt">unit</span> <span class="o">-&gt;</span> <span class="k">&#39;</span><span class="n">a</span><span class="o">,</span> <span class="n">initialPoolCount</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>  <span class="k">let</span> <span class="n">initial</span> <span class="o">=</span> <span class="nn">List</span><span class="p">.</span><span class="n">init</span> <span class="n">initialPoolCount</span> <span class="o">(</span><span class="k">fun</span> <span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">generate</span><span class="bp">()</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">let</span> <span class="n">agent</span> <span class="o">=</span> <span class="nn">Agent</span><span class="p">.</span><span class="nc">Start</span><span class="o">(</span><span class="k">fun</span> <span class="n">inbox</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="k">let</span> <span class="k">rec</span> <span class="n">loop</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="o">=</span> <span class="n">async</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">let</span><span class="o">!</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">inbox</span><span class="o">.</span><span class="nc">Receive</span><span class="bp">()</span>
+</span><span class='line'>      <span class="k">match</span> <span class="n">msg</span> <span class="k">with</span>
+</span><span class='line'>      <span class="o">|</span> <span class="nc">Get</span><span class="o">(</span><span class="n">reply</span><span class="o">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>        <span class="k">let</span> <span class="n">res</span> <span class="o">=</span> <span class="k">match</span> <span class="n">x</span> <span class="k">with</span>
+</span><span class='line'>              <span class="o">|</span> <span class="n">a</span> <span class="o">::</span> <span class="n">b</span> <span class="o">-&gt;</span>
+</span><span class='line'>                <span class="n">reply</span><span class="o">.</span><span class="nc">Reply</span><span class="o">(</span><span class="n">a</span><span class="o">);</span><span class="n">b</span>
+</span><span class='line'>              <span class="o">|</span> <span class="bp">[]</span> <span class="k">as</span> <span class="n">empty</span><span class="o">-&gt;</span>
+</span><span class='line'>                <span class="n">reply</span><span class="o">.</span><span class="nc">Reply</span><span class="o">(</span><span class="n">generate</span><span class="bp">()</span><span class="o">);</span><span class="n">empty</span>
+</span><span class='line'>        <span class="k">return</span><span class="o">!</span> <span class="n">loop</span><span class="o">(</span><span class="n">res</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">|</span> <span class="nc">Put</span><span class="o">(</span><span class="n">value</span><span class="o">,</span> <span class="n">reply</span><span class="o">)-&gt;</span>
+</span><span class='line'>        <span class="n">reply</span><span class="o">.</span><span class="nc">Reply</span><span class="bp">()</span>
+</span><span class='line'>        <span class="k">return</span><span class="o">!</span> <span class="n">loop</span><span class="o">(</span><span class="n">value</span> <span class="o">::</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">|</span> <span class="nc">Clear</span><span class="o">(</span><span class="n">reply</span><span class="o">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>        <span class="n">reply</span><span class="o">.</span><span class="nc">Reply</span><span class="o">(</span><span class="n">x</span><span class="o">)</span>
+</span><span class='line'>        <span class="k">return</span><span class="o">!</span> <span class="n">loop</span><span class="o">(</span><span class="nn">List</span><span class="p">.</span><span class="n">empty</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">)</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">loop</span><span class="o">(</span><span class="n">initial</span><span class="o">))</span>
+</span><span class='line'>  <span class="c1">/// Clears the object pool, returning all of the data that was in the pool.</span>
+</span><span class='line'>  <span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="nc">ToListAndClear</span><span class="bp">()</span> <span class="o">=</span>
+</span><span class='line'>    <span class="n">agent</span><span class="o">.</span><span class="nc">PostAndAsyncReply</span><span class="o">(</span><span class="nc">Clear</span><span class="o">)</span>
+</span><span class='line'>  <span class="c1">/// Puts an item into the pool</span>
+</span><span class='line'>  <span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="nc">Put</span><span class="o">(</span><span class="n">item</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>    <span class="n">agent</span><span class="o">.</span><span class="nc">PostAndAsyncReply</span><span class="o">((</span><span class="k">fun</span> <span class="n">ch</span> <span class="o">-&gt;</span> <span class="nc">Put</span><span class="o">(</span><span class="n">item</span><span class="o">,</span> <span class="n">ch</span><span class="o">)))</span>
+</span><span class='line'>  <span class="c1">/// Gets an item from the pool or if there are none present use the generator</span>
+</span><span class='line'>  <span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="nc">Get</span><span class="o">(</span><span class="n">item</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>    <span class="n">agent</span><span class="o">.</span><span class="nc">PostAndAsyncReply</span><span class="o">(</span><span class="nc">Get</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We have a discriminated union (PoolMessage) which describes the messages that we are going to use with this agent, they are pretty straight forward to follow.  </p>
+
+<ul>
+<li><strong>Get</strong> simply returns either a stored item or generates a brand new one using the generator function which is passed into the ObjectPools constructor <strong>(generate: unit -> &#8216;a)</strong>.  </li>
+<li><strong>Put</strong> simply adds the item onto the internal list.</li>
+<li><strong>Clear</strong> simply returns the current pool and then clears it.</li>
+</ul>
+
+
+<p>The core processing all happens in the <strong>async{}</strong> block, we simply wait for a message to arrive, then we pattern match on one of the messages either Get,Put, or Clear.</p>
+
+<p><strong>Get</strong> takes an item from the internal list if there are items present, otherwise it invokes the generator function and returns a newly generated object.</p>
+
+<p>For a <strong>Put</strong> operation we use the cons <strong>(::)</strong> operator to add the item onto the internal list via the recursive loop.</p>
+
+<p>For the <strong>Clear</strong> operation we return the entire list then return an empty list to the recursive loop.</p>
+
+<p>I think you will agree this is a nice succinct example of the flexibility and elegance of agents and yet another reason to use F# for more server side
+activities.  It&#8217;s not simply a language for the mathematical and finance orientated developers.</p>
+
+<p>For anyone interested all of the code should be in my <a href="http://bit.ly/mDQyfH">GitHub repository </a>to download.</p>
+
+<p>Thanks to <a href="http://tomasp.net/">Tomas Petricek</a> for suggesting using the recursive loop to pass the list rather than using a ref cell and the (<strong>:=</strong>) operator.</p>
+
+<p>Until next time&#8230;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">7sharp9</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-06-05T16:13:57+01:00" pubdate data-updated="true">Jun 5<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/agents/'>Agents</a>, <a class='category' href='/blog/categories/programming-tales/'>Programming Tales</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2011/06/05/agents-and-objectpools/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2011/06/05/agents-and-objectpools/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/05/04/new-projects/" title="Previous Post: New projects">&laquo; New projects</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/07/03/agent-based-scheduling/" title="next Post: Agent based scheduling">Agent based scheduling &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/07/15/the-lurking-horror/">The Lurking Horror</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/22/back-to-the-primitive-ii/">Back to the Primitive II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/12/back-to-the-primitive/">Back to the Primitive</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/11/black-scholes-taste-test/">Black-Scholes Taste Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/FSharp-Dataflow-agents-II/">F# Dataflow Agents Part II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/22/FSharp-Dataflow-agents-I/">F# Dataflow Agents Part I</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/7sharp9">@7sharp9</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        var blacklist = [];
+        
+          
+            blacklist.push('nemerle');
+          
+            blacklist.push('FSharp.Javascript');
+          
+            blacklist.push('ServiceStack');
+          
+        
+
+        github.showRepos({
+            user: '7sharp9',
+            count: 0,
+            skip_forks: false,
+            blacklist: blacklist,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Dave Thomas -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'moiraesoftware';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2011/06/05/agents-and-objectpools/';
+        var disqus_url = 'http://MoiraeSoftware.com/blog/2011/06/05/agents-and-objectpools/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

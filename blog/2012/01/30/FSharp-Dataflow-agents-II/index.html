@@ -1,0 +1,574 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>F# Dataflow Agents Part II - Moirae</title>
+  <meta name="author" content="Dave Thomas">
+
+  
+  <meta name="description" content="Right, no messing about this time, straight to the code. Construction This is pretty straight forward and I don&#8217;t want to detract from the &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://MoiraeSoftware.com/blog/2012/01/30/FSharp-Dataflow-agents-II/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Moirae" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif|PT+Sans|Michroma:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-10152365-7']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Moirae</a></h1>
+  
+    <h2>Software Engineering Ltd</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:MoiraeSoftware.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/services.html">Services</a></li>
+  <li><a href="/contact-us.html">Contact Us</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">F# Dataflow Agents Part II</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-30T07:49:00+00:00" pubdate data-updated="true">Jan 30<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Right, no messing about this time, straight to the code.</p>
+
+<h2>Construction</h2>
+
+<p>This is pretty straight forward and I don&#8217;t want to detract from the important bits of this post, the only thing
+of note is the <code>cancellationToken</code> which is initialized to a default value using the <code>defaultArg</code> function if the
+optional parameter  <code>cancellationToken</code> is not supplied. The TDF construct that we to use to perform most of the hard
+work is <code>incomingMessages</code> which is a <code>BufferBlock&lt;'Msg&gt;</code>.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="nc">DataflowAgent</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="nc">Msg</span><span class="o">&gt;(</span><span class="n">initial</span><span class="o">,</span> <span class="o">?</span><span class="n">cancellationToken</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">cancellationToken</span> <span class="o">=</span>
+</span><span class='line'>        <span class="n">defaultArg</span> <span class="n">cancellationToken</span> <span class="nn">Async</span><span class="p">.</span><span class="nc">DefaultCancellationToken</span>
+</span><span class='line'>    <span class="k">let</span> <span class="k">mutable</span> <span class="n">started</span> <span class="o">=</span> <span class="bp">false</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">errorEvent</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Event</span><span class="o">&lt;</span><span class="nn">System</span><span class="p">.</span><span class="nc">Exception</span><span class="o">&gt;</span><span class="bp">()</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">incomingMessages</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferBlock</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="nc">Msg</span><span class="o">&gt;</span><span class="bp">()</span>
+</span><span class='line'>    <span class="k">let</span> <span class="k">mutable</span> <span class="n">defaultTimeout</span> <span class="o">=</span> <span class="nn">Timeout</span><span class="p">.</span><span class="nc">Infinite</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Error</h2>
+
+<p>This is the public facing part for the Error event.  The <code>[&lt;CLIEvent&gt;]</code> attribute exposes the event in a friendly manner to other .Net languages by adding the <code>add_Error</code> and <code>remove_Error</code> event handler properties to allow subscription to take place.  The <code>Error</code> event fires when an exception is thrown in the <code>initial</code> asynchronous workflow.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="o">[&lt;</span><span class="nc">CLIEvent</span><span class="o">&gt;]</span>
+</span><span class='line'><span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="nc">Error</span> <span class="o">=</span> <span class="n">errorEvent</span><span class="o">.</span><span class="nc">Publish</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Start</h2>
+
+<p>This is implemented the same as the MailboxProcessor.  An exception is thrown if the agent has already started as this is not valid operation.  We set the mutable field <code>started</code> to true and proceed to start the <code>initial</code> asynchronous workflow.  This workflow is wrapped in a <code>try with block</code> so that if an exception is thrown we catch it and trigger the <code>Error</code> event.  The computation is then started with <code>Async.Start(...)</code>.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="nc">Start</span><span class="bp">()</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">started</span>
+</span><span class='line'>        <span class="k">then</span> <span class="n">raise</span> <span class="o">(</span><span class="k">new</span> <span class="nc">InvalidOperationException</span><span class="o">(</span><span class="s2">&quot;Already Started.&quot;</span><span class="o">))</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>        <span class="n">started</span> <span class="o">&lt;-</span> <span class="bp">true</span>
+</span><span class='line'>        <span class="k">let</span> <span class="n">comp</span> <span class="o">=</span> <span class="n">async</span> <span class="o">{</span> <span class="k">try</span> <span class="k">do</span><span class="o">!</span> <span class="n">initial</span> <span class="n">this</span>
+</span><span class='line'>                           <span class="k">with</span> <span class="n">error</span> <span class="o">-&gt;</span> <span class="n">errorEvent</span><span class="o">.</span><span class="nc">Trigger</span> <span class="n">error</span> <span class="o">}</span>
+</span><span class='line'>        <span class="nn">Async</span><span class="p">.</span><span class="nc">Start</span><span class="o">(</span><span class="n">computation</span> <span class="o">=</span> <span class="n">comp</span><span class="o">,</span> <span class="n">cancellationToken</span> <span class="o">=</span> <span class="n">cancellationToken</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Receive</h2>
+
+<p>The Receive member is used by the agent as a way of waiting for a message to arrive without blocking.  Because the TDF functionality is all TPL Task based we use the the <a href="http://msdn.microsoft.com/en-us/library/ee370232.aspx">Async</a> helper functions.  In this instance we utilise the Async.AwaitTask passing in the <code>incomingMessages</code> <code>ReceiveAsync</code> method to wait for
+a message to arrive.  The integration between F# async and TDF is nice and succinct here.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="nc">Receive</span><span class="o">(?</span><span class="n">timeout</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>    <span class="nn">Async</span><span class="p">.</span><span class="nc">AwaitTask</span> <span class="o">&lt;|</span> <span class="n">incomingMessages</span><span class="o">.</span><span class="nc">ReceiveAsync</span><span class="bp">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Post</h2>
+
+<p>The Post member allows a message to be sent to the agents, this member simply calls the <code>incomingMessages</code> <code>Post</code> method passing in the <code>item</code>.  We raise an exception if there is a problem posting (i.e. the <code>incomingMessages</code> internal queue is full).</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="nc">Post</span><span class="o">(</span><span class="n">item</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">posted</span> <span class="o">=</span> <span class="n">incomingMessages</span><span class="o">.</span><span class="nc">Post</span><span class="o">(</span><span class="n">item</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="ow">not</span> <span class="n">posted</span> <span class="k">then</span>
+</span><span class='line'>        <span class="n">raise</span> <span class="o">(</span><span class="nc">InvalidOperationException</span><span class="o">(</span><span class="s2">&quot;Incoming message buffer full.&quot;</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>PostAndTryAsyncReply / PostAndAsyncReply</h2>
+
+<p>I&#8217;m grouping both of these together as they are related in functionality.  In the previous post I purposely left
+out some ancillary code as it added unnecessary complexity to the introduction.  There are a two types we need to be able to replicate the <code>PostAndTryAsyncReply</code> and <code>PostAndAsyncReply</code> members of the <code>MailboxProcessor</code>.</p>
+
+<h3>AsyncReplyChannel</h3>
+
+<p>The first type we need is the <code>AsyncReplyChannel&lt;'Reply&gt;</code>.  This type takes a function that accepts a generic <code>'Reply</code> and returns a unit.  It is used as a way of communicating back to the caller of the <code>PostAndTryAsyncReply</code> and <code>PostAndAsyncReply</code> members via its single member <code>Reply</code>.  This should become a little clearer when we see it used in context.</p>
+
+<p>An <code>AsyncRepyChannel</code> does actually exist in F# under the Microsoft.FSharp.Control namespace and is used my the <code>MailboxPRocessor</code>, unfortunately its constructor is marked as internal so we are not able to reuse it here.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="nc">AsyncReplyChannel</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="nc">Reply</span><span class="o">&gt;(</span><span class="n">replyf</span> <span class="o">:</span> <span class="k">&#39;</span><span class="nc">Reply</span> <span class="o">-&gt;</span> <span class="kt">unit</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">Reply</span><span class="o">(</span><span class="n">reply</span><span class="o">)</span> <span class="o">=</span> <span class="n">replyf</span><span class="o">(</span><span class="n">reply</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>AsyncResultCell</h3>
+
+<p>The next type we need is the <code>AsyncResultCell&lt;'a&gt;</code>.  We use this as a way to await for the results of an asynchronous operation.  We create a <a href="http://msdn.microsoft.com/en-us/library/dd449174.aspx">TaskCompletionSource</a> (<code>source</code>), which is a TPL type that we use as a way of signalling to a callback / lambda expression when a message has arrived.</p>
+
+<p><strong>RegisterResult</strong> is used as a way of notifying when a message has been arrived, this is used internally by our agent as a result of a reply being made to the AsyncReplyChannel.</p>
+
+<p><strong>AsyncWaitResult</strong> is a continuation wrapper, it is called when we want to wait indefinitely for the result to be returned.  It wraps a successful completion with a call to task.Result which then returns the result.</p>
+
+<p><strong>GetWaitHandle</strong> is used as a mechanism to force the asynchronous result to return within a specified timeout interval.  If a result is not returned within the timeout then this function will return false.</p>
+
+<p><strong>GrabResult</strong> returns the result from the TaskCompletionSource object <code>source</code>.  This is set earlier by the <code>RegisterResult</code> member.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">type</span> <span class="nc">AsyncResultCell</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span><span class="bp">()</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">source</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TaskCompletionSource</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span><span class="bp">()</span>
+</span><span class='line'>    <span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">RegisterResult</span> <span class="n">result</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="nc">SetResult</span><span class="o">(</span><span class="n">result</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">AsyncWaitResult</span> <span class="o">=</span>
+</span><span class='line'>        <span class="nn">Async</span><span class="p">.</span><span class="nc">FromContinuations</span><span class="o">(</span><span class="k">fun</span> <span class="o">(</span><span class="n">cont</span><span class="o">,_,_)</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="k">let</span> <span class="n">apply</span> <span class="o">=</span> <span class="k">fun</span> <span class="o">(</span><span class="n">task</span><span class="o">:</span><span class="nc">Task</span><span class="o">&lt;_&gt;)</span> <span class="o">-&gt;</span> <span class="n">cont</span> <span class="o">(</span><span class="n">task</span><span class="o">.</span><span class="nc">Result</span><span class="o">)</span>
+</span><span class='line'>            <span class="n">source</span><span class="o">.</span><span class="nn">Task</span><span class="p">.</span><span class="nc">ContinueWith</span><span class="o">(</span><span class="n">apply</span><span class="o">)</span> <span class="o">|&gt;</span> <span class="n">ignore</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">GetWaitHandle</span><span class="o">(</span><span class="n">timeout</span><span class="o">:</span><span class="kt">int</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>        <span class="n">async</span> <span class="o">{</span> <span class="k">let</span> <span class="n">waithandle</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="nn">Task</span><span class="p">.</span><span class="nc">Wait</span><span class="o">(</span><span class="n">timeout</span><span class="o">)</span>
+</span><span class='line'>                <span class="k">return</span> <span class="n">waithandle</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">member</span> <span class="n">x</span><span class="o">.</span><span class="nc">GrabResult</span><span class="bp">()</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="nn">Task</span><span class="p">.</span><span class="nc">Result</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>PostAndTryAsyncReply</h4>
+
+<p>This one is a little more tricky and I have added a few line number references to try and make it easier.  On <strong>line 3</strong> we
+declare an resultCell to collect the result of the asynchronous operation.  This is used on <strong>line 4</strong> when we create a <code>msg</code>
+to post to <code>incomingMessages</code> on <strong>line 5</strong>.  The <code>replyChannelMsg</code> is a function that takes an <code>AsyncReplyChannel</code> and returns
+a message, so we create an <code>AsyncReplyChannel</code> with a lambda expression that registers the reply with the <code>resultCell</code>.  This
+is the key to how this works, you have to remember that will be done the other side of the operation which will be within the
+asynchronous processing loop of the agent when <code>Reply</code> is called on the <code>AsyncReplyChannel</code>.</p>
+
+<p>Finally pattern matching is used on <strong>line 7</strong> to call either <code>AsyncWaitResult</code> or <code>GetWaitHandle</code> on the <code>resultCell</code>.  The <code>AsyncWaitResult</code> function is used to wait indefinitely and the <code>GetWaitHandle</code> function is used if we want to use a timeout.  Both of these are asynchronous workflows that either return a result or return an option type containing the result.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="nc">PostAndTryAsyncReply</span><span class="o">(</span><span class="n">replyChannelMsg</span><span class="o">,</span> <span class="o">?</span><span class="n">timeout</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">timeout</span> <span class="o">=</span> <span class="n">defaultArg</span> <span class="n">timeout</span> <span class="n">defaultTimeout</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">resultCell</span> <span class="o">=</span> <span class="nc">AsyncResultCell</span><span class="o">&lt;_&gt;</span><span class="bp">()</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">replyChannelMsg</span><span class="o">(</span><span class="nc">AsyncReplyChannel</span><span class="o">&lt;_&gt;(</span><span class="k">fun</span> <span class="n">reply</span> <span class="o">-&gt;</span> <span class="n">resultCell</span><span class="o">.</span><span class="nc">RegisterResult</span><span class="o">(</span><span class="n">reply</span><span class="o">)))</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">posted</span> <span class="o">=</span> <span class="n">incomingMessages</span><span class="o">.</span><span class="nc">Post</span><span class="o">(</span><span class="n">msg</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">posted</span> <span class="k">then</span>
+</span><span class='line'>        <span class="k">match</span> <span class="n">timeout</span> <span class="k">with</span>
+</span><span class='line'>        <span class="o">|</span>   <span class="nn">Threading</span><span class="p">.</span><span class="nn">Timeout</span><span class="p">.</span><span class="nc">Infinite</span> <span class="o">-&gt;</span>
+</span><span class='line'>                <span class="n">async</span> <span class="o">{</span> <span class="k">let</span><span class="o">!</span> <span class="n">result</span> <span class="o">=</span> <span class="n">resultCell</span><span class="o">.</span><span class="nc">AsyncWaitResult</span>
+</span><span class='line'>                        <span class="k">return</span> <span class="nc">Some</span><span class="o">(</span><span class="n">result</span><span class="o">)</span> <span class="o">}</span>
+</span><span class='line'>        <span class="o">|</span>   <span class="o">_</span> <span class="o">-&gt;</span>
+</span><span class='line'>                <span class="n">async</span> <span class="o">{</span> <span class="k">let</span><span class="o">!</span> <span class="n">ok</span> <span class="o">=</span>  <span class="n">resultCell</span><span class="o">.</span><span class="nc">GetWaitHandle</span><span class="o">(</span><span class="n">timeout</span><span class="o">)</span>
+</span><span class='line'>                        <span class="k">let</span> <span class="n">res</span> <span class="o">=</span> <span class="o">(</span><span class="k">if</span> <span class="n">ok</span> <span class="k">then</span> <span class="nc">Some</span><span class="o">(</span><span class="n">resultCell</span><span class="o">.</span><span class="nc">GrabResult</span><span class="bp">()</span><span class="o">)</span> <span class="k">else</span> <span class="nc">None</span><span class="o">)</span>
+</span><span class='line'>                        <span class="k">return</span> <span class="n">res</span> <span class="o">}</span>
+</span><span class='line'>    <span class="k">else</span> <span class="n">async</span><span class="o">{</span><span class="k">return</span> <span class="nc">None</span><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>PostAndAsyncReply</h4>
+
+<p>This member uses the same functionality as <code>PostAndTryAsyncReply</code>, creating a message using the <code>AsyncReplyChannel</code>.  The main
+difference is that an asynchronous workflow is created that wraps a call to <code>PostAndTryAsyncReply</code> if the <code>timeout</code> is specified.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">member</span> <span class="n">this</span><span class="o">.</span><span class="nc">PostAndAsyncReply</span><span class="o">(</span> <span class="n">replyChannelMsg</span><span class="o">,</span> <span class="o">?</span><span class="n">timeout</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">timeout</span> <span class="o">=</span> <span class="n">defaultArg</span> <span class="n">timeout</span> <span class="n">defaultTimeout</span>
+</span><span class='line'>    <span class="k">match</span> <span class="n">timeout</span> <span class="k">with</span>
+</span><span class='line'>    <span class="o">|</span>   <span class="nn">Threading</span><span class="p">.</span><span class="nn">Timeout</span><span class="p">.</span><span class="nc">Infinite</span> <span class="o">-&gt;</span>
+</span><span class='line'>        <span class="k">let</span> <span class="n">resCell</span> <span class="o">=</span> <span class="nc">AsyncResultCell</span><span class="o">&lt;_&gt;</span><span class="bp">()</span>
+</span><span class='line'>        <span class="k">let</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">replyChannelMsg</span> <span class="o">(</span><span class="nc">AsyncReplyChannel</span><span class="o">&lt;_&gt;(</span><span class="k">fun</span> <span class="n">reply</span> <span class="o">-&gt;</span> <span class="n">resCell</span><span class="o">.</span><span class="nc">RegisterResult</span><span class="o">(</span><span class="n">reply</span><span class="o">)</span> <span class="o">))</span>
+</span><span class='line'>        <span class="k">let</span> <span class="n">posted</span> <span class="o">=</span> <span class="n">incomingMessages</span><span class="o">.</span><span class="nc">Post</span><span class="o">(</span><span class="n">msg</span><span class="o">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">posted</span> <span class="k">then</span>
+</span><span class='line'>            <span class="n">resCell</span><span class="o">.</span><span class="nc">AsyncWaitResult</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>            <span class="n">raise</span> <span class="o">(</span><span class="nc">InvalidOperationException</span><span class="o">(</span><span class="s2">&quot;Incoming message buffer full.&quot;</span><span class="o">))</span>
+</span><span class='line'>    <span class="o">|</span>   <span class="o">_</span> <span class="o">-&gt;</span>
+</span><span class='line'>        <span class="k">let</span> <span class="n">asyncReply</span> <span class="o">=</span> <span class="n">this</span><span class="o">.</span><span class="nc">PostAndTryAsyncReply</span><span class="o">(</span><span class="n">replyChannelMsg</span><span class="o">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="o">)</span>
+</span><span class='line'>        <span class="n">async</span> <span class="o">{</span> <span class="k">let</span><span class="o">!</span> <span class="n">res</span> <span class="o">=</span> <span class="n">asyncReply</span>
+</span><span class='line'>                <span class="k">match</span> <span class="n">res</span> <span class="k">with</span>
+</span><span class='line'>                <span class="o">|</span> <span class="nc">None</span> <span class="o">-&gt;</span>  <span class="k">return</span><span class="o">!</span> <span class="n">raise</span> <span class="o">(</span><span class="nc">TimeoutException</span><span class="o">(</span><span class="s2">&quot;PostAndAsyncReply TimedOut&quot;</span><span class="o">))</span>
+</span><span class='line'>                <span class="o">|</span> <span class="nc">Some</span> <span class="n">res</span> <span class="o">-&gt;</span> <span class="k">return</span> <span class="n">res</span> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Static Start</h2>
+
+<p>The static Start function is used as a way to construct and start the agent than using the constructor and then calling the Start function.  This is really just a simple short cut for this common use case.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">static</span> <span class="k">member</span> <span class="nc">Start</span><span class="o">(</span><span class="n">initial</span><span class="o">,</span> <span class="o">?</span><span class="n">cancellationToken</span><span class="o">)</span> <span class="o">=</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">dfa</span> <span class="o">=</span> <span class="nc">DataflowAgent</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="nc">Msg</span><span class="o">&gt;(</span><span class="n">initial</span><span class="o">,</span> <span class="o">?</span><span class="n">cancellationToken</span> <span class="o">=</span> <span class="n">cancellationToken</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">dfa</span><span class="o">.</span><span class="nc">Start</span><span class="bp">()</span>
+</span><span class='line'>    <span class="n">dfa</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Until next time&#8230;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">7sharp9</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-30T07:49:00+00:00" pubdate data-updated="true">Jan 30<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/agents/'>Agents</a>, <a class='category' href='/blog/categories/programming-tales/'>Programming Tales</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://MoiraeSoftware.com/blog/2012/01/30/FSharp-Dataflow-agents-II/" data-via="" data-counturl="http://MoiraeSoftware.com/blog/2012/01/30/FSharp-Dataflow-agents-II/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/01/22/FSharp-Dataflow-agents-I/" title="Previous Post: F# Dataflow Agents Part I">&laquo; F# Dataflow Agents Part I</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/02/20/fsharp-dataflow-agents-iii/" title="next Post: FSharp Dataflow agents III">FSharp Dataflow agents III &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/07/15/the-lurking-horror/">The Lurking Horror</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/22/back-to-the-primitive-ii/">Back to the Primitive II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/12/back-to-the-primitive/">Back to the Primitive</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/11/black-scholes-taste-test/">Black-Scholes Taste Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/02/20/fsharp-dataflow-agents-iii/">FSharp Dataflow agents III</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/FSharp-Dataflow-agents-II/">F# Dataflow Agents Part II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/22/FSharp-Dataflow-agents-I/">F# Dataflow Agents Part I</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/08/moved-to-octopress/">Moved To Octopress...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/11/fixing-a-hole/">Fixing a hole...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/14/build-2011-a-quick-look/">Build 2011 - A quick look</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/7sharp9">@7sharp9</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        var blacklist = [];
+        
+          
+            blacklist.push('nemerle');
+          
+            blacklist.push('FSharp.Javascript');
+          
+            blacklist.push('ServiceStack');
+          
+        
+
+        github.showRepos({
+            user: '7sharp9',
+            count: 0,
+            skip_forks: false,
+            blacklist: blacklist,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Dave Thomas -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'moiraesoftware';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://MoiraeSoftware.com/blog/2012/01/30/FSharp-Dataflow-agents-II/';
+        var disqus_url = 'http://MoiraeSoftware.com/blog/2012/01/30/FSharp-Dataflow-agents-II/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
